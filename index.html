@@ -245,7 +245,8 @@
     z-index:50;
     display:none;
   }
-  .custom-select.open .select-panel{display:block;}
+  .custom-select.open .select-panel,
+  .multi-select.open .select-panel{display:block;}
   .select-panel::-webkit-scrollbar{width:6px;}
   .select-panel::-webkit-scrollbar-thumb{background:#C0C4CC;border-radius:4px;}
   .select-option{
@@ -288,6 +289,17 @@
   .multi-select.disabled .sel-display{
     background:#F5F7FA;color:var(--text-placeholder);cursor:not-allowed;
   }
+  .ipt:disabled{
+    background:#F5F7FA;color:var(--text-placeholder);cursor:not-allowed;border-color:var(--border-light);
+  }
+  .custom-select.disabled .sel-display{
+    background:#F5F7FA;color:var(--text-placeholder);cursor:not-allowed;border-color:var(--border-light);
+  }
+  .radio-item.disabled{cursor:not-allowed;color:var(--text-placeholder);}
+  .radio-item.disabled .radio-circle{border-color:var(--border-base);}
+  .radio-item.disabled.checked .radio-circle{border-color:var(--border-base);}
+  .radio-item.disabled.checked .radio-circle .dot{background:var(--text-placeholder);}
+  .radio-item.disabled.checked{color:var(--text-placeholder);}
 
   /* ===================== 按钮 ===================== */
   .btn{
@@ -339,7 +351,7 @@
   .col-platform{white-space:normal;}
 
   .op-btns{
-    display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
   }
 
   /* 空状态 */
@@ -397,26 +409,22 @@
     background:#fff;z-index:1001;border-radius:8px;
     box-shadow:0 1px 3px rgba(0,0,0,.3);
     display:none;
-    max-height:85vh;
     flex-direction:column;
-    overflow:hidden;
   }
   .form-dialog.show{display:flex;}
   .drawer-header{
     height:56px;flex-shrink:0;
     display:flex;align-items:center;justify-content:space-between;
     padding:0 24px;border-bottom:1px solid var(--border-light);
+    border-top-left-radius:8px;border-top-right-radius:8px;
   }
   .drawer-title{font-size:16px;font-weight:bold;color:var(--text-primary);}
   .drawer-close{cursor:pointer;color:var(--text-secondary);font-size:18px;}
   .drawer-close:hover{color:var(--text-primary);}
   .drawer-body{
-    flex:1;overflow-y:auto;
     padding:24px;
     position:relative;
   }
-  .drawer-body::-webkit-scrollbar{width:6px;}
-  .drawer-body::-webkit-scrollbar-thumb{background:#C0C4CC;border-radius:4px;}
 
   .drawer-footer{
     flex-shrink:0;
@@ -424,6 +432,7 @@
     border-top:1px solid #EBEEF5;
     background:#FFFFFF;
     display:flex;justify-content:flex-end;gap:12px;
+    border-bottom-left-radius:8px;border-bottom-right-radius:8px;
   }
 
   /* 表单 */
@@ -433,8 +442,9 @@
   }
   .form-item:last-child{margin-bottom:0;}
   .form-label{
-    width:100px;flex-shrink:0;text-align:right;padding-right:12px;
+    width:120px;flex-shrink:0;text-align:right;padding-right:12px;
     font-size:14px;color:var(--text-regular);line-height:40px;
+    white-space:nowrap;
   }
   .form-label .required{color:#F56C6C;margin-right:4px;}
   .form-control{flex:1;min-width:0;}
@@ -633,9 +643,27 @@
               <span class="filter-label">渠道名称</span>
               <input type="text" class="ipt" id="filterChannelName" placeholder="请输入渠道名称" style="width:200px;">
             </div>
+            <div class="filter-item">
+              <span class="filter-label">放款比例</span>
+              <input type="text" class="ipt" id="filterLoanRatio" placeholder="请输入放款比例" style="width:200px;">
+            </div>
+            <div class="filter-item">
+              <span class="filter-label" style="width:100px;white-space:nowrap;">车辆评估方式</span>
+              <div class="custom-select" id="filterEvalTypeSelect" style="width:200px;">
+                <div class="sel-display" data-value="">
+                  <span class="sel-text">全部</span>
+                  <span class="sel-arrow">▾</span>
+                </div>
+                <div class="select-panel">
+                  <div class="select-option selected" data-value="">全部</div>
+                  <div class="select-option" data-value="auto">自动评估</div>
+                  <div class="select-option" data-value="manual">人工评估</div>
+                </div>
+              </div>
+            </div>
             <div class="filter-actions">
-              <button class="btn btn-primary btn-large" id="btnSearch">🔍 查询</button>
-              <button class="btn btn-large" id="btnReset">⟳ 重置</button>
+              <button class="btn btn-primary btn-large" id="btnSearch">查询</button>
+              <button class="btn btn-large" id="btnReset">重置</button>
             </div>
           </div>
         </div>
@@ -646,23 +674,23 @@
             <colgroup>
               <col style="width:140px;">
               <col style="width:160px;">
-              <col style="width:160px;">
+              <col style="width:220px;">
               <col style="width:100px;">
               <col style="width:120px;">
-              <col style="width:auto;">
+              <col style="width:120px;">
               <col style="width:180px;">
-              <col style="width:200px;">
+              <col style="width:90px;">
             </colgroup>
             <thead>
               <tr>
                 <th>所属市场</th>
                 <th>金融公司名称</th>
-                <th>渠道名称</th>
+                <th style="width:220px;">渠道名称</th>
                 <th>放款比例</th>
                 <th>车辆评估方式</th>
-                <th>评估平台</th>
+                <th style="width:120px;">评估平台</th>
                 <th>创建时间</th>
-                <th>操作</th>
+                <th style="width:90px;">操作</th>
               </tr>
             </thead>
             <tbody id="tableBody">
@@ -781,11 +809,8 @@
             <span class="sel-arrow">▾</span>
           </div>
           <div class="select-panel">
-            <div class="select-option" data-value="中检车服"><span class="chk"></span><span>中检车服</span></div>
+            <div class="select-option" data-value="精真估"><span class="chk"></span><span>精真估</span></div>
             <div class="select-option" data-value="车300"><span class="chk"></span><span>车300</span></div>
-            <div class="select-option" data-value="大圣检测"><span class="chk"></span><span>大圣检测</span></div>
-            <div class="select-option" data-value="优信评估"><span class="chk"></span><span>优信评估</span></div>
-            <div class="select-option" data-value="检车无忧"><span class="chk"></span><span>检车无忧</span></div>
           </div>
         </div>
         <div class="field-error" id="errPlatform" style="display:none;"></div>
@@ -835,23 +860,6 @@
   </div>
 </div>
 
-<!-- 离开确认弹窗 -->
-<div class="dialog dialog-380" id="leaveDialog">
-  <div class="dialog-header">
-    <span class="dialog-title">提示</span>
-    <span class="dialog-close" data-close="leaveDialog">✕</span>
-  </div>
-  <div class="dialog-body">
-    <div class="confirm-icon-area">
-      <div class="confirm-desc">当前修改尚未保存，确认离开？</div>
-    </div>
-  </div>
-  <div class="dialog-footer">
-    <button class="btn" data-close="leaveDialog">继续编辑</button>
-    <button class="btn btn-primary" id="confirmLeaveBtn">确认离开</button>
-  </div>
-</div>
-
 <!-- 操作日志弹窗 -->
 <div class="dialog dialog-540" id="logDialog">
   <div class="dialog-header">
@@ -886,7 +894,7 @@ let channels = [
     channelName: '泸州银行-标准质押产品',
     loanRatio: 80,
     evalType: 'auto',
-    platforms: ['中检车服', '车300'],
+    platforms: ['精真估', '车300'],
     createdAt: '2026-01-12 10:23:05',
     hasOrders: true,
     logs: [
@@ -929,11 +937,11 @@ let channels = [
     channelName: '招商银行-标准产品',
     loanRatio: 75,
     evalType: 'auto',
-    platforms: ['中检车服', '大圣检测', '车300'],
+    platforms: ['精真估', '大圣检测', '车300'],
     createdAt: '2026-03-05 16:55:47',
     hasOrders: false,
     logs: [
-      { time:'2026-03-06 11:02:21', user:'李芳', type:'编辑', detail: '评估平台：中检车服、车300 → 中检车服、大圣检测、车300' },
+      { time:'2026-03-06 11:02:21', user:'李芳', type:'编辑', detail: '评估平台：精真估、车300 → 精真估、大圣检测、车300' },
       { time:'2026-03-05 16:55:47', user:'王晓明', type:'新增', detail: '创建资金渠道：招商银行-标准产品' }
     ]
   },
@@ -953,9 +961,8 @@ let channels = [
   }
 ];
 
-let filterState = { company:'', channelName:'' };
+let filterState = { company:'', channelName:'', loanRatio:'', evalType:'' };
 let editingId = null;
-let formDirty = false;
 
 // ===================== 工具函数 =====================
 function showMsg(text, type){
@@ -981,6 +988,8 @@ function renderTable(){
   let list = channels.filter(c => {
     if (filterState.company && c.company !== filterState.company) return false;
     if (filterState.channelName && !c.channelName.includes(filterState.channelName)) return false;
+    if (filterState.loanRatio !== '' && c.loanRatio !== Number(filterState.loanRatio)) return false;
+    if (filterState.evalType && c.evalType !== filterState.evalType) return false;
     return true;
   });
 
@@ -1019,12 +1028,15 @@ function renderTable(){
 // ===================== 筛选区交互 =====================
 document.getElementById('btnSearch').addEventListener('click', () => {
   filterState.channelName = document.getElementById('filterChannelName').value.trim();
+  filterState.loanRatio = document.getElementById('filterLoanRatio').value.trim();
   renderTable();
 });
 document.getElementById('btnReset').addEventListener('click', () => {
-  filterState = { company:'', channelName:'' };
+  filterState = { company:'', channelName:'', loanRatio:'', evalType:'' };
   document.getElementById('filterChannelName').value = '';
+  document.getElementById('filterLoanRatio').value = '';
   setSelectValue('filterCompanySelect', '', '全部');
+  setSelectValue('filterEvalTypeSelect', '', '全部');
   renderTable();
 });
 
@@ -1036,6 +1048,7 @@ function setupSingleSelect(containerId, onChange){
 
   display.addEventListener('click', (e) => {
     e.stopPropagation();
+    if (el.classList.contains('disabled')) return;
     document.querySelectorAll('.custom-select.open, .multi-select.open').forEach(o => {
       if (o !== el) o.classList.remove('open');
     });
@@ -1050,7 +1063,7 @@ function setupSingleSelect(containerId, onChange){
       const text = opt.textContent;
       display.querySelector('.sel-text').textContent = text;
       display.setAttribute('data-value', value);
-      display.classList.toggle('placeholder', value === '' && containerId !== 'filterCompanySelect');
+      display.classList.toggle('placeholder', value === '' && containerId !== 'filterCompanySelect' && containerId !== 'filterEvalTypeSelect');
       el.classList.remove('open');
       if (onChange) onChange(value, text);
     });
@@ -1072,8 +1085,12 @@ setupSingleSelect('filterCompanySelect', (value) => {
   renderTable();
 });
 
+setupSingleSelect('filterEvalTypeSelect', (value) => {
+  filterState.evalType = value;
+  renderTable();
+});
+
 setupSingleSelect('fCompanySelect', (value) => {
-  formDirty = true;
   document.getElementById('errCompany').style.display = 'none';
   document.querySelector('#fCompanySelect .sel-display').classList.remove('is-error');
   document.querySelector('#fCompanySelect .sel-display').classList.toggle('placeholder', value === '');
@@ -1127,7 +1144,6 @@ platformSelect.querySelector('.sel-display').addEventListener('click', (e) => {
     const p = e.target.getAttribute('data-platform');
     selectedPlatforms = selectedPlatforms.filter(x => x !== p);
     renderPlatformDisplay();
-    formDirty = true;
     return;
   }
   e.stopPropagation();
@@ -1145,7 +1161,6 @@ platformSelect.querySelectorAll('.select-option').forEach(opt => {
     } else {
       selectedPlatforms.push(v);
     }
-    formDirty = true;
     document.getElementById('errPlatform').style.display = 'none';
     renderPlatformDisplay();
   });
@@ -1166,7 +1181,6 @@ document.getElementById('btnAdd').addEventListener('click', () => openDrawer(nul
 
 function openDrawer(channel){
   editingId = channel ? channel.id : null;
-  formDirty = false;
   document.getElementById('drawerTitle').textContent = channel ? '编辑资金渠道' : '新增资金渠道';
 
   // 渠道名称
@@ -1175,6 +1189,7 @@ function openDrawer(channel){
   document.getElementById('channelNameCount').textContent = `${nameInput.value.length}/50`;
   document.getElementById('errChannelName').style.display = 'none';
   nameInput.classList.remove('is-error');
+  nameInput.disabled = !!channel;
 
   // 所属金融公司
   if (channel){
@@ -1185,12 +1200,14 @@ function openDrawer(channel){
     document.querySelector('#fCompanySelect .sel-display').classList.add('placeholder');
   }
   document.getElementById('errCompany').style.display = 'none';
+  document.getElementById('fCompanySelect').classList.toggle('disabled', !!channel);
 
   // 放款比例
   const ratioInput = document.getElementById('fLoanRatio');
   ratioInput.value = channel ? channel.loanRatio : '';
   ratioInput.classList.remove('is-error');
   document.getElementById('errLoanRatio').style.display = 'none';
+  ratioInput.disabled = !!channel;
 
   // 车辆评估选项
   document.querySelectorAll('#fEvalType .radio-item').forEach(r => r.classList.remove('checked'));
@@ -1198,6 +1215,8 @@ function openDrawer(channel){
     document.querySelector(`#fEvalType .radio-item[data-value="${channel.evalType}"]`).classList.add('checked');
   }
   document.getElementById('errEvalType').style.display = 'none';
+  const evalDisabled = !!(channel && channel.hasOrders);
+  document.querySelectorAll('#fEvalType .radio-item').forEach(r => r.classList.toggle('disabled', evalDisabled));
 
   // 评估平台
   selectedPlatforms = channel ? [...channel.platforms] : [];
@@ -1207,9 +1226,6 @@ function openDrawer(channel){
 
   drawer.classList.add('show');
   showOverlay();
-
-  // 标记为非脏（重置交互后再标记）
-  setTimeout(() => { formDirty = false; }, 0);
 }
 
 function togglePlatformField(evalType){
@@ -1219,7 +1235,6 @@ function togglePlatformField(evalType){
 
 // 渠道名称输入
 document.getElementById('fChannelName').addEventListener('input', (e) => {
-  formDirty = true;
   document.getElementById('channelNameCount').textContent = `${e.target.value.length}/50`;
 });
 document.getElementById('fChannelName').addEventListener('blur', (e) => {
@@ -1249,7 +1264,6 @@ function validateChannelName(){
 }
 
 // 放款比例
-document.getElementById('fLoanRatio').addEventListener('input', () => { formDirty = true; });
 document.getElementById('fLoanRatio').addEventListener('blur', validateLoanRatio);
 function validateLoanRatio(){
   const val = document.getElementById('fLoanRatio').value.trim();
@@ -1318,9 +1332,9 @@ function validatePlatform(){
 // 单选组：车辆评估选项
 document.querySelectorAll('#fEvalType .radio-item').forEach(item => {
   item.addEventListener('click', () => {
+    if (item.classList.contains('disabled')) return;
     document.querySelectorAll('#fEvalType .radio-item').forEach(r => r.classList.remove('checked'));
     item.classList.add('checked');
-    formDirty = true;
     document.getElementById('errEvalType').style.display = 'none';
     const evalType = item.getAttribute('data-value');
     togglePlatformField(evalType);
@@ -1333,25 +1347,12 @@ document.querySelectorAll('#fEvalType .radio-item').forEach(item => {
 });
 
 // 关闭抽屉
-function closeDrawer(force){
-  if (!force && formDirty){
-    showLeaveConfirm();
-    return;
-  }
+function closeDrawer(){
   drawer.classList.remove('show');
   hideOverlayIfNoneOpen();
 }
-document.getElementById('drawerClose').addEventListener('click', () => closeDrawer(false));
-document.getElementById('drawerCancel').addEventListener('click', () => closeDrawer(false));
-
-function showLeaveConfirm(){
-  document.getElementById('leaveDialog').classList.add('show');
-  showOverlay();
-}
-document.getElementById('confirmLeaveBtn').addEventListener('click', () => {
-  document.getElementById('leaveDialog').classList.remove('show');
-  closeDrawer(true);
-});
+document.getElementById('drawerClose').addEventListener('click', () => closeDrawer());
+document.getElementById('drawerCancel').addEventListener('click', () => closeDrawer());
 
 // 保存
 document.getElementById('drawerSave').addEventListener('click', () => {
@@ -1402,8 +1403,7 @@ document.getElementById('drawerSave').addEventListener('click', () => {
     showMsg('新增成功');
   }
 
-  formDirty = false;
-  closeDrawer(true);
+  closeDrawer();
   renderTable();
 });
 

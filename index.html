@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>资金渠道管理 - 智慧车市</title>
+<style>
+  :root{
+    --primary:#409EFF;
+    --success:#67C23A;
+    --warning:#E6A23C;
+    --danger:#F56C6C;
+    --text-primary:#303133;
+    --text-regular:#606266;
+    --text-secondary:#909399;
+    --text-placeholder:#C0C4CC;
+    --border-base:#DCDFE6;
+    --border-light:#EBEEF5;
+    --border-lighter:#F2F6FC;
+    --bg-page:#F2F4F5;
+    --fill-light:#F5F7FA;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    font-size:14px;
+    color:var(--text-primary);
+    background:var(--bg-page);
+    min-width:1200px;
+  }
+
+  /* ===================== 整体布局 ===================== */
+  .layout-container{
+    display:flex;
+    height:100vh;
+    background:var(--bg-page);
+    min-width:1200px;
+  }
+
+  /* ===================== 侧边栏 ===================== */
+  .sidebar{
+    width:180px;
+    flex-shrink:0;
+    background:#FFFFFF;
+    box-shadow:2px 0 8px rgba(29,35,41,0.05);
+    height:100vh;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+  }
+  .sidebar::-webkit-scrollbar{width:6px;}
+  .sidebar::-webkit-scrollbar-thumb{background:#C0C4CC;border-radius:4px;}
+  .logo{
+    height:90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    border-bottom:1px solid var(--border-lighter);
+    flex-shrink:0;
+  }
+  .logo-icon{
+    width:40px;height:40px;border-radius:8px;
+    background:linear-gradient(135deg,#48528e,#409EFF);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:bold;font-size:18px;
+  }
+  .logo-text{font-size:20px;color:#0444a6;font-weight:400;}
+
+  .menu{padding:8px 0;}
+  .menu-item{
+    display:flex;align-items:center;gap:8px;
+    height:44px;padding:0 20px;
+    font-size:14px;color:#66798c;
+    cursor:pointer;
+    transition:background .2s,color .2s;
+  }
+  .menu-item:hover{background:#f2f7ff;color:#409eff;}
+  .menu-item .menu-icon{
+    width:16px;height:16px;flex-shrink:0;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .menu-item .arrow{
+    margin-left:auto;
+    font-size:12px;
+    transition:transform .2s;
+    color:#c0c4cc;
+  }
+  .menu-item.expanded .arrow{transform:rotate(90deg);}
+
+  .submenu{overflow:hidden;}
+  .submenu-item{
+    height:40px;line-height:40px;padding:0 20px 0 44px;
+    font-size:14px;color:#66798c;cursor:pointer;
+    transition:background .2s,color .2s;
+  }
+  .submenu-item:hover{background:#f2f7ff;color:#409eff;}
+  .submenu-item.active{background:#48528e;color:#FFFFFF;}
+
+  /* ===================== 顶部状态栏 ===================== */
+  .main-area{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    height:100vh;
+  }
+  .top-header{
+    height:60px;
+    flex-shrink:0;
+    background:#FFFFFF;
+    border-bottom:1px solid #f0f0f0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+  }
+  .market-info{
+    font-size:14px;color:#333333;font-weight:600;
+  }
+  .user-profile{
+    display:flex;align-items:center;gap:12px;
+  }
+  .role-switcher{
+    font-size:12px;color:var(--text-regular);
+    border:1px solid var(--border-base);
+    border-radius:4px;
+    padding:4px 8px;
+    cursor:pointer;
+    background:#fff;
+  }
+  .avatar{
+    width:30px;height:30px;border-radius:50%;
+    background:#48528e;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:600;flex-shrink:0;
+  }
+  .username{font-size:16px;color:#000000;font-weight:600;}
+  .role-tag{
+    background:#d0e2f2;color:#1d2c4f;
+    height:20px;line-height:20px;
+    padding:0 8px;border-radius:4px;
+    font-size:12px;white-space:nowrap;
+  }
+  .dropdown-arrow{
+    width:20px;height:20px;border-radius:4px;
+    background:#f3f5fc;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-secondary);font-size:12px;cursor:pointer;
+  }
+
+  /* ===================== 主内容区 ===================== */
+  .main-content{
+    flex:1;
+    padding:15px;
+    background:var(--bg-page);
+    overflow:auto;
+  }
+  .content-body{
+    background:#f9fafb;
+    min-height:100%;
+    padding:20px 12px;
+  }
+
+  /* 操作按钮区 */
+  .action-bar{
+    margin-bottom:16px;
+  }
+
+  /* 筛选条件区 */
+  .search-filter-container{
+    background:#F2F2F2;
+    padding:20px 12px;
+  }
+  .filter-row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    gap:16px 24px;
+  }
+  .filter-item{
+    display:inline-flex;
+    align-items:center;
+  }
+  .filter-label{
+    width:80px;
+    flex-shrink:0;
+    text-align:right;
+    margin-right:12px;
+    font-size:14px;
+    color:var(--text-regular);
+  }
+  .filter-actions{
+    width:100%;
+    display:flex;
+    margin-left:92px;
+    gap:12px;
+    margin-bottom:0;
+  }
+
+  .market-name-display{
+    height:40px;
+    line-height:40px;
+    padding:0 12px;
+    font-size:14px;
+    color:#303133;
+    background:#F5F7FA;
+    border:1px solid #DCDFE6;
+    border-radius:4px;
+    width:160px;
+    display:inline-block;
+    box-sizing:border-box;
+  }
+
+  /* ===================== 表单控件通用 ===================== */
+  .ipt, .sel-display{
+    height:40px;
+    line-height:38px;
+    padding:0 12px;
+    font-size:14px;
+    color:var(--text-primary);
+    background:#FFFFFF;
+    border:1px solid var(--border-base);
+    border-radius:4px;
+    outline:none;
+    transition:border-color .2s;
+    width:200px;
+  }
+  .ipt:hover, .sel-display:hover{border-color:#C0C4CC;}
+  .ipt:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(64,158,255,.1);}
+  .ipt::placeholder{color:var(--text-placeholder);}
+
+  /* 自定义下拉选择 */
+  .custom-select{position:relative;width:200px;}
+  .custom-select .sel-display{
+    width:100%;display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  }
+  .custom-select .sel-display.placeholder{color:var(--text-placeholder);}
+  .custom-select .sel-arrow{color:var(--text-placeholder);font-size:12px;transition:transform .2s;}
+  .custom-select.open .sel-arrow{transform:rotate(180deg);}
+  .custom-select.open .sel-display{border-color:var(--primary);}
+  .select-panel{
+    position:absolute;top:calc(100% + 4px);left:0;right:0;
+    background:#fff;border:1px solid var(--border-light);
+    border-radius:4px;
+    box-shadow:0 2px 12px rgba(0,0,0,.1);
+    max-height:260px;overflow-y:auto;
+    z-index:50;
+    display:none;
+  }
+  .custom-select.open .select-panel{display:block;}
+  .select-panel::-webkit-scrollbar{width:6px;}
+  .select-panel::-webkit-scrollbar-thumb{background:#C0C4CC;border-radius:4px;}
+  .select-option{
+    padding:0 16px;height:34px;line-height:34px;font-size:14px;
+    color:var(--text-primary);cursor:pointer;
+  }
+  .select-option:hover{background:#F5F7FA;}
+  .select-option.selected{background:#F5F7FA;color:var(--primary);font-weight:bold;}
+  .select-empty-tip{
+    padding:12px 16px;
+    font-size:13px;
+    color:#909399;
+    text-align:center;
+    line-height:1.6;
+  }
+  .select-empty-tip a{color:var(--primary);text-decoration:none;cursor:pointer;}
+
+  /* 多选下拉（评估平台）*/
+  .multi-select{position:relative;width:100%;}
+  .multi-select .sel-display{
+    width:100%;min-height:40px;height:auto;line-height:1.4;
+    display:flex;align-items:center;flex-wrap:wrap;gap:4px;
+    cursor:pointer;padding:4px 28px 4px 8px;position:relative;
+  }
+  .multi-select .sel-display.placeholder{color:var(--text-placeholder);padding-left:12px;}
+  .multi-select .sel-arrow{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-placeholder);font-size:12px;}
+  .multi-select.open .sel-arrow{transform:translateY(-50%) rotate(180deg);}
+  .multi-select.open .sel-display{border-color:var(--primary);}
+  .multi-tag{
+    background:#F0F2F5;border:1px solid #E4E7ED;color:var(--text-regular);
+    font-size:12px;border-radius:3px;padding:1px 6px;display:inline-flex;align-items:center;gap:4px;
+  }
+  .multi-tag .tag-close{cursor:pointer;color:var(--text-secondary);font-weight:bold;}
+  .multi-select .select-option{display:flex;align-items:center;gap:8px;}
+  .multi-select .select-option .chk{
+    width:14px;height:14px;border:1px solid var(--border-base);border-radius:2px;
+    display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .multi-select .select-option.selected .chk{background:var(--primary);border-color:var(--primary);color:#fff;font-size:11px;}
+  .multi-select.disabled .sel-display{
+    background:#F5F7FA;color:var(--text-placeholder);cursor:not-allowed;
+  }
+
+  /* ===================== 按钮 ===================== */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:4px;
+    height:32px;padding:0 15px;
+    font-size:14px;border-radius:4px;cursor:pointer;
+    border:1px solid var(--border-base);background:#fff;color:var(--text-regular);
+    min-width:64px;white-space:nowrap;
+    transition:all .2s;
+  }
+  .btn:hover{color:var(--primary);border-color:#c6e2ff;background:#ecf5ff;}
+  .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff;}
+  .btn-primary:hover{background:#66b1ff;border-color:#66b1ff;color:#fff;}
+  .btn-danger-plain{background:#fff;border-color:#fbc4c4;color:var(--danger);}
+  .btn-danger-plain:hover{background:var(--danger);border-color:var(--danger);color:#fff;}
+  .btn-primary-plain{background:#fff;border-color:#b3d8ff;color:var(--primary);}
+  .btn-primary-plain:hover{background:var(--primary);border-color:var(--primary);color:#fff;}
+
+  .btn-large{height:40px;padding:0 19px;font-size:14px;}
+  .btn-small{height:24px;padding:0 12px;font-size:12px;min-width:0;}
+
+  /* ===================== 表格 ===================== */
+  .table-wrap{
+    margin-top:40px;
+    background:#fff;
+    border:1px solid var(--border-light);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  table.data-table{
+    width:100%;border-collapse:collapse;table-layout:fixed;
+  }
+  .data-table th{
+    background:#F5F7FA;color:var(--text-secondary);
+    font-size:14px;font-weight:bold;text-align:center;
+    height:54px;padding:0 8px;
+    border-bottom:1px solid var(--border-light);
+    border-right:1px solid var(--border-light);
+  }
+  .data-table th:last-child, .data-table td:last-child{border-right:none;}
+  .data-table td{
+    height:54px;text-align:center;padding:8px;
+    font-size:14px;color:var(--text-primary);
+    border-bottom:1px solid var(--border-light);
+    border-right:1px solid var(--border-light);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .data-table tbody tr:hover td{background:#F5F7FA;}
+  .col-platform{white-space:normal;}
+
+  .op-btns{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+  }
+
+  /* 空状态 */
+  .empty-state{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:60px 0;color:#909399;font-size:14px;
+  }
+  .empty-icon{
+    width:80px;height:80px;border-radius:50%;
+    background:#F5F7FA;display:flex;align-items:center;justify-content:center;
+    margin-bottom:16px;font-size:36px;color:#C0C4CC;
+  }
+  .empty-state .empty-sub{font-size:12px;color:#C0C4CC;margin-top:4px;}
+
+  /* ===================== 分页 ===================== */
+  .pagination-container{
+    margin-top:20px;
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:12px;
+    padding:8px 0;
+    font-size:13px;
+    color:var(--text-regular);
+  }
+  .pg-total{font-size:13px;color:var(--text-regular);}
+  .pg-sizes select{
+    height:28px;border:1px solid var(--border-base);border-radius:4px;
+    color:var(--text-regular);font-size:13px;padding:0 6px;background:#fff;cursor:pointer;
+  }
+  .pg-btn{
+    min-width:28px;height:28px;border-radius:4px;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid transparent;background:#f4f4f5;color:var(--text-regular);
+    cursor:pointer;font-size:13px;padding:0 4px;
+  }
+  .pg-btn.active{background:var(--primary);color:#fff;}
+  .pg-btn.disabled{cursor:not-allowed;color:var(--text-placeholder);}
+  .pg-jumper input{
+    width:40px;height:28px;border:1px solid var(--border-base);border-radius:4px;
+    text-align:center;font-size:13px;
+  }
+
+  /* ===================== 遮罩 ===================== */
+  .overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.5);
+    z-index:1000;display:none;
+  }
+  .overlay.show{display:block;}
+
+  /* ===================== 抽屉 ===================== */
+  .drawer{
+    position:fixed;top:0;right:-480px;bottom:0;width:480px;
+    background:#fff;z-index:1001;
+    box-shadow:-2px 0 12px rgba(0,0,0,.1);
+    transition:right .3s ease;
+    display:flex;flex-direction:column;
+  }
+  .drawer.show{right:0;}
+  .drawer-header{
+    height:56px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 24px;border-bottom:1px solid var(--border-light);
+  }
+  .drawer-title{font-size:16px;font-weight:bold;color:var(--text-primary);}
+  .drawer-close{cursor:pointer;color:var(--text-secondary);font-size:18px;}
+  .drawer-close:hover{color:var(--text-primary);}
+  .drawer-body{
+    flex:1;overflow-y:auto;
+    padding:24px 24px 80px;
+    position:relative;
+  }
+  .drawer-body::-webkit-scrollbar{width:6px;}
+  .drawer-body::-webkit-scrollbar-thumb{background:#C0C4CC;border-radius:4px;}
+
+  .drawer-footer{
+    position:absolute;bottom:0;left:0;right:0;
+    padding:16px 24px;
+    border-top:1px solid #EBEEF5;
+    background:#FFFFFF;
+    display:flex;justify-content:flex-end;gap:12px;
+  }
+
+  /* 表单 */
+  .form-item{
+    display:flex;align-items:flex-start;
+    margin-bottom:22px;
+  }
+  .form-item:last-child{margin-bottom:0;}
+  .form-label{
+    width:100px;flex-shrink:0;text-align:right;padding-right:12px;
+    font-size:14px;color:var(--text-regular);line-height:40px;
+  }
+  .form-label .required{color:#F56C6C;margin-right:4px;}
+  .form-control{flex:1;min-width:0;}
+  .form-control .ipt{width:100%;}
+  .field-error{font-size:12px;color:#F56C6C;margin-top:4px;line-height:1.4;}
+  .field-tip{font-size:12px;color:#909399;margin-top:4px;line-height:1.5;}
+  .field-tip.error{color:#F56C6C;}
+  .ipt.is-error{border-color:#F56C6C;}
+  .input-with-suffix{
+    display:flex;align-items:stretch;width:100%;
+  }
+  .input-with-suffix .ipt{
+    border-top-right-radius:0;border-bottom-right-radius:0;flex:1;width:auto;
+  }
+  .input-suffix{
+    display:flex;align-items:center;justify-content:center;
+    padding:0 12px;background:#F5F7FA;border:1px solid var(--border-base);
+    border-left:none;border-top-right-radius:4px;border-bottom-right-radius:4px;
+    color:var(--text-secondary);font-size:14px;
+  }
+  .word-limit{
+    position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--text-placeholder);
+    background:transparent;
+  }
+  .ipt-wrap{position:relative;}
+
+  /* 单选组 */
+  .radio-group{display:flex;gap:24px;height:40px;align-items:center;}
+  .radio-item{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;color:var(--text-primary);}
+  .radio-circle{
+    width:14px;height:14px;border-radius:50%;border:1px solid var(--border-base);
+    display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .radio-item.checked .radio-circle{border-color:var(--primary);}
+  .radio-circle .dot{width:6px;height:6px;border-radius:50%;background:var(--primary);display:none;}
+  .radio-item.checked .radio-circle .dot{display:block;}
+  .radio-item.checked{color:var(--primary);}
+
+  /* ===================== 弹窗 Dialog ===================== */
+  .dialog{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:#fff;border-radius:8px;z-index:1002;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);
+    display:none;
+    max-height:85vh;overflow:hidden;
+    flex-direction:column;
+  }
+  .dialog.show{display:flex;}
+  .dialog-420{width:420px;}
+  .dialog-380{width:380px;}
+  .dialog-540{width:540px;}
+  .dialog-header{
+    padding:20px 20px 10px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .dialog-title{font-size:16px;font-weight:bold;color:var(--text-primary);}
+  .dialog-close{cursor:pointer;color:var(--text-secondary);font-size:18px;}
+  .dialog-close:hover{color:var(--text-primary);}
+  .dialog-body{padding:10px 20px;overflow-y:auto;}
+  .dialog-footer{padding:10px 20px 20px;display:flex;justify-content:flex-end;gap:12px;}
+
+  .confirm-icon-area{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:10px 0 16px;}
+  .confirm-icon{font-size:40px;}
+  .confirm-icon.warning{color:#E6A23C;}
+  .confirm-icon.danger{color:#F56C6C;}
+  .confirm-title{font-size:16px;font-weight:bold;color:var(--text-primary);}
+  .confirm-desc{font-size:14px;color:var(--text-regular);}
+  .confirm-card{
+    width:100%;background:#f8f9fb;border:1px solid #ebeef5;border-radius:6px;
+    padding:12px 16px;text-align:center;font-size:14px;color:var(--text-primary);
+    margin-top:4px;
+  }
+
+  /* timeline */
+  .timeline{padding:8px 4px;}
+  .timeline-item{display:flex;gap:12px;position:relative;padding-bottom:24px;}
+  .timeline-item:last-child{padding-bottom:0;}
+  .timeline-item::before{
+    content:'';position:absolute;left:5px;top:14px;bottom:-4px;width:1px;background:var(--border-light);
+  }
+  .timeline-item:last-child::before{display:none;}
+  .timeline-dot{
+    width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:3px;
+    border:2px solid var(--text-secondary);background:#fff;
+  }
+  .timeline-item.primary .timeline-dot{
+    background:var(--primary);border-color:var(--primary);
+  }
+  .timeline-content{flex:1;}
+  .timeline-title{font-size:14px;color:var(--text-primary);font-weight:600;}
+  .timeline-time{font-size:12px;color:var(--text-secondary);margin-top:4px;}
+  .timeline-detail{
+    margin-top:8px;background:#f8f9fb;border:1px solid #ebeef5;border-radius:6px;
+    padding:8px 12px;font-size:13px;color:var(--text-regular);line-height:1.8;
+  }
+
+  /* el-message toast */
+  .msg-toast{
+    position:fixed;top:30px;left:50%;transform:translateX(-50%);
+    background:#fff;border:1px solid #e1f3d8;color:#67C23A;
+    padding:10px 20px;border-radius:4px;font-size:14px;
+    box-shadow:0 2px 12px rgba(0,0,0,.1);
+    z-index:2000;display:none;
+    align-items:center;gap:8px;
+  }
+  .msg-toast.error{border-color:#fde2e2;color:#F56C6C;}
+  .msg-toast.show{display:flex;}
+</style>
+</head>
+<body>
+<div class="layout-container">
+
+  <!-- 侧边栏 -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">智</div>
+      <div class="logo-text">智慧车市</div>
+    </div>
+    <div class="menu">
+      <div class="menu-item">
+        <span class="menu-icon">🏠</span>
+        <span>首页概览</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-icon">🚗</span>
+        <span>车辆管理</span>
+      </div>
+      <div class="menu-item expanded" id="kurongMenu">
+        <span class="menu-icon">📦</span>
+        <span>库容管理</span>
+        <span class="arrow">›</span>
+      </div>
+      <div class="submenu" id="kurongSubmenu">
+        <div class="submenu-item">二次复核列表</div>
+        <div class="submenu-item">申请审核列表</div>
+        <div class="submenu-item">商户质押订单</div>
+        <div class="submenu-item">库融订单</div>
+        <div class="submenu-item">盘库列表</div>
+        <div class="submenu-item">临时出场列表</div>
+        <div class="submenu-item">金融公司管理</div>
+        <div class="submenu-item active">资金渠道管理</div>
+        <div class="submenu-item">金融管控车管理</div>
+      </div>
+      <div class="menu-item">
+        <span class="menu-icon">🏢</span>
+        <span>商户管理</span>
+      </div>
+      <div class="menu-item">
+        <span class="menu-icon">⚙️</span>
+        <span>系统设置</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧主体 -->
+  <div class="main-area">
+    <!-- 顶部状态栏 -->
+    <div class="top-header">
+      <div class="market-info">【泸州汽车交易市场】</div>
+      <div class="user-profile">
+        <div class="role-switcher">切换角色：超级管理员</div>
+        <div class="avatar">王</div>
+        <div class="username">王晓明</div>
+        <div class="role-tag">超级管理员</div>
+        <div class="dropdown-arrow">▾</div>
+      </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <div class="content-body">
+
+        <!-- 操作按钮区 -->
+        <div class="action-bar">
+          <button class="btn btn-primary" id="btnAdd">+ 新增渠道</button>
+        </div>
+
+        <!-- 筛选条件区 -->
+        <div class="search-filter-container">
+          <div class="filter-row">
+            <div class="filter-item">
+              <span class="filter-label">市场名称</span>
+              <span class="market-name-display">泸州汽车交易市场</span>
+            </div>
+            <div class="filter-item">
+              <span class="filter-label">金融公司</span>
+              <div class="custom-select" id="filterCompanySelect" style="width:200px;">
+                <div class="sel-display" data-value="">
+                  <span class="sel-text">全部</span>
+                  <span class="sel-arrow">▾</span>
+                </div>
+                <div class="select-panel">
+                  <div class="select-option selected" data-value="">全部</div>
+                  <div class="select-option" data-value="泸州银行">泸州银行</div>
+                  <div class="select-option" data-value="工商银行">工商银行</div>
+                  <div class="select-option" data-value="招商银行">招商银行</div>
+                  <div class="select-option" data-value="平安银行">平安银行</div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-item">
+              <span class="filter-label">渠道名称</span>
+              <input type="text" class="ipt" id="filterChannelName" placeholder="请输入渠道名称" style="width:200px;">
+            </div>
+            <div class="filter-actions">
+              <button class="btn btn-primary btn-large" id="btnSearch">🔍 查询</button>
+              <button class="btn btn-large" id="btnReset">⟳ 重置</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 数据表格 -->
+        <div class="table-wrap">
+          <table class="data-table">
+            <colgroup>
+              <col style="width:140px;">
+              <col style="width:160px;">
+              <col style="width:160px;">
+              <col style="width:100px;">
+              <col style="width:120px;">
+              <col style="width:auto;">
+              <col style="width:180px;">
+              <col style="width:200px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>所属市场</th>
+                <th>金融公司名称</th>
+                <th>渠道名称</th>
+                <th>放款比例</th>
+                <th>车辆评估方式</th>
+                <th>评估平台</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- JS渲染 -->
+            </tbody>
+          </table>
+          <div class="empty-state" id="emptyState" style="display:none;">
+            <div class="empty-icon">📭</div>
+            <div>暂无资金渠道</div>
+            <div class="empty-sub">点击「+ 新增渠道」开始配置</div>
+          </div>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination-container">
+          <span class="pg-total">共 <b id="pgTotal">5</b> 条</span>
+          <span class="pg-sizes">
+            <select id="pgSizeSelect">
+              <option value="10">10条/页</option>
+              <option value="20">20条/页</option>
+              <option value="50">50条/页</option>
+              <option value="100">100条/页</option>
+            </select>
+          </span>
+          <span class="pg-btn disabled">‹</span>
+          <span class="pg-btn active">1</span>
+          <span class="pg-btn disabled">›</span>
+          <span class="pg-jumper">前往 <input type="text" value="1"> 页</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 遮罩层 -->
+<div class="overlay" id="overlay"></div>
+
+<!-- 新增/编辑抽屉 -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-title" id="drawerTitle">新增资金渠道</span>
+    <span class="drawer-close" id="drawerClose">✕</span>
+  </div>
+  <div class="drawer-body">
+    <!-- 渠道名称 -->
+    <div class="form-item">
+      <div class="form-label"><span class="required">*</span>渠道名称</div>
+      <div class="form-control">
+        <div class="ipt-wrap">
+          <input type="text" class="ipt" id="fChannelName" placeholder="请输入渠道名称" maxlength="50">
+          <span class="word-limit" id="channelNameCount">0/50</span>
+        </div>
+        <div class="field-error" id="errChannelName" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- 所属金融公司 -->
+    <div class="form-item">
+      <div class="form-label"><span class="required">*</span>所属金融公司</div>
+      <div class="form-control">
+        <div class="custom-select" id="fCompanySelect" style="width:100%;">
+          <div class="sel-display placeholder" data-value="">
+            <span class="sel-text">请选择金融公司</span>
+            <span class="sel-arrow">▾</span>
+          </div>
+          <div class="select-panel">
+            <div class="select-option" data-value="泸州银行">泸州银行</div>
+            <div class="select-option" data-value="工商银行">工商银行</div>
+            <div class="select-option" data-value="招商银行">招商银行</div>
+            <div class="select-option" data-value="平安银行">平安银行</div>
+            <div class="select-option" data-value="建设银行">建设银行</div>
+          </div>
+        </div>
+        <div class="field-error" id="errCompany" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- 放款比例 -->
+    <div class="form-item">
+      <div class="form-label"><span class="required">*</span>放款比例</div>
+      <div class="form-control">
+        <div class="input-with-suffix">
+          <input type="text" class="ipt" id="fLoanRatio" placeholder="请输入放款比例">
+          <span class="input-suffix">%</span>
+        </div>
+        <div class="field-error" id="errLoanRatio" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- 车辆评估选项 -->
+    <div class="form-item">
+      <div class="form-label"><span class="required">*</span>车辆评估选项</div>
+      <div class="form-control">
+        <div class="radio-group" id="fEvalType">
+          <div class="radio-item" data-value="auto">
+            <span class="radio-circle"><span class="dot"></span></span>
+            <span>自动评估</span>
+          </div>
+          <div class="radio-item" data-value="manual">
+            <span class="radio-circle"><span class="dot"></span></span>
+            <span>人工评估</span>
+          </div>
+        </div>
+        <div class="field-error" id="errEvalType" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- 评估平台（联动） -->
+    <div class="form-item" id="fPlatformItem" style="display:none;">
+      <div class="form-label"><span class="required">*</span>评估平台</div>
+      <div class="form-control">
+        <div class="multi-select" id="fPlatformSelect">
+          <div class="sel-display placeholder">
+            <span class="sel-text">请选择评估平台（可多选）</span>
+            <span class="sel-arrow">▾</span>
+          </div>
+          <div class="select-panel">
+            <div class="select-option" data-value="中检车服"><span class="chk"></span><span>中检车服</span></div>
+            <div class="select-option" data-value="车300"><span class="chk"></span><span>车300</span></div>
+            <div class="select-option" data-value="大圣检测"><span class="chk"></span><span>大圣检测</span></div>
+            <div class="select-option" data-value="优信评估"><span class="chk"></span><span>优信评估</span></div>
+            <div class="select-option" data-value="检车无忧"><span class="chk"></span><span>检车无忧</span></div>
+          </div>
+        </div>
+        <div class="field-error" id="errPlatform" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn" id="drawerCancel">取消</button>
+    <button class="btn btn-primary" id="drawerSave">保存</button>
+  </div>
+</div>
+
+<!-- 删除确认弹窗 -->
+<div class="dialog dialog-420" id="deleteDialog">
+  <div class="dialog-header">
+    <span class="dialog-title">删除确认</span>
+    <span class="dialog-close" data-close="deleteDialog">✕</span>
+  </div>
+  <div class="dialog-body">
+    <div class="confirm-icon-area">
+      <div class="confirm-icon warning">⚠️</div>
+      <div class="confirm-title">确认删除该资金渠道？</div>
+      <div class="confirm-card">渠道名称：<span id="deleteChannelName">--</span></div>
+      <div class="confirm-desc">删除后不可恢复，请谨慎操作。</div>
+    </div>
+  </div>
+  <div class="dialog-footer">
+    <button class="btn" data-close="deleteDialog">取消</button>
+    <button class="btn btn-primary" style="background:#F56C6C;border-color:#F56C6C;" id="confirmDeleteBtn">确认删除</button>
+  </div>
+</div>
+
+<!-- 关联订单拦截弹窗 -->
+<div class="dialog dialog-380" id="blockDialog">
+  <div class="dialog-header">
+    <span class="dialog-title">无法删除</span>
+    <span class="dialog-close" data-close="blockDialog">✕</span>
+  </div>
+  <div class="dialog-body">
+    <div class="confirm-icon-area">
+      <div class="confirm-icon danger">✕</div>
+      <div class="confirm-desc">该资金渠道已有关联订单，无法删除。如需停用，请联系管理员。</div>
+    </div>
+  </div>
+  <div class="dialog-footer">
+    <button class="btn btn-primary" data-close="blockDialog">我知道了</button>
+  </div>
+</div>
+
+<!-- 离开确认弹窗 -->
+<div class="dialog dialog-380" id="leaveDialog">
+  <div class="dialog-header">
+    <span class="dialog-title">提示</span>
+    <span class="dialog-close" data-close="leaveDialog">✕</span>
+  </div>
+  <div class="dialog-body">
+    <div class="confirm-icon-area">
+      <div class="confirm-desc">当前修改尚未保存，确认离开？</div>
+    </div>
+  </div>
+  <div class="dialog-footer">
+    <button class="btn" data-close="leaveDialog">继续编辑</button>
+    <button class="btn btn-primary" id="confirmLeaveBtn">确认离开</button>
+  </div>
+</div>
+
+<!-- 操作日志弹窗 -->
+<div class="dialog dialog-540" id="logDialog">
+  <div class="dialog-header">
+    <span class="dialog-title">操作日志</span>
+    <span class="dialog-close" data-close="logDialog">✕</span>
+  </div>
+  <div class="dialog-body">
+    <div class="timeline" id="logTimeline">
+      <!-- JS渲染 -->
+    </div>
+  </div>
+  <div class="dialog-footer">
+    <button class="btn" data-close="logDialog">关闭</button>
+  </div>
+</div>
+
+<!-- 消息提示 -->
+<div class="msg-toast" id="msgToast">
+  <span id="msgIcon">✔</span>
+  <span id="msgText">操作成功</span>
+</div>
+
+<script>
+// ===================== 数据 =====================
+const MARKET_NAME = '泸州汽车交易市场';
+
+let channels = [
+  {
+    id: 1,
+    market: '泸州汽车交易市场',
+    company: '泸州银行',
+    channelName: '泸州银行-标准质押产品',
+    loanRatio: 80,
+    evalType: 'auto',
+    platforms: ['中检车服', '车300'],
+    createdAt: '2026-01-12 10:23:05',
+    hasOrders: true,
+    logs: [
+      { time:'2026-01-12 10:23:05', user:'王晓明', type:'新增', detail: '创建资金渠道：泸州银行-标准质押产品' }
+    ]
+  },
+  {
+    id: 2,
+    market: '泸州汽车交易市场',
+    company: '泸州银行',
+    channelName: '泸州银行-灵活质押产品',
+    loanRatio: 70,
+    evalType: 'manual',
+    platforms: [],
+    createdAt: '2026-02-01 14:08:32',
+    hasOrders: false,
+    logs: [
+      { time:'2026-02-03 09:15:00', user:'李芳', type:'编辑', detail: '放款比例：65% → 70%' },
+      { time:'2026-02-01 14:08:32', user:'王晓明', type:'新增', detail: '创建资金渠道：泸州银行-灵活质押产品' }
+    ]
+  },
+  {
+    id: 3,
+    market: '泸州汽车交易市场',
+    company: '工商银行',
+    channelName: '工商银行-车贷产品A',
+    loanRatio: 85,
+    evalType: 'auto',
+    platforms: ['大圣检测'],
+    createdAt: '2026-02-18 09:40:11',
+    hasOrders: false,
+    logs: [
+      { time:'2026-02-18 09:40:11', user:'王晓明', type:'新增', detail: '创建资金渠道：工商银行-车贷产品A' }
+    ]
+  },
+  {
+    id: 4,
+    market: '泸州汽车交易市场',
+    company: '招商银行',
+    channelName: '招商银行-标准产品',
+    loanRatio: 75,
+    evalType: 'auto',
+    platforms: ['中检车服', '大圣检测', '车300'],
+    createdAt: '2026-03-05 16:55:47',
+    hasOrders: false,
+    logs: [
+      { time:'2026-03-06 11:02:21', user:'李芳', type:'编辑', detail: '评估平台：中检车服、车300 → 中检车服、大圣检测、车300' },
+      { time:'2026-03-05 16:55:47', user:'王晓明', type:'新增', detail: '创建资金渠道：招商银行-标准产品' }
+    ]
+  },
+  {
+    id: 5,
+    market: '泸州汽车交易市场',
+    company: '平安银行',
+    channelName: '平安银行-极速放款',
+    loanRatio: 90,
+    evalType: 'manual',
+    platforms: [],
+    createdAt: '2026-04-22 11:30:00',
+    hasOrders: false,
+    logs: [
+      { time:'2026-04-22 11:30:00', user:'王晓明', type:'新增', detail: '创建资金渠道：平安银行-极速放款' }
+    ]
+  }
+];
+
+let filterState = { company:'', channelName:'' };
+let editingId = null;
+let formDirty = false;
+
+// ===================== 工具函数 =====================
+function showMsg(text, type){
+  const toast = document.getElementById('msgToast');
+  document.getElementById('msgText').textContent = text;
+  document.getElementById('msgIcon').textContent = type === 'error' ? '✕' : '✔';
+  toast.classList.toggle('error', type === 'error');
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(()=> toast.classList.remove('show'), 3000);
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ===================== 表格渲染 =====================
+function renderTable(){
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  let list = channels.filter(c => {
+    if (filterState.company && c.company !== filterState.company) return false;
+    if (filterState.channelName && !c.channelName.includes(filterState.channelName)) return false;
+    return true;
+  });
+
+  document.getElementById('pgTotal').textContent = list.length;
+
+  if (list.length === 0){
+    tbody.innerHTML = '';
+    document.querySelector('table.data-table').style.display = 'none';
+    empty.style.display = 'flex';
+    empty.style.flexDirection = 'column';
+    return;
+  }
+  document.querySelector('table.data-table').style.display = '';
+  empty.style.display = 'none';
+
+  tbody.innerHTML = list.map(c => `
+    <tr>
+      <td>${escapeHtml(c.market)}</td>
+      <td>${escapeHtml(c.company)}</td>
+      <td>${escapeHtml(c.channelName)}</td>
+      <td>${c.loanRatio}%</td>
+      <td>${c.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
+      <td class="col-platform">${c.evalType === 'auto' ? c.platforms.join('、') : '—'}</td>
+      <td>${c.createdAt}</td>
+      <td>
+        <div class="op-btns">
+          <button class="btn btn-small btn-primary-plain" onclick="openEdit(${c.id})">编辑</button>
+          <button class="btn btn-small btn-danger-plain" onclick="openDelete(${c.id})">删除</button>
+          <button class="btn btn-small btn-primary-plain" onclick="openLog(${c.id})">操作日志</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ===================== 筛选区交互 =====================
+document.getElementById('btnSearch').addEventListener('click', () => {
+  filterState.channelName = document.getElementById('filterChannelName').value.trim();
+  renderTable();
+});
+document.getElementById('btnReset').addEventListener('click', () => {
+  filterState = { company:'', channelName:'' };
+  document.getElementById('filterChannelName').value = '';
+  setSelectValue('filterCompanySelect', '', '全部');
+  renderTable();
+});
+
+// 通用单选下拉逻辑
+function setupSingleSelect(containerId, onChange){
+  const el = document.getElementById(containerId);
+  const display = el.querySelector('.sel-display');
+  const options = el.querySelectorAll('.select-option');
+
+  display.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.querySelectorAll('.custom-select.open, .multi-select.open').forEach(o => {
+      if (o !== el) o.classList.remove('open');
+    });
+    el.classList.toggle('open');
+  });
+
+  options.forEach(opt => {
+    opt.addEventListener('click', () => {
+      options.forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      const value = opt.getAttribute('data-value');
+      const text = opt.textContent;
+      display.querySelector('.sel-text').textContent = text;
+      display.setAttribute('data-value', value);
+      display.classList.toggle('placeholder', value === '' && containerId !== 'filterCompanySelect');
+      el.classList.remove('open');
+      if (onChange) onChange(value, text);
+    });
+  });
+}
+
+function setSelectValue(containerId, value, text){
+  const el = document.getElementById(containerId);
+  const display = el.querySelector('.sel-display');
+  display.querySelector('.sel-text').textContent = text;
+  display.setAttribute('data-value', value);
+  el.querySelectorAll('.select-option').forEach(o => {
+    o.classList.toggle('selected', o.getAttribute('data-value') === value);
+  });
+}
+
+setupSingleSelect('filterCompanySelect', (value) => {
+  filterState.company = value;
+  renderTable();
+});
+
+setupSingleSelect('fCompanySelect', (value) => {
+  formDirty = true;
+  document.getElementById('errCompany').style.display = 'none';
+  document.querySelector('#fCompanySelect .sel-display').classList.remove('is-error');
+  document.querySelector('#fCompanySelect .sel-display').classList.toggle('placeholder', value === '');
+});
+
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.custom-select.open, .multi-select.open').forEach(el => {
+    if (!el.contains(e.target)) el.classList.remove('open');
+  });
+});
+
+// ===================== 多选下拉（评估平台）=====================
+const platformSelect = document.getElementById('fPlatformSelect');
+let selectedPlatforms = [];
+
+function renderPlatformDisplay(){
+  const display = platformSelect.querySelector('.sel-display');
+  const textSpan = display.querySelector('.sel-text');
+  if (selectedPlatforms.length === 0){
+    display.classList.add('placeholder');
+    if (textSpan) textSpan.remove();
+    if (!display.querySelector('.sel-text')){
+      const span = document.createElement('span');
+      span.className = 'sel-text';
+      span.textContent = '请选择评估平台（可多选）';
+      display.insertBefore(span, display.querySelector('.sel-arrow'));
+    }
+  } else {
+    display.classList.remove('placeholder');
+    display.querySelectorAll('.multi-tag, .sel-text').forEach(n => n.remove());
+    selectedPlatforms.forEach(p => {
+      const tag = document.createElement('span');
+      tag.className = 'multi-tag';
+      tag.innerHTML = `${escapeHtml(p)}<span class="tag-close" data-platform="${escapeHtml(p)}">×</span>`;
+      display.insertBefore(tag, display.querySelector('.sel-arrow'));
+    });
+  }
+  // sync checkboxes
+  platformSelect.querySelectorAll('.select-option').forEach(opt => {
+    const v = opt.getAttribute('data-value');
+    const checked = selectedPlatforms.includes(v);
+    opt.classList.toggle('selected', checked);
+    opt.querySelector('.chk').textContent = checked ? '✓' : '';
+  });
+}
+
+platformSelect.querySelector('.sel-display').addEventListener('click', (e) => {
+  if (platformSelect.classList.contains('disabled')) return;
+  if (e.target.classList.contains('tag-close')){
+    e.stopPropagation();
+    const p = e.target.getAttribute('data-platform');
+    selectedPlatforms = selectedPlatforms.filter(x => x !== p);
+    renderPlatformDisplay();
+    formDirty = true;
+    return;
+  }
+  e.stopPropagation();
+  document.querySelectorAll('.custom-select.open, .multi-select.open').forEach(o => {
+    if (o !== platformSelect) o.classList.remove('open');
+  });
+  platformSelect.classList.toggle('open');
+});
+
+platformSelect.querySelectorAll('.select-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    const v = opt.getAttribute('data-value');
+    if (selectedPlatforms.includes(v)){
+      selectedPlatforms = selectedPlatforms.filter(x => x !== v);
+    } else {
+      selectedPlatforms.push(v);
+    }
+    formDirty = true;
+    document.getElementById('errPlatform').style.display = 'none';
+    renderPlatformDisplay();
+  });
+});
+
+// ===================== 抽屉表单交互 =====================
+const overlay = document.getElementById('overlay');
+const drawer = document.getElementById('drawer');
+
+function showOverlay(){ overlay.classList.add('show'); }
+function hideOverlayIfNoneOpen(){
+  const anyOpen = drawer.classList.contains('show') ||
+    document.querySelectorAll('.dialog.show').length > 0;
+  if (!anyOpen) overlay.classList.remove('show');
+}
+
+document.getElementById('btnAdd').addEventListener('click', () => openDrawer(null));
+
+function openDrawer(channel){
+  editingId = channel ? channel.id : null;
+  formDirty = false;
+  document.getElementById('drawerTitle').textContent = channel ? '编辑资金渠道' : '新增资金渠道';
+
+  // 渠道名称
+  const nameInput = document.getElementById('fChannelName');
+  nameInput.value = channel ? channel.channelName : '';
+  document.getElementById('channelNameCount').textContent = `${nameInput.value.length}/50`;
+  document.getElementById('errChannelName').style.display = 'none';
+  nameInput.classList.remove('is-error');
+
+  // 所属金融公司
+  if (channel){
+    setSelectValue('fCompanySelect', channel.company, channel.company);
+    document.querySelector('#fCompanySelect .sel-display').classList.remove('placeholder');
+  } else {
+    setSelectValue('fCompanySelect', '', '请选择金融公司');
+    document.querySelector('#fCompanySelect .sel-display').classList.add('placeholder');
+  }
+  document.getElementById('errCompany').style.display = 'none';
+
+  // 放款比例
+  const ratioInput = document.getElementById('fLoanRatio');
+  ratioInput.value = channel ? channel.loanRatio : '';
+  ratioInput.classList.remove('is-error');
+  document.getElementById('errLoanRatio').style.display = 'none';
+
+  // 车辆评估选项
+  document.querySelectorAll('#fEvalType .radio-item').forEach(r => r.classList.remove('checked'));
+  if (channel){
+    document.querySelector(`#fEvalType .radio-item[data-value="${channel.evalType}"]`).classList.add('checked');
+  }
+  document.getElementById('errEvalType').style.display = 'none';
+
+  // 评估平台
+  selectedPlatforms = channel ? [...channel.platforms] : [];
+  renderPlatformDisplay();
+  document.getElementById('errPlatform').style.display = 'none';
+  togglePlatformField(channel ? channel.evalType : null);
+
+  drawer.classList.add('show');
+  showOverlay();
+
+  // 标记为非脏（重置交互后再标记）
+  setTimeout(() => { formDirty = false; }, 0);
+}
+
+function togglePlatformField(evalType){
+  const item = document.getElementById('fPlatformItem');
+  item.style.display = evalType === 'auto' ? 'flex' : 'none';
+}
+
+// 渠道名称输入
+document.getElementById('fChannelName').addEventListener('input', (e) => {
+  formDirty = true;
+  document.getElementById('channelNameCount').textContent = `${e.target.value.length}/50`;
+});
+document.getElementById('fChannelName').addEventListener('blur', (e) => {
+  validateChannelName();
+});
+function validateChannelName(){
+  const val = document.getElementById('fChannelName').value.trim();
+  const input = document.getElementById('fChannelName');
+  const err = document.getElementById('errChannelName');
+  if (!val){
+    input.classList.add('is-error');
+    err.textContent = '请输入渠道名称';
+    err.style.display = 'block';
+    return false;
+  }
+  // 唯一性校验（同市场下）
+  const dup = channels.some(c => c.channelName === val && c.id !== editingId);
+  if (dup){
+    input.classList.add('is-error');
+    err.textContent = '该渠道名称已存在，请更换';
+    err.style.display = 'block';
+    return false;
+  }
+  input.classList.remove('is-error');
+  err.style.display = 'none';
+  return true;
+}
+
+// 放款比例
+document.getElementById('fLoanRatio').addEventListener('input', () => { formDirty = true; });
+document.getElementById('fLoanRatio').addEventListener('blur', validateLoanRatio);
+function validateLoanRatio(){
+  const val = document.getElementById('fLoanRatio').value.trim();
+  const input = document.getElementById('fLoanRatio');
+  const err = document.getElementById('errLoanRatio');
+  if (!val){
+    input.classList.add('is-error');
+    err.textContent = '请输入放款比例';
+    err.style.display = 'block';
+    return false;
+  }
+  const num = Number(val);
+  const decimalOk = /^\d+(\.\d{1,2})?$/.test(val);
+  if (isNaN(num) || !decimalOk || num < 1 || num > 100){
+    input.classList.add('is-error');
+    err.textContent = '放款比例须在 1% ～ 100% 之间';
+    err.style.display = 'block';
+    return false;
+  }
+  input.classList.remove('is-error');
+  err.style.display = 'none';
+  return true;
+}
+
+function validateCompany(){
+  const display = document.querySelector('#fCompanySelect .sel-display');
+  const value = display.getAttribute('data-value');
+  const err = document.getElementById('errCompany');
+  if (!value){
+    display.classList.add('is-error');
+    err.textContent = '请选择所属金融公司';
+    err.style.display = 'block';
+    return false;
+  }
+  display.classList.remove('is-error');
+  err.style.display = 'none';
+  return true;
+}
+
+function validateEvalType(){
+  const checked = document.querySelector('#fEvalType .radio-item.checked');
+  const err = document.getElementById('errEvalType');
+  if (!checked){
+    err.textContent = '请选择车辆评估方式';
+    err.style.display = 'block';
+    return false;
+  }
+  err.style.display = 'none';
+  return true;
+}
+
+function validatePlatform(){
+  const checked = document.querySelector('#fEvalType .radio-item.checked');
+  const err = document.getElementById('errPlatform');
+  if (checked && checked.getAttribute('data-value') === 'auto'){
+    if (selectedPlatforms.length === 0){
+      err.textContent = '请至少选择一个评估平台';
+      err.style.display = 'block';
+      return false;
+    }
+  }
+  err.style.display = 'none';
+  return true;
+}
+
+// 单选组：车辆评估选项
+document.querySelectorAll('#fEvalType .radio-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('#fEvalType .radio-item').forEach(r => r.classList.remove('checked'));
+    item.classList.add('checked');
+    formDirty = true;
+    document.getElementById('errEvalType').style.display = 'none';
+    const evalType = item.getAttribute('data-value');
+    togglePlatformField(evalType);
+    if (evalType === 'manual'){
+      selectedPlatforms = [];
+      renderPlatformDisplay();
+      document.getElementById('errPlatform').style.display = 'none';
+    }
+  });
+});
+
+// 关闭抽屉
+function closeDrawer(force){
+  if (!force && formDirty){
+    showLeaveConfirm();
+    return;
+  }
+  drawer.classList.remove('show');
+  hideOverlayIfNoneOpen();
+}
+document.getElementById('drawerClose').addEventListener('click', () => closeDrawer(false));
+document.getElementById('drawerCancel').addEventListener('click', () => closeDrawer(false));
+
+function showLeaveConfirm(){
+  document.getElementById('leaveDialog').classList.add('show');
+  showOverlay();
+}
+document.getElementById('confirmLeaveBtn').addEventListener('click', () => {
+  document.getElementById('leaveDialog').classList.remove('show');
+  closeDrawer(true);
+});
+
+// 保存
+document.getElementById('drawerSave').addEventListener('click', () => {
+  const v1 = validateChannelName();
+  const v2 = validateCompany();
+  const v3 = validateLoanRatio();
+  const v4 = validateEvalType();
+  const v5 = validatePlatform();
+  if (!(v1 && v2 && v3 && v4 && v5)) return;
+
+  const channelName = document.getElementById('fChannelName').value.trim();
+  const company = document.querySelector('#fCompanySelect .sel-display').getAttribute('data-value');
+  const loanRatio = Number(document.getElementById('fLoanRatio').value.trim());
+  const evalType = document.querySelector('#fEvalType .radio-item.checked').getAttribute('data-value');
+  const platforms = evalType === 'auto' ? [...selectedPlatforms] : [];
+
+  if (editingId){
+    const target = channels.find(c => c.id === editingId);
+    const changes = [];
+    if (target.channelName !== channelName) changes.push(`渠道名称：${target.channelName} → ${channelName}`);
+    if (target.company !== company) changes.push(`所属金融公司：${target.company} → ${company}`);
+    if (target.loanRatio !== loanRatio) changes.push(`放款比例：${target.loanRatio}% → ${loanRatio}%`);
+    if (target.evalType !== evalType) changes.push(`车辆评估方式：${target.evalType === 'auto' ? '自动评估':'人工评估'} → ${evalType === 'auto' ? '自动评估':'人工评估'}`);
+    if (JSON.stringify(target.platforms) !== JSON.stringify(platforms)) changes.push(`评估平台：${target.platforms.join('、') || '—'} → ${platforms.join('、') || '—'}`);
+
+    target.channelName = channelName;
+    target.company = company;
+    target.loanRatio = loanRatio;
+    target.evalType = evalType;
+    target.platforms = platforms;
+
+    if (changes.length){
+      target.logs.unshift({
+        time: nowStr(), user: '王晓明', type: '编辑', detail: changes.join('；')
+      });
+    }
+    showMsg('编辑成功');
+  } else {
+    const newItem = {
+      id: Math.max(0, ...channels.map(c=>c.id)) + 1,
+      market: MARKET_NAME,
+      company, channelName, loanRatio, evalType, platforms,
+      createdAt: nowStr(),
+      hasOrders: false,
+      logs: [{ time: nowStr(), user:'王晓明', type:'新增', detail: `创建资金渠道：${channelName}` }]
+    };
+    channels.unshift(newItem);
+    showMsg('新增成功');
+  }
+
+  formDirty = false;
+  closeDrawer(true);
+  renderTable();
+});
+
+function nowStr(){
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+// ===================== 编辑/删除/日志 入口 =====================
+function openEdit(id){
+  const channel = channels.find(c => c.id === id);
+  openDrawer(channel);
+}
+
+let pendingDeleteId = null;
+function openDelete(id){
+  const channel = channels.find(c => c.id === id);
+  pendingDeleteId = id;
+  document.getElementById('deleteChannelName').textContent = channel.channelName;
+  document.getElementById('deleteDialog').classList.add('show');
+  showOverlay();
+}
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+  const channel = channels.find(c => c.id === pendingDeleteId);
+  document.getElementById('deleteDialog').classList.remove('show');
+  if (channel.hasOrders){
+    document.getElementById('blockDialog').classList.add('show');
+    return;
+  }
+  channels = channels.filter(c => c.id !== pendingDeleteId);
+  hideOverlayIfNoneOpen();
+  renderTable();
+  showMsg('删除成功');
+});
+
+function openLog(id){
+  const channel = channels.find(c => c.id === id);
+  const timeline = document.getElementById('logTimeline');
+  timeline.innerHTML = channel.logs.map((log, idx) => `
+    <div class="timeline-item ${idx === 0 ? 'primary' : ''}">
+      <span class="timeline-dot"></span>
+      <div class="timeline-content">
+        <div class="timeline-title">${escapeHtml(log.type)} · ${escapeHtml(log.user)}</div>
+        <div class="timeline-time">${escapeHtml(log.time)}</div>
+        ${log.type !== '新增' || channel.logs.length === 1 ? `<div class="timeline-detail">${escapeHtml(log.detail)}</div>` : `<div class="timeline-detail">${escapeHtml(log.detail)}</div>`}
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('logDialog').classList.add('show');
+  showOverlay();
+}
+
+// ===================== 通用弹窗关闭 =====================
+document.querySelectorAll('[data-close]').forEach(el => {
+  el.addEventListener('click', () => {
+    const id = el.getAttribute('data-close');
+    document.getElementById(id).classList.remove('show');
+    hideOverlayIfNoneOpen();
+  });
+});
+
+// ===================== 侧边栏菜单展开/收起 =====================
+document.getElementById('kurongMenu').addEventListener('click', () => {
+  const menu = document.getElementById('kurongMenu');
+  const submenu = document.getElementById('kurongSubmenu');
+  menu.classList.toggle('expanded');
+  submenu.style.display = menu.classList.contains('expanded') ? 'block' : 'none';
+});
+
+// ===================== 分页（仅展示，5条数据无需翻页）=====================
+document.getElementById('pgSizeSelect').addEventListener('change', () => {
+  renderTable();
+});
+
+// ===================== 初始化 =====================
+renderTable();
+</script>
+</body>
+</html>

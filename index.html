@@ -70,17 +70,13 @@
 
   .menu{padding:8px 0;}
   .menu-item{
-    display:flex;align-items:center;gap:8px;
+    display:flex;align-items:center;
     height:44px;padding:0 20px;
     font-size:14px;color:#66798c;
     cursor:pointer;
     transition:background .2s,color .2s;
   }
   .menu-item:hover{background:#f2f7ff;color:#409eff;}
-  .menu-item .menu-icon{
-    width:16px;height:16px;flex-shrink:0;
-    display:inline-flex;align-items:center;justify-content:center;
-  }
   .menu-item .arrow{
     margin-left:auto;
     font-size:12px;
@@ -555,15 +551,12 @@
     </div>
     <div class="menu">
       <div class="menu-item">
-        <span class="menu-icon">🏠</span>
         <span>首页概览</span>
       </div>
       <div class="menu-item">
-        <span class="menu-icon">🚗</span>
         <span>车辆管理</span>
       </div>
       <div class="menu-item expanded" id="kurongMenu">
-        <span class="menu-icon">📦</span>
         <span>库容管理</span>
         <span class="arrow">›</span>
       </div>
@@ -579,11 +572,9 @@
         <div class="submenu-item">金融管控车管理</div>
       </div>
       <div class="menu-item">
-        <span class="menu-icon">🏢</span>
         <span>商户管理</span>
       </div>
       <div class="menu-item">
-        <span class="menu-icon">⚙️</span>
         <span>系统设置</span>
       </div>
     </div>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD · 资金渠道管理</title>
+<style>
+  :root{
+    --primary:#409EFF;
+    --text-primary:#303133;
+    --text-regular:#606266;
+    --text-secondary:#909399;
+    --border-base:#DCDFE6;
+    --border-light:#EBEEF5;
+    --bg-page:#F5F7FA;
+    --success:#67C23A;
+    --danger:#F56C6C;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", sans-serif;
+    color:var(--text-primary);
+    background:var(--bg-page);
+    line-height:1.7;
+  }
+  .layout{
+    display:flex;
+    max-width:1280px;
+    margin:0 auto;
+  }
+  /* 左侧目录 */
+  .toc{
+    width:240px;
+    flex-shrink:0;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    padding:32px 16px;
+    background:#fff;
+    border-right:1px solid var(--border-light);
+  }
+  .toc-title{
+    font-size:13px;
+    font-weight:bold;
+    color:var(--text-secondary);
+    letter-spacing:2px;
+    margin:0 0 12px 8px;
+  }
+  .toc a{
+    display:block;
+    padding:6px 8px;
+    font-size:13px;
+    color:var(--text-regular);
+    text-decoration:none;
+    border-radius:4px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .toc a:hover{ background:#f2f7ff; color:var(--primary); }
+  .toc a.lv2{ padding-left:20px; font-size:12.5px; color:var(--text-secondary); }
+  /* 主内容 */
+  .content{
+    flex:1;
+    min-width:0;
+    padding:40px 56px 80px;
+    background:#fff;
+  }
+  .doc-header{
+    margin-bottom:32px;
+    padding-bottom:24px;
+    border-bottom:1px solid var(--border-light);
+  }
+  .doc-header h1{
+    font-size:28px;
+    margin:0 0 16px;
+  }
+  .meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 24px;
+    font-size:13px;
+    color:var(--text-secondary);
+  }
+  .meta b{ color:var(--text-regular); }
+  .status-badge{
+    display:inline-block;
+    padding:2px 10px;
+    font-size:12px;
+    border-radius:4px;
+    background:#fdf6ec;
+    color:#E6A23C;
+    border:1px solid #faecd8;
+  }
+  h2{
+    font-size:20px;
+    margin:48px 0 16px;
+    padding-bottom:10px;
+    border-bottom:2px solid var(--primary);
+    scroll-margin-top:20px;
+  }
+  h3{
+    font-size:16px;
+    margin:28px 0 12px;
+    color:var(--text-primary);
+    scroll-margin-top:20px;
+  }
+  h3::before{
+    content:"";
+    display:inline-block;
+    width:4px;
+    height:14px;
+    background:var(--primary);
+    border-radius:2px;
+    margin-right:8px;
+    vertical-align:-1px;
+  }
+  h4{
+    font-size:14.5px;
+    margin:20px 0 10px;
+    color:var(--text-primary);
+    scroll-margin-top:20px;
+  }
+  p{ margin:8px 0; font-size:14px; color:var(--text-regular); }
+  blockquote{
+    margin:12px 0;
+    padding:12px 16px;
+    background:#f4f4f5;
+    border-left:4px solid var(--border-base);
+    border-radius:0 4px 4px 0;
+    color:var(--text-regular);
+    font-size:13.5px;
+  }
+  blockquote p{ margin:4px 0; }
+  blockquote strong{ color:var(--text-primary); }
+  ul, ol{ font-size:14px; color:var(--text-regular); padding-left:24px; }
+  li{ margin:4px 0; }
+  li > ul, li > ol{ margin-top:4px; }
+  code{
+    background:#f4f4f5;
+    color:#c0341d;
+    padding:1px 6px;
+    border-radius:3px;
+    font-size:13px;
+    font-family: "SF Mono", Consolas, Menlo, monospace;
+  }
+  pre{
+    background:#282c34;
+    color:#e6e6e6;
+    padding:16px 20px;
+    border-radius:6px;
+    overflow-x:auto;
+    font-size:13px;
+    line-height:1.6;
+    font-family: "SF Mono", Consolas, Menlo, monospace;
+  }
+  pre code{ background:none; color:inherit; padding:0; }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:12px 0 20px;
+    font-size:13.5px;
+  }
+  th, td{
+    border:1px solid var(--border-light);
+    padding:10px 14px;
+    text-align:left;
+    vertical-align:top;
+  }
+  th{
+    background:var(--bg-page);
+    color:var(--text-secondary);
+    font-weight:bold;
+    white-space:nowrap;
+  }
+  tr:hover td{ background:#fafbfc; }
+  hr{
+    border:none;
+    border-top:1px solid var(--border-light);
+    margin:36px 0;
+  }
+  .tree{
+    background:#fafbfc;
+    border:1px solid var(--border-light);
+    border-radius:6px;
+    padding:14px 20px;
+    font-family: "SF Mono", Consolas, Menlo, monospace;
+    font-size:13px;
+    color:var(--text-regular);
+    white-space:pre;
+    overflow-x:auto;
+  }
+  .tree .new{ color:var(--primary); font-weight:bold; }
+  .back-top{
+    position:fixed;
+    right:32px;
+    bottom:32px;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:var(--primary);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font-size:18px;
+    box-shadow:0 2px 8px rgba(64,158,255,.4);
+    opacity:.85;
+  }
+  .back-top:hover{ opacity:1; }
+  @media (max-width: 900px){
+    .toc{ display:none; }
+    .content{ padding:24px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc">
+    <div class="toc-title">目录</div>
+    <a href="#sec1">一、背景与目标</a>
+    <a href="#sec2">二、信息架构</a>
+    <a href="#sec3">三、功能说明</a>
+    <a href="#sec3-1" class="lv2">3.1 资金渠道管理列表</a>
+    <a href="#sec3-2" class="lv2">3.2 新增/编辑渠道</a>
+    <a href="#sec3-3" class="lv2">3.3 操作日志</a>
+    <a href="#sec4">四、交互规则与异常处理</a>
+    <a href="#sec5">五、权限模型</a>
+    <a href="#sec6">六、数据字段汇总</a>
+    <a href="#sec7">七、旧版数据处理说明</a>
+    <a href="#sec8">八、验收标准</a>
+    <a href="#sec9">九、关联改动：金融订单编号前缀</a>
+  </nav>
+
+  <main class="content">
+    <div class="doc-header">
+      <h1>PRD · 资金渠道管理</h1>
+      <div class="meta">
+        <span>所属系统：<b>智慧车市</b></span>
+        <span>所属模块：<b>库容管理</b></span>
+        <span>文档版本：<b>v1.1</b></span>
+        <span>状态：<span class="status-badge">待评审</span></span>
+      </div>
+    </div>
+
+    <h2 id="sec1">一、背景与目标</h2>
+
+    <h3>1.1 背景</h3>
+    <p>平台金融系统在使用前需配置资金渠道信息（包含渠道名称、放款比例、车辆评估方式等）。现有方案中，资金渠道名称需要后端工程师直接操作数据库添加，每次新增渠道均依赖技术人员介入，效率低、维护成本高。</p>
+    <p>同时，系统现有"金融公司管理"功能仅维护金融公司基本信息，与资金渠道之间缺乏明确的层级关联，不能体现"一个金融公司下有多个资金产品"的真实业务结构。</p>
+
+    <h3>1.2 目标</h3>
+    <ol>
+      <li>在前端提供完整的资金渠道配置能力，消除对后端数据库操作的依赖</li>
+      <li>建立"金融公司 → 资金渠道"的归属关系，使业务结构清晰可维护</li>
+      <li>支持权限控制，超级管理员与市场管理员均可在授权范围内操作</li>
+    </ol>
+
+    <h3>1.3 不在本次范围内</h3>
+    <ul>
+      <li>临时出场默认限制：该配置项属于市场级全局设置，影响市场内所有金融冻结车，<strong>保留在市场配置页面中，不纳入本次需求</strong></li>
+      <li>金融公司管理功能本身：现有功能基本不变，仅作为资金渠道的上级数据来源</li>
+      <li>旧版资金渠道数据迁移：现有三个开通金融业务的市场，由运营人员在新功能上线后手动完成重新配置；配置完毕并确认业务正常后，由研发从市场配置页面移除旧的资金渠道配置模块</li>
+      <li>金融订单编号前缀：属于市场配置页面的关联改动，详见第九章</li>
+    </ul>
+
+    <hr>
+
+    <h2 id="sec2">二、信息架构</h2>
+
+    <h3>2.1 导航位置</h3>
+    <p>在侧边栏"库容管理"菜单下新增子菜单项：</p>
+    <div class="tree">库容管理
+├── 二次复核列表
+├── 申请审核列表
+├── 商户质押订单
+├── 库融订单
+├── 盘库列表
+├── 临时出场列表
+├── 金融公司管理
+├── <span class="new">资金渠道管理     ← 新增</span>
+└── 金融管控车管理</div>
+
+    <h3>2.2 业务层级关系</h3>
+    <div class="tree">市场（A市场）
+└── 金融公司（如：泸州银行）
+    └── 资金渠道（如：泸州银行-标准质押产品）
+        ├── 渠道名称
+        ├── 放款比例
+        ├── 车辆评估选项
+        └── 评估平台（自动评估时必填）</div>
+
+    <hr>
+
+    <h2 id="sec3">三、功能说明</h2>
+
+    <h3 id="sec3-1">3.1 页面：资金渠道管理列表</h3>
+
+    <h4>3.1.1 页面布局</h4>
+    <ul>
+      <li>顶部：操作按钮区（新增渠道）</li>
+      <li>中部：筛选区（筛选条件 + 查询/重置按钮）</li>
+      <li>下部：数据表格 + 分页</li>
+    </ul>
+
+    <h4>3.1.2 筛选条件</h4>
+    <table>
+      <thead><tr><th>筛选项</th><th>组件类型</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>市场名称</td><td>文本展示（只读）</td><td>自动显示当前操作者所在市场，不可更改</td></tr>
+        <tr><td>金融公司</td><td>下拉选择</td><td>选项来源：当前市场下的金融公司列表；含"全部"默认项</td></tr>
+        <tr><td>渠道名称</td><td>文本输入</td><td>模糊搜索</td></tr>
+      </tbody>
+    </table>
+    <p>操作按钮：<strong>查询</strong>（主要）、<strong>重置</strong>（次要）</p>
+
+    <h4>3.1.3 表格列定义</h4>
+    <table>
+      <thead><tr><th>列名</th><th>说明</th><th>宽度建议</th></tr></thead>
+      <tbody>
+        <tr><td>所属市场</td><td>当前市场名称</td><td>固定</td></tr>
+        <tr><td>金融公司名称</td><td>所属金融公司</td><td>固定</td></tr>
+        <tr><td>渠道名称</td><td>资金渠道名称</td><td>固定</td></tr>
+        <tr><td>放款比例</td><td>数值 + % 单位</td><td>固定</td></tr>
+        <tr><td>车辆评估方式</td><td>自动评估 / 人工评估</td><td>固定</td></tr>
+        <tr><td>评估平台</td><td>多选平台名称，逗号分隔展示；人工评估时显示"—"</td><td>自适应</td></tr>
+        <tr><td>创建时间</td><td>yyyy-MM-dd HH:mm:ss</td><td>固定</td></tr>
+        <tr><td>操作</td><td>见下方说明</td><td>固定</td></tr>
+      </tbody>
+    </table>
+
+    <h4>3.1.4 操作列</h4>
+    <table>
+      <thead><tr><th>操作</th><th>显示条件</th><th>权限要求</th></tr></thead>
+      <tbody>
+        <tr><td>编辑</td><td>始终显示</td><td>需有编辑权限</td></tr>
+        <tr><td>删除</td><td>始终显示</td><td>需有删除权限；有引用时禁止删除</td></tr>
+        <tr><td>操作日志</td><td>始终显示</td><td>无权限限制</td></tr>
+      </tbody>
+    </table>
+    <p><strong>删除保护规则：</strong> 若该渠道已被金融订单引用（存在关联中的有效订单），点击删除时弹出提示：</p>
+    <blockquote><p>"该资金渠道已有关联订单，无法删除。如需停用，请联系管理员。"</p></blockquote>
+
+    <h4>3.1.5 空状态</h4>
+    <p>当前市场下无任何渠道数据时，表格区域显示空状态提示：</p>
+    <blockquote><p>"暂无资金渠道，点击「+ 新增渠道」开始配置"</p></blockquote>
+
+    <hr>
+
+    <h3 id="sec3-2">3.2 新增 / 编辑渠道（抽屉）</h3>
+    <p>使用右侧抽屉（Drawer）形式，与系统现有操作风格保持一致。</p>
+
+    <h4>3.2.1 抽屉标题</h4>
+    <ul>
+      <li>新增时：<strong>新增资金渠道</strong></li>
+      <li>编辑时：<strong>编辑资金渠道</strong></li>
+    </ul>
+
+    <h4>3.2.2 表单字段</h4>
+
+    <p><strong>① 渠道名称</strong></p>
+    <table>
+      <thead><tr><th>属性</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>组件</td><td>单行文本输入框</td></tr>
+        <tr><td>必填</td><td>是</td></tr>
+        <tr><td>最大长度</td><td>50个字符</td></tr>
+        <tr><td>唯一性校验</td><td>同一市场下不允许重复；提交时后端校验，失败时在字段下方提示："该渠道名称已存在，请更换"</td></tr>
+        <tr><td>编辑状态</td><td><strong>再次编辑时不可修改</strong>，字段置灰只读，仅新增时可填写</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>② 所属金融公司</strong></p>
+    <table>
+      <thead><tr><th>属性</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>组件</td><td>下拉选择（Select）</td></tr>
+        <tr><td>必填</td><td>是</td></tr>
+        <tr><td>选项来源</td><td>当前市场下的金融公司列表（来自"金融公司管理"模块）</td></tr>
+        <tr><td>编辑状态</td><td><strong>再次编辑时不可修改</strong>，字段置灰只读，仅新增时可选择</td></tr>
+        <tr><td>兜底处理</td><td>若当前市场无金融公司，下拉无选项，字段下方提示："当前市场暂无金融公司，请先前往「金融公司管理」完成配置"</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>③ 放款比例</strong></p>
+    <table>
+      <thead><tr><th>属性</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>组件</td><td>数字输入框，后缀显示"%"</td></tr>
+        <tr><td>必填</td><td>是</td></tr>
+        <tr><td>范围</td><td>1 ～ 100 的整数或最多保留两位小数</td></tr>
+        <tr><td>校验提示</td><td>超出范围时："放款比例须在 1% ～ 100% 之间"</td></tr>
+        <tr><td>编辑状态</td><td><strong>再次编辑时不可修改</strong>，字段置灰只读，仅新增时可填写</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>④ 车辆评估选项</strong></p>
+    <table>
+      <thead><tr><th>属性</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>组件</td><td>单选按钮组（Radio Group）</td></tr>
+        <tr><td>必填</td><td>是</td></tr>
+        <tr><td>选项</td><td>自动评估 / 人工评估</td></tr>
+        <tr><td>默认值</td><td>无默认，用户必须主动选择</td></tr>
+        <tr><td>联动规则</td><td>选择"自动评估"后，下方显示评估平台字段；选择"人工评估"后，评估平台字段隐藏</td></tr>
+        <tr><td>编辑状态</td><td>该资金渠道<strong>存在进行中的关联订单时不可修改</strong>（置灰只读，保留原选项及联动展示）；<strong>无进行中关联订单时可修改</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>⑤ 评估平台</strong>（仅"自动评估"时显示）</p>
+    <table>
+      <thead><tr><th>属性</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>组件</td><td>多选下拉（Multi-select）</td></tr>
+        <tr><td>必填</td><td>是（自动评估时）</td></tr>
+        <tr><td>选项来源</td><td>后端动态配置，前端通过接口获取</td></tr>
+        <tr><td>最少选择</td><td>1个</td></tr>
+        <tr><td>校验提示</td><td>未选择时："请至少选择一个评估平台"</td></tr>
+      </tbody>
+    </table>
+
+    <h4>3.2.3 抽屉底部操作</h4>
+    <table>
+      <thead><tr><th>按钮</th><th>类型</th><th>行为</th></tr></thead>
+      <tbody>
+        <tr><td>取消</td><td>次要按钮</td><td>关闭抽屉，不保存；若已有修改，弹出确认："当前修改尚未保存，确认离开？"</td></tr>
+        <tr><td>保存</td><td>主要按钮</td><td>触发表单校验 → 提交 → 成功后关闭抽屉并刷新列表</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h3 id="sec3-3">3.3 操作日志</h3>
+    <p>点击操作列中的"操作日志"，以抽屉或弹窗形式展示该渠道的操作历史记录。</p>
+    <table>
+      <thead><tr><th>列名</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>操作时间</td><td>yyyy-MM-dd HH:mm:ss</td></tr>
+        <tr><td>操作人</td><td>操作者姓名</td></tr>
+        <tr><td>操作类型</td><td>新增 / 编辑 / 删除</td></tr>
+        <tr><td>操作内容</td><td>变更前后的字段对比（字段名：旧值 → 新值）</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2 id="sec4">四、交互规则与异常处理</h2>
+
+    <h3>4.1 表单校验时机</h3>
+    <ul>
+      <li>每个字段在失焦（onBlur）时触发单字段校验</li>
+      <li>点击"保存"时触发全字段校验</li>
+      <li>唯一性校验在提交时由后端返回</li>
+    </ul>
+
+    <h3>4.2 删除确认</h3>
+    <p>点击"删除"时，弹出二次确认对话框：</p>
+    <blockquote>
+      <p><strong>确认删除该资金渠道？</strong></p>
+      <p>渠道名称：[渠道名称]</p>
+      <p>删除后不可恢复，请谨慎操作。</p>
+      <p>[取消]　[确认删除]</p>
+    </blockquote>
+    <p>若后端返回"有关联订单"错误，关闭确认框，改为展示错误提示弹窗（见 3.1.4）。</p>
+
+    <h3>4.3 评估平台接口异常</h3>
+    <p>若评估平台选项接口请求失败，多选框显示为禁用状态，下方提示：</p>
+    <blockquote><p>"评估平台数据加载失败，请刷新页面重试"</p></blockquote>
+
+    <h3>4.4 网络/接口异常</h3>
+    <p>所有增删改查操作若接口返回异常，统一在页面顶部以 Message 组件展示错误信息，不打断用户当前操作流程。</p>
+
+    <hr>
+
+    <h2 id="sec5">五、权限模型</h2>
+    <table>
+      <thead><tr><th>角色</th><th>查看</th><th>新增</th><th>编辑</th><th>删除</th></tr></thead>
+      <tbody>
+        <tr><td>超级管理员</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>市场管理员（已授权）</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>市场管理员（未授权）</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+      </tbody>
+    </table>
+    <p><strong>权限控制方式：</strong></p>
+    <ul>
+      <li>无权限时，操作按钮（新增、编辑、删除）不展示或置灰，与系统现有权限处理方式保持一致</li>
+      <li>菜单入口的显隐由超级管理员在权限配置中控制</li>
+    </ul>
+
+    <hr>
+
+    <h2 id="sec6">六、数据字段汇总</h2>
+
+    <h3>6.1 资金渠道实体字段</h3>
+    <table>
+      <thead><tr><th>字段名</th><th>类型</th><th>必填</th><th>约束</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>主键</td><td>—</td><td>系统生成</td></tr>
+        <tr><td><code>market_id</code></td><td>关联市场</td><td>是</td><td>系统自动关联当前市场</td></tr>
+        <tr><td><code>finance_company_id</code></td><td>关联金融公司</td><td>是</td><td>外键，来自金融公司管理</td></tr>
+        <tr><td><code>channel_name</code></td><td>渠道名称</td><td>是</td><td>同 market_id 下唯一，最大 50 字符</td></tr>
+        <tr><td><code>loan_ratio</code></td><td>放款比例</td><td>是</td><td>1 ～ 100，最多两位小数</td></tr>
+        <tr><td><code>evaluation_type</code></td><td>评估方式</td><td>是</td><td>枚举：auto / manual</td></tr>
+        <tr><td><code>evaluation_platforms</code></td><td>评估平台</td><td>条件必填</td><td>evaluation_type = auto 时必填，多值存储</td></tr>
+        <tr><td><code>created_by</code></td><td>创建人</td><td>—</td><td>系统自动记录</td></tr>
+        <tr><td><code>created_at</code></td><td>创建时间</td><td>—</td><td>系统自动记录</td></tr>
+        <tr><td><code>updated_by</code></td><td>最后修改人</td><td>—</td><td>系统自动记录</td></tr>
+        <tr><td><code>updated_at</code></td><td>最后修改时间</td><td>—</td><td>系统自动记录</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2 id="sec7">七、旧版数据处理说明</h2>
+
+    <h3>7.1 当前现状</h3>
+    <p>市场配置页面（"编辑市场"）的金融系统设置中，现有"资金渠道"配置模块，支持输入渠道名称、放款比例、评估方式，以及"临时出场默认限制"。</p>
+    <p>目前共三个市场开通了金融业务，已存在部分旧渠道数据。</p>
+
+    <h3>7.2 迁移方式</h3>
+    <p>采用<strong>人工重新配置</strong>方式，不做自动化数据迁移：</p>
+    <ol>
+      <li>新功能上线后，由运营/管理员在"资金渠道管理"页面，为三个市场逐一配置渠道数据并关联正确的金融公司</li>
+      <li>配置完成并确认金融业务运行正常后</li>
+      <li>由研发将市场配置页面中的旧"资金渠道"配置模块移除</li>
+    </ol>
+
+    <h3>7.3 临时出场默认限制</h3>
+    <p>该字段<strong>不纳入本次迁移</strong>，继续保留在市场配置页面中，作为市场级全局设置维护。</p>
+
+    <hr>
+
+    <h2 id="sec8">八、验收标准</h2>
+    <table>
+      <thead><tr><th>#</th><th>验收项</th><th>通过条件</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>菜单入口</td><td>侧边栏"库容管理"下可见"资金渠道管理"菜单项</td></tr>
+        <tr><td>2</td><td>列表展示</td><td>正确展示当前市场下的所有渠道记录，分页正常</td></tr>
+        <tr><td>3</td><td>筛选功能</td><td>按金融公司、渠道名称筛选结果准确</td></tr>
+        <tr><td>4</td><td>新增渠道</td><td>表单校验通过后成功创建，列表刷新并可见新记录</td></tr>
+        <tr><td>5</td><td>唯一性校验</td><td>同市场下重复渠道名称提交时提示报错，不创建数据</td></tr>
+        <tr><td>6</td><td>评估联动</td><td>选择"自动评估"后显示评估平台多选；选择"人工评估"后隐藏</td></tr>
+        <tr><td>7</td><td>编辑渠道</td><td>修改后保存，列表数据实时更新</td></tr>
+        <tr><td>8</td><td>删除保护</td><td>有关联订单时无法删除，展示正确提示</td></tr>
+        <tr><td>9</td><td>删除成功</td><td>无关联订单时，确认后删除，列表中记录消失</td></tr>
+        <tr><td>10</td><td>操作日志</td><td>新增、编辑、删除操作均有日志记录，可查看变更详情</td></tr>
+        <tr><td>11</td><td>权限控制</td><td>未授权市场管理员不可见新增/编辑/删除操作入口</td></tr>
+        <tr><td>12</td><td>数据隔离</td><td>A市场管理员不可见B市场的渠道数据</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2 id="sec9">九、关联改动：市场配置 - 金融订单编号前缀</h2>
+
+    <h3>9.1 背景</h3>
+    <p>金融订单编号由"前缀 + 日期 + 当日序号"组成，例如 <code>JHJR20260610001</code>。前缀用于标识订单所属市场，是对外可见的业务标识。</p>
+    <p>现有系统中该前缀由后端工程师手动维护，缺乏前端配置入口。随着资金渠道管理功能上线，需要一并提供前缀的配置能力，以完整支撑金融业务的自助开通流程。</p>
+
+    <h3>9.2 改动位置</h3>
+    <p><strong>市场配置页面 → 金融系统设置模块</strong>，新增"金融订单编号前缀"配置项。</p>
+
+    <h3>9.3 字段说明</h3>
+    <table>
+      <thead><tr><th>属性</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>字段名称</td><td>金融订单编号前缀</td></tr>
+        <tr><td>组件类型</td><td>单行文本输入框</td></tr>
+        <tr><td>必填条件</td><td>开启金融系统时必填</td></tr>
+        <tr><td>格式要求</td><td>2～6位大写字母，仅限字母（A-Z）</td></tr>
+        <tr><td>唯一性</td><td>平台内所有市场的前缀不可重复</td></tr>
+        <tr><td>修改限制</td><td>该市场产生第一笔金融订单后，字段变为只读，不可修改；修改按钮置灰并 tooltip 提示："已有金融订单，编号前缀不可修改"</td></tr>
+        <tr><td>权限</td><td>仅超级管理员可编辑（跟随市场配置现有权限，市场管理员无法访问市场配置页面）</td></tr>
+      </tbody>
+    </table>
+
+    <h3>9.4 交互说明</h3>
+    <p><strong>开启金融系统时的引导顺序：</strong></p>
+    <ol>
+      <li>超级管理员在市场配置中开启金融系统开关</li>
+      <li>填写"金融订单编号前缀"（此时为必填，不填写无法保存）</li>
+      <li>保存市场配置后，前往"金融公司管理"创建金融公司</li>
+      <li>再前往"资金渠道管理"创建资金渠道</li>
+      <li>金融系统正式可用</li>
+    </ol>
+    <p><strong>唯一性校验：</strong> 提交时后端校验，若前缀已被其他市场使用，在字段下方提示：</p>
+    <blockquote><p>"该编号前缀已被其他市场使用，请更换"</p></blockquote>
+
+    <h3>9.5 对验收标准的补充</h3>
+    <table>
+      <thead><tr><th>#</th><th>验收项</th><th>通过条件</th></tr></thead>
+      <tbody>
+        <tr><td>13</td><td>前缀配置入口</td><td>市场配置 → 金融系统设置中可见"金融订单编号前缀"字段</td></tr>
+        <tr><td>14</td><td>必填校验</td><td>开启金融系统时未填写前缀，保存时提示报错</td></tr>
+        <tr><td>15</td><td>格式校验</td><td>输入非大写字母或超出长度时提示格式错误</td></tr>
+        <tr><td>16</td><td>唯一性校验</td><td>填写已存在的前缀时提示报错，不保存</td></tr>
+        <tr><td>17</td><td>修改限制</td><td>已有订单后前缀字段变为只读，tooltip 提示正确</td></tr>
+        <tr><td>18</td><td>订单编号生成</td><td>新建金融订单后，编号前缀与市场配置中填写的前缀一致</td></tr>
+      </tbody>
+    </table>
+
+  </main>
+</div>
+
+<a href="#" class="back-top" title="返回顶部">↑</a>
+</body>
+</html>

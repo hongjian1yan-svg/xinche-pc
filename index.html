@@ -626,7 +626,7 @@
         <span class="arrow">›</span>
       </div>
       <div class="submenu" id="kurongSubmenu">
-        <div class="submenu-item" id="navChannelManage">资金渠道管理</div>
+        <div class="submenu-item" id="navChannelManage" onclick="location.href='金融初始化/金融初始化.html'">金融初始化</div>
       </div>
     </div>
   </div>
@@ -886,10 +886,6 @@
       <!-- 市场配置页面 -->
       <div class="content-body" id="marketConfigPage" style="display:none;">
 
-        <div class="config-page-title">
-          <span id="configMarketName">编辑市场 · 泸州汽车交易市场</span>
-        </div>
-
         <!-- 金融系统设置 -->
         <div class="config-card">
           <div class="config-card-title">金融系统设置</div>
@@ -911,6 +907,34 @@
                 </span>
               </div>
               <div class="field-tip">用于生成该市场的金融订单编号，设置后不可修改</div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <span class="setting-label"><span class="required">*</span>市场核价自动评估</span>
+            <div class="setting-control">
+              <div class="seg-group" id="autoEvalSeg">
+                <div class="seg-btn" data-value="on">开启</div>
+                <div class="seg-btn active" data-value="off">关闭</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item" id="autoEvalPlatformItem" style="display:none;">
+            <span class="setting-label"><span class="required">*</span>评估平台</span>
+            <div class="setting-control">
+              <div class="multi-select" id="autoEvalPlatformSelect" style="width:300px;">
+                <div class="sel-display placeholder">
+                  <span class="sel-text">请选择评估平台（可多选）</span>
+                  <span class="sel-arrow">▾</span>
+                </div>
+                <div class="select-panel">
+                  <div class="select-option" data-value="精真估"><span class="chk"></span><span>精真估</span></div>
+                  <div class="select-option" data-value="车300"><span class="chk"></span><span>车300</span></div>
+                  <div class="select-option" data-value="大圣检测"><span class="chk"></span><span>大圣检测</span></div>
+                </div>
+              </div>
+              <div class="field-error" id="errAutoEvalPlatform" style="display:none;">请选择评估平台</div>
             </div>
           </div>
 
@@ -965,7 +989,7 @@
           <div class="setting-item">
             <span class="setting-label"><span class="required">*</span>临时出场默认限制</span>
             <div class="setting-control">
-              <div class="seg-group">
+              <div class="seg-group" id="tempExitSeg">
                 <div class="seg-btn active">一次出入</div>
                 <div class="seg-btn">不限次出入</div>
               </div>
@@ -1818,10 +1842,33 @@ document.addEventListener('click', () => {
 });
 
 function openMarketEdit(id) {
-  const m = markets.find(x => x.id === id);
-  document.getElementById('configMarketName').textContent = '编辑市场 · ' + (m ? m.name : '');
   showPage('marketConfigPage', 'navMarketList');
+  const prefixInput = document.getElementById('orderPrefix');
+  const lockIcon = document.querySelector('.lock-icon');
+  const fieldTip = document.querySelector('#marketConfigPage .field-tip');
+  if (id === '52a') {
+    // 第一个市场：未填写，可编辑
+    prefixInput.value = '';
+    prefixInput.disabled = false;
+    prefixInput.placeholder = '请输入大写字母，如XCJR';
+    if (lockIcon) lockIcon.style.display = 'none';
+  } else {
+    // 其他市场：已锁定
+    prefixInput.value = 'JHJR';
+    prefixInput.disabled = true;
+    if (lockIcon) lockIcon.style.display = '';
+    if (fieldTip) fieldTip.style.display = '';
+  }
 }
+
+// 处理从市场列表页跳转过来的 hash
+(function() {
+  const hash = location.hash;
+  if (hash.startsWith('#editMarket=')) {
+    const id = hash.slice('#editMarket='.length);
+    openMarketEdit(id);
+  }
+})();
 
 // ===================== 市场配置页：开关与分段按钮交互 =====================
 document.querySelectorAll('#marketConfigPage .el-switch').forEach(sw => {
@@ -1832,9 +1879,74 @@ document.querySelectorAll('#marketConfigPage .seg-group').forEach(group => {
     btn.addEventListener('click', () => {
       group.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      if (group.id === 'autoEvalSeg') {
+        const isOn = btn.getAttribute('data-value') === 'on';
+        document.getElementById('autoEvalPlatformItem').style.display = isOn ? 'flex' : 'none';
+        if (!isOn) document.getElementById('errAutoEvalPlatform').style.display = 'none';
+      }
     });
   });
 });
+
+// 市场核价自动评估 - 评估平台多选交互
+(function() {
+  const sel = document.getElementById('autoEvalPlatformSelect');
+  if (!sel) return;
+  const display = sel.querySelector('.sel-display');
+  let autoEvalSelected = [];
+
+  function renderAutoEvalPlatform() {
+    const arrow = display.querySelector('.sel-arrow');
+    display.querySelectorAll('.multi-tag, .sel-text').forEach(n => n.remove());
+    if (autoEvalSelected.length === 0) {
+      display.classList.add('placeholder');
+      const span = document.createElement('span');
+      span.className = 'sel-text';
+      span.textContent = '请选择评估平台（可多选）';
+      display.insertBefore(span, arrow);
+    } else {
+      display.classList.remove('placeholder');
+      autoEvalSelected.forEach(v => {
+        const tag = document.createElement('span');
+        tag.className = 'multi-tag';
+        tag.innerHTML = `${v}<span class="tag-close" data-val="${v}">×</span>`;
+        display.insertBefore(tag, arrow);
+      });
+    }
+    sel.querySelectorAll('.select-option').forEach(opt => {
+      opt.classList.toggle('selected', autoEvalSelected.includes(opt.getAttribute('data-value')));
+      const chk = opt.querySelector('.chk');
+      if (chk) chk.textContent = autoEvalSelected.includes(opt.getAttribute('data-value')) ? '✓' : '';
+    });
+  }
+
+  display.addEventListener('click', e => {
+    const closeVal = e.target.getAttribute('data-val');
+    if (closeVal) {
+      autoEvalSelected = autoEvalSelected.filter(x => x !== closeVal);
+      renderAutoEvalPlatform();
+      return;
+    }
+    document.querySelectorAll('.custom-select.open, .multi-select.open').forEach(o => {
+      if (o !== sel) o.classList.remove('open');
+    });
+    sel.classList.toggle('open');
+  });
+
+  sel.querySelectorAll('.select-option').forEach(opt => {
+    opt.addEventListener('click', e => {
+      e.stopPropagation();
+      const v = opt.getAttribute('data-value');
+      if (autoEvalSelected.includes(v)) {
+        autoEvalSelected = autoEvalSelected.filter(x => x !== v);
+      } else {
+        autoEvalSelected.push(v);
+      }
+      renderAutoEvalPlatform();
+      if (autoEvalSelected.length > 0) document.getElementById('errAutoEvalPlatform').style.display = 'none';
+    });
+  });
+})();
 
 // ===================== 分页（仅展示，5条数据无需翻页）=====================
 document.getElementById('pgSizeSelect').addEventListener('change', () => {

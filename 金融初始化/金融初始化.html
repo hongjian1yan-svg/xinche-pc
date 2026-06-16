@@ -609,7 +609,7 @@
         <span class="arrow">›</span>
       </div>
       <div class="submenu" id="carMarketSubmenu">
-        <div class="submenu-item">市场列表</div>
+        <div class="submenu-item" onclick="location.href='../市场管理/市场列表.html'">市场列表</div>
       </div>
       <div class="menu-item expanded" id="kurongMenu">
         <span>库容管理</span>
@@ -1780,13 +1780,11 @@ function renderPlatformDisplay(){
   const textSpan = display.querySelector('.sel-text');
   if (selectedPlatforms.length === 0){
     display.classList.add('placeholder');
-    if (textSpan) textSpan.remove();
-    if (!display.querySelector('.sel-text')){
-      const span = document.createElement('span');
-      span.className = 'sel-text';
-      span.textContent = '请选择评估平台（可多选）';
-      display.insertBefore(span, display.querySelector('.sel-arrow'));
-    }
+    display.querySelectorAll('.multi-tag, .sel-text').forEach(n => n.remove());
+    const span = document.createElement('span');
+    span.className = 'sel-text';
+    span.textContent = '请选择评估平台（可多选）';
+    display.insertBefore(span, display.querySelector('.sel-arrow'));
   } else {
     display.classList.remove('placeholder');
     display.querySelectorAll('.multi-tag, .sel-text').forEach(n => n.remove());
@@ -2024,11 +2022,10 @@ document.querySelectorAll('#fEvalType .radio-item').forEach(item => {
     document.getElementById('errEvalType').style.display = 'none';
     const evalType = item.getAttribute('data-value');
     togglePlatformField(evalType);
-    if (evalType === 'manual'){
-      selectedPlatforms = [];
-      renderPlatformDisplay();
-      document.getElementById('errPlatform').style.display = 'none';
-    }
+    // 切换评估方式时清空平台选择，让用户重新选
+    selectedPlatforms = [];
+    renderPlatformDisplay();
+    document.getElementById('errPlatform').style.display = 'none';
   });
 });
 

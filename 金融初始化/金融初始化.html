@@ -360,7 +360,7 @@
   }
   .data-table tbody tr:hover td{background:#F5F7FA;}
   .col-platform{white-space:normal;}
-  .col-ellipsis{max-width:160px;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;word-break:break-all;}
+  .col-ellipsis{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;word-break:break-all;}
 
   .op-btns{
     display:flex;flex-direction:column;align-items:center;gap:8px;
@@ -1727,7 +1727,7 @@ function renderTable(){
       <td>${c.loanRatio}%</td>
       <td>${c.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
       <td class="col-platform">${c.evalType === 'auto' ? c.platforms.join('、') : '—'}</td>
-      <td class="col-ellipsis" title="${escapeHtml(c.desc || '')}">${c.desc ? escapeHtml(c.desc) : '—'}</td>
+      <td title="${escapeHtml(c.desc || '')}"><div class="col-ellipsis">${c.desc ? escapeHtml(c.desc) : '—'}</div></td>
       <td>${c.createdAt}</td>
       <td>
         <div class="op-btns">

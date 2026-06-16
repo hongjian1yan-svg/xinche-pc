@@ -161,12 +161,12 @@
 
   /* 模块标题 */
   .section-title{
-    font-size:14px;font-weight:bold;color:#303133;
-    margin-bottom:16px;padding-left:10px;
-    border-left:4px solid #48528e;line-height:16px;
+    font-size:16px;font-weight:600;color:#303133;
+    padding-bottom:12px;margin-bottom:20px;
+    border-bottom:1px solid var(--border-light);
   }
   .module{}
-  .module + .module{margin-top:40px;}
+  .module + .module{margin-top:20px;}
 
   /* 操作按钮区 */
   .action-bar{margin-top:16px;margin-bottom:16px;}
@@ -360,6 +360,7 @@
   }
   .data-table tbody tr:hover td{background:#F5F7FA;}
   .col-platform{white-space:normal;}
+  .col-ellipsis{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
   .op-btns{
     display:flex;flex-direction:column;align-items:center;gap:8px;
@@ -642,6 +643,11 @@
         <div class="module" id="companyModule">
           <div class="section-title">金融公司</div>
 
+          <!-- 操作按钮区 -->
+          <div class="action-bar">
+            <button class="btn btn-primary" id="cBtnAdd">+ 新增金融公司</button>
+          </div>
+
           <!-- 筛选条件区 -->
           <div class="search-filter-container">
             <div class="filter-row">
@@ -691,11 +697,6 @@
                 <button class="btn btn-primary-plain btn-large">查询数据导出</button>
               </div>
             </div>
-          </div>
-
-          <!-- 操作按钮区 -->
-          <div class="action-bar">
-            <button class="btn btn-primary" id="cBtnAdd">+ 新增金融公司</button>
           </div>
 
           <!-- 数据表格 -->
@@ -750,6 +751,11 @@
         <!-- ===================== 资金渠道模块 ===================== -->
         <div class="module" id="channelModule">
           <div class="section-title">资金渠道</div>
+
+          <!-- 操作按钮区 -->
+          <div class="action-bar">
+            <button class="btn btn-primary" id="btnAdd">+ 新增渠道</button>
+          </div>
 
           <!-- 筛选条件区 -->
           <div class="search-filter-container">
@@ -808,16 +814,15 @@
                   </div>
                 </div>
               </div>
+              <div class="filter-item">
+                <span class="filter-label">放款比例</span>
+                <input type="text" class="ipt" id="filterLoanRatio" placeholder="请输入放款比例" style="width:160px;">
+              </div>
               <div class="filter-actions">
                 <button class="btn btn-primary btn-large" id="btnSearch">查询</button>
                 <button class="btn btn-large" id="btnReset">重置</button>
               </div>
             </div>
-          </div>
-
-          <!-- 操作按钮区 -->
-          <div class="action-bar">
-            <button class="btn btn-primary" id="btnAdd">+ 新增渠道</button>
           </div>
 
           <!-- 数据表格 -->
@@ -829,7 +834,8 @@
                 <col style="width:160px;">
                 <col style="width:100px;">
                 <col style="width:120px;">
-                <col style="width:200px;">
+                <col style="width:160px;">
+                <col style="width:160px;">
                 <col style="width:180px;">
                 <col style="width:200px;">
               </colgroup>
@@ -841,6 +847,7 @@
                   <th>放款比例</th>
                   <th>车辆评估方式</th>
                   <th>评估平台</th>
+                  <th>渠道说明</th>
                   <th>创建时间</th>
                   <th>操作</th>
                 </tr>
@@ -919,8 +926,7 @@
       <div class="form-label w80"><span class="required">*</span>公司名称</div>
       <div class="form-control">
         <div class="ipt-wrap">
-          <input type="text" class="ipt" id="coName" placeholder="请输入公司名称" maxlength="50">
-          <span class="word-limit" id="coNameCount">0/50</span>
+          <input type="text" class="ipt" id="coName" placeholder="请输入公司名称">
         </div>
         <div class="field-error" id="errCoName" style="display:none;"></div>
       </div>
@@ -1024,6 +1030,29 @@
     </span>
   </div>
   <div class="drawer-body">
+    <!-- 所属市场 -->
+    <div class="form-item">
+      <div class="form-label w100"><span class="required">*</span>所属市场</div>
+      <div class="form-control">
+        <div class="custom-select" id="fMarketSelect" style="width:100%;">
+          <div class="sel-display placeholder" data-value="">
+            <span class="sel-text">请选择市场</span>
+            <span class="sel-arrow">▾</span>
+          </div>
+          <div class="select-panel">
+            <div class="select-option" data-value="泸州汽车交易市场">泸州汽车交易市场</div>
+            <div class="select-option" data-value="银地汽车出口">银地汽车出口</div>
+            <div class="select-option" data-value="文昌利星二手车市场">文昌利星二手车市场</div>
+            <div class="select-option" data-value="中国(广州琶洲)汽车出口基地">中国(广州琶洲)汽车出口基地</div>
+            <div class="select-option" data-value="广东中山鸿源二手车市场">广东中山鸿源二手车市场</div>
+            <div class="select-option" data-value="上海车王二手车市场">上海车王二手车市场</div>
+            <div class="select-option" data-value="陕西车坛二弟汽车销售有限公司">陕西车坛二弟汽车销售有限公司</div>
+          </div>
+        </div>
+        <div class="field-error" id="errFMarket" style="display:none;"></div>
+      </div>
+    </div>
+
     <!-- 渠道名称 -->
     <div class="form-item">
       <div class="form-label w100"><span class="required">*</span>渠道名称</div>
@@ -1099,10 +1128,25 @@
           <div class="select-panel">
             <div class="select-option" data-value="精真估"><span class="chk"></span><span>精真估</span></div>
             <div class="select-option" data-value="车300"><span class="chk"></span><span>车300</span></div>
-            <div class="select-option" data-value="大圣检测"><span class="chk"></span><span>大圣检测</span></div>
           </div>
         </div>
         <div class="field-error" id="errPlatform" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- 渠道说明 -->
+    <div class="form-item">
+      <div class="form-label w100">渠道说明</div>
+      <div class="form-control">
+        <div style="position:relative;">
+          <textarea id="fDesc" rows="3" maxlength="100" placeholder="请输入渠道说明，方便商户了解该渠道特点"
+            style="width:100%;box-sizing:border-box;resize:none;padding:8px 12px;border:1px solid var(--border-base);border-radius:4px;font-size:14px;color:#303133;font-family:inherit;line-height:1.5;outline:none;"
+            oninput="document.getElementById('fDescCount').textContent=this.value.length"
+            onfocus="this.style.borderColor='var(--primary)'"
+            onblur="this.style.borderColor='var(--border-base)'"
+          ></textarea>
+          <span style="position:absolute;bottom:6px;right:8px;font-size:12px;color:#909399;"><span id="fDescCount">0</span>/100</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1137,6 +1181,23 @@
   <div class="dialog-footer">
     <button class="btn" data-close="deleteDialog">取消</button>
     <button class="btn btn-danger" id="confirmDeleteBtn">确认删除</button>
+  </div>
+</div>
+
+<!-- ===================== 资金渠道删除确认弹窗 ===================== -->
+<div class="dialog dialog-380" id="channelDeleteDialog">
+  <div class="dialog-header">
+    <span class="dialog-title">提示</span>
+    <span class="dialog-close" data-close="channelDeleteDialog">
+      <svg viewBox="0 0 1024 1024" width="16" height="16"><path fill="currentColor" d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"/></svg>
+    </span>
+  </div>
+  <div class="dialog-body" style="padding:24px 24px 8px;">
+    <p style="margin:0;font-size:14px;color:#303133;">确认删除该资金渠道吗？</p>
+  </div>
+  <div class="dialog-footer">
+    <button class="btn" data-close="channelDeleteDialog">取消</button>
+    <button class="btn btn-primary" id="confirmChannelDeleteBtn">确定</button>
   </div>
 </div>
 
@@ -1195,15 +1256,16 @@ const MARKET_NAME = '泸州汽车交易市场';
 let companies = [
   { id: 1, market: '泸州汽车交易市场', name: '泸州银行', owner: '张伟', ownerPhone: '13800001111', idNumber: '510106199001011234', remark: '标准质押合作银行', image: null, createdAt: '2026-01-10 09:00:00', creator: '王晓明' },
   { id: 2, market: '泸州汽车交易市场', name: '工商银行', owner: '李娜', ownerPhone: '13800002222', idNumber: '', remark: '', image: null, createdAt: '2026-02-15 10:30:00', creator: '王晓明' },
-  { id: 3, market: '泸州汽车交易市场', name: '招商银行', owner: '王芳', ownerPhone: '13800003333', idNumber: '510106198505056789', remark: '灵活质押产品合作方', image: null, createdAt: '2026-03-05 14:20:00', creator: '李芳' },
-  { id: 4, market: '泸州汽车交易市场', name: '平安银行', owner: '赵明', ownerPhone: '13800004444', idNumber: '', remark: '暂未开通自动放款', image: null, createdAt: '2026-04-22 11:10:00', creator: '王晓明' },
-  { id: 5, market: '泸州汽车交易市场', name: '建设银行', owner: '刘洋', ownerPhone: '13800005555', idNumber: '510106199203038888', remark: '', image: null, createdAt: '2026-05-30 16:45:00', creator: '李芳' }
+  { id: 3, market: '银地汽车出口', name: '招商银行', owner: '王芳', ownerPhone: '13800003333', idNumber: '510106198505056789', remark: '灵活质押产品合作方', image: null, createdAt: '2026-03-05 14:20:00', creator: '李芳' },
+  { id: 4, market: '银地汽车出口', name: '平安银行', owner: '赵明', ownerPhone: '13800004444', idNumber: '', remark: '暂未开通自动放款', image: null, createdAt: '2026-04-22 11:10:00', creator: '王晓明' },
+  { id: 5, market: '文昌利星二手车市场', name: '建设银行', owner: '刘洋', ownerPhone: '13800005555', idNumber: '510106199203038888', remark: '', image: null, createdAt: '2026-05-30 16:45:00', creator: '李芳' }
 ];
 
 let channels = [
   {
     id: 1, market: '泸州汽车交易市场', company: '泸州银行', channelName: '泸州银行-标准质押产品',
     loanRatio: 80, evalType: 'auto', platforms: ['精真估', '车300'],
+    desc: '适用于标准质押业务，放款周期短，审批流程标准化，适合批量操作场景。',
     createdAt: '2026-01-12 10:23:05', hasOrders: true,
     logs: [
       { time:'2026-01-12 10:23:05', user:'王晓明', type:'新增', detail: '创建资金渠道：泸州银行-标准质押产品' }
@@ -1212,6 +1274,7 @@ let channels = [
   {
     id: 2, market: '泸州汽车交易市场', company: '泸州银行', channelName: '泸州银行-灵活质押产品',
     loanRatio: 70, evalType: 'manual', platforms: [],
+    desc: '',
     createdAt: '2026-02-01 14:08:32', hasOrders: false,
     logs: [
       { time:'2026-02-03 09:15:00', user:'李芳', type:'编辑', detail: '放款比例：65% → 70%' },
@@ -1221,6 +1284,7 @@ let channels = [
   {
     id: 3, market: '泸州汽车交易市场', company: '工商银行', channelName: '工商银行-车贷产品A',
     loanRatio: 85, evalType: 'auto', platforms: ['大圣检测'],
+    desc: '工商银行专属车贷产品，最高放款比例85%，适合优质客户优先推荐。',
     createdAt: '2026-02-18 09:40:11', hasOrders: false,
     logs: [
       { time:'2026-02-18 09:40:11', user:'王晓明', type:'新增', detail: '创建资金渠道：工商银行-车贷产品A' }
@@ -1229,6 +1293,7 @@ let channels = [
   {
     id: 4, market: '泸州汽车交易市场', company: '招商银行', channelName: '招商银行-标准产品',
     loanRatio: 75, evalType: 'auto', platforms: ['精真估', '大圣检测', '车300'],
+    desc: '',
     createdAt: '2026-03-05 16:55:47', hasOrders: false,
     logs: [
       { time:'2026-03-06 11:02:21', user:'李芳', type:'编辑', detail: '评估平台：精真估、车300 → 精真估、大圣检测、车300' },
@@ -1238,6 +1303,7 @@ let channels = [
   {
     id: 5, market: '泸州汽车交易市场', company: '平安银行', channelName: '平安银行-极速放款',
     loanRatio: 90, evalType: 'manual', platforms: [],
+    desc: '极速放款渠道，人工审核，最快当日放款，适合急需用款的优质客户。',
     createdAt: '2026-04-22 11:30:00', hasOrders: false,
     logs: [
       { time:'2026-04-22 11:30:00', user:'王晓明', type:'新增', detail: '创建资金渠道：平安银行-极速放款' }
@@ -1461,14 +1527,15 @@ function openCompanyDrawer(company){
   editingCompanyId = company ? company.id : null;
   document.getElementById('companyDrawerTitle').textContent = company ? '编辑金融公司' : '新增金融公司';
 
-  const marketValue = company ? company.market : MARKET_NAME;
-  setSelectValue('coMarketSelect', marketValue, marketValue);
-  document.querySelector('#coMarketSelect .sel-display').classList.remove('placeholder', 'is-error');
+  const marketValue = company ? company.market : '';
+  setSelectValue('coMarketSelect', marketValue, company ? marketValue : '请选择市场');
+  const coMarketDisplay = document.querySelector('#coMarketSelect .sel-display');
+  coMarketDisplay.classList.toggle('placeholder', !company);
+  coMarketDisplay.classList.remove('is-error');
   document.getElementById('errCoMarket').style.display = 'none';
 
   const nameInput = document.getElementById('coName');
   nameInput.value = company ? company.name : '';
-  document.getElementById('coNameCount').textContent = `${nameInput.value.length}/50`;
   nameInput.classList.remove('is-error');
   document.getElementById('errCoName').style.display = 'none';
 
@@ -1497,9 +1564,7 @@ function openCompanyEdit(id){
   openCompanyDrawer(companies.find(c => c.id === id));
 }
 
-document.getElementById('coName').addEventListener('input', (e) => {
-  document.getElementById('coNameCount').textContent = `${e.target.value.length}/50`;
-});
+
 document.getElementById('coRemark').addEventListener('input', (e) => {
   document.getElementById('coRemarkCount').textContent = `${e.target.value.length}/50`;
 });
@@ -1662,6 +1727,7 @@ function renderTable(){
       <td>${c.loanRatio}%</td>
       <td>${c.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
       <td class="col-platform">${c.evalType === 'auto' ? c.platforms.join('、') : '—'}</td>
+      <td class="col-ellipsis" title="${escapeHtml(c.desc || '')}">${c.desc ? escapeHtml(c.desc) : '—'}</td>
       <td>${c.createdAt}</td>
       <td>
         <div class="op-btns">
@@ -1771,6 +1837,11 @@ platformSelect.querySelectorAll('.select-option').forEach(opt => {
 });
 
 // ===================== 新增/编辑资金渠道弹窗 =====================
+setupSingleSelect('fMarketSelect', (value) => {
+  document.getElementById('errFMarket').style.display = 'none';
+  document.querySelector('#fMarketSelect .sel-display').classList.remove('is-error');
+  document.querySelector('#fMarketSelect .sel-display').classList.toggle('placeholder', value === '');
+});
 setupSingleSelect('fCompanySelect', (value) => {
   document.getElementById('errCompany').style.display = 'none';
   document.querySelector('#fCompanySelect .sel-display').classList.remove('is-error');
@@ -1814,6 +1885,10 @@ function openDrawer(channel){
   renderPlatformDisplay();
   document.getElementById('errPlatform').style.display = 'none';
   togglePlatformField(channel ? channel.evalType : null);
+
+  const descInput = document.getElementById('fDesc');
+  descInput.value = channel ? (channel.desc || '') : '';
+  document.getElementById('fDescCount').textContent = descInput.value.length;
 
   drawer.classList.add('show');
   showOverlay();
@@ -1951,6 +2026,7 @@ document.getElementById('drawerSave').addEventListener('click', () => {
   const loanRatio = Number(document.getElementById('fLoanRatio').value.trim());
   const evalType = document.querySelector('#fEvalType .radio-item.checked').getAttribute('data-value');
   const platforms = evalType === 'auto' ? [...selectedPlatforms] : [];
+  const desc = document.getElementById('fDesc').value.trim();
 
   if (editingId){
     const target = channels.find(c => c.id === editingId);
@@ -1960,12 +2036,14 @@ document.getElementById('drawerSave').addEventListener('click', () => {
     if (target.loanRatio !== loanRatio) changes.push(`放款比例：${target.loanRatio}% → ${loanRatio}%`);
     if (target.evalType !== evalType) changes.push(`车辆评估方式：${target.evalType === 'auto' ? '自动评估':'人工评估'} → ${evalType === 'auto' ? '自动评估':'人工评估'}`);
     if (JSON.stringify(target.platforms) !== JSON.stringify(platforms)) changes.push(`评估平台：${target.platforms.join('、') || '—'} → ${platforms.join('、') || '—'}`);
+    if ((target.desc || '') !== desc) changes.push(`渠道说明已更新`);
 
     target.channelName = channelName;
     target.company = company;
     target.loanRatio = loanRatio;
     target.evalType = evalType;
     target.platforms = platforms;
+    target.desc = desc;
 
     if (changes.length){
       target.logs.unshift({ time: nowStr(), user: '王晓明', type: '编辑', detail: changes.join('；') });
@@ -1975,7 +2053,7 @@ document.getElementById('drawerSave').addEventListener('click', () => {
     channels.unshift({
       id: Math.max(0, ...channels.map(c=>c.id)) + 1,
       market: MARKET_NAME,
-      company, channelName, loanRatio, evalType, platforms,
+      company, channelName, loanRatio, evalType, platforms, desc,
       createdAt: nowStr(),
       hasOrders: false,
       logs: [{ time: nowStr(), user:'王晓明', type:'新增', detail: `创建资金渠道：${channelName}` }]
@@ -1994,9 +2072,14 @@ function openEdit(id){
 
 function openChannelDelete(id){
   const c = channels.find(x => x.id === id);
+  if (c.hasOrders){
+    document.getElementById('blockDialogText').textContent = '该资金渠道存在进行中的质押订单，无法删除。';
+    document.getElementById('blockDialog').classList.add('show');
+    showOverlay();
+    return;
+  }
   pendingDelete = { type:'channel', id };
-  document.getElementById('deleteItemName').textContent = c.channelName;
-  document.getElementById('deleteDialog').classList.add('show');
+  document.getElementById('channelDeleteDialog').classList.add('show');
   showOverlay();
 }
 
@@ -2014,18 +2097,15 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
     hideOverlayIfNoneOpen();
     renderCompanyTable();
     showMsg('删除成功');
-  } else if (pendingDelete.type === 'channel'){
-    const channel = channels.find(c => c.id === pendingDelete.id);
-    if (channel.hasOrders){
-      document.getElementById('blockDialogText').textContent = '该资金渠道存在进行中的质押订单，无法删除。';
-      document.getElementById('blockDialog').classList.add('show');
-      return;
-    }
-    channels = channels.filter(c => c.id !== pendingDelete.id);
-    hideOverlayIfNoneOpen();
-    renderTable();
-    showMsg('删除成功');
   }
+});
+
+document.getElementById('confirmChannelDeleteBtn').addEventListener('click', () => {
+  document.getElementById('channelDeleteDialog').classList.remove('show');
+  channels = channels.filter(c => c.id !== pendingDelete.id);
+  hideOverlayIfNoneOpen();
+  renderTable();
+  showMsg('删除成功');
 });
 
 function openLog(id){

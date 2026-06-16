@@ -360,7 +360,7 @@
   }
   .data-table tbody tr:hover td{background:#F5F7FA;}
   .col-platform{white-space:normal;}
-  .col-ellipsis{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;word-break:break-all;}
+  .col-ellipsis{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
   .op-btns{
     display:flex;flex-direction:column;align-items:center;gap:8px;
@@ -1727,7 +1727,7 @@ function renderTable(){
       <td>${c.loanRatio}%</td>
       <td>${c.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
       <td class="col-platform">${c.evalType === 'auto' ? c.platforms.join('、') : '—'}</td>
-      <td title="${escapeHtml(c.desc || '')}"><div class="col-ellipsis">${c.desc ? escapeHtml(c.desc) : '—'}</div></td>
+      <td class="col-ellipsis" title="${escapeHtml(c.desc || '')}">${c.desc ? escapeHtml(c.desc) : '—'}</td>
       <td>${c.createdAt}</td>
       <td>
         <div class="op-btns">
@@ -1855,12 +1855,29 @@ function openDrawer(channel){
   editingId = channel ? channel.id : null;
   document.getElementById('drawerTitle').textContent = channel ? '编辑资金渠道' : '新增资金渠道';
 
+  const isEdit = !!channel;
+  const locked = isEdit && channel.hasOrders; // 有质押订单时放款比例/评估方式不可改
+
+  // ---- 所属市场（编辑时只读）----
+  if (channel){
+    setSelectValue('fMarketSelect', channel.market, channel.market);
+    document.querySelector('#fMarketSelect .sel-display').classList.remove('placeholder');
+  } else {
+    setSelectValue('fMarketSelect', '', '请选择市场');
+    document.querySelector('#fMarketSelect .sel-display').classList.add('placeholder');
+  }
+  document.getElementById('errFMarket').style.display = 'none';
+  document.getElementById('fMarketSelect').classList.toggle('disabled', isEdit);
+
+  // ---- 渠道名称（编辑时只读）----
   const nameInput = document.getElementById('fChannelName');
   nameInput.value = channel ? channel.channelName : '';
   document.getElementById('channelNameCount').textContent = `${nameInput.value.length}/50`;
   document.getElementById('errChannelName').style.display = 'none';
   nameInput.classList.remove('is-error');
+  nameInput.disabled = isEdit;
 
+  // ---- 所属金融公司（编辑时只读）----
   if (channel){
     setSelectValue('fCompanySelect', channel.company, channel.company);
     document.querySelector('#fCompanySelect .sel-display').classList.remove('placeholder');
@@ -1869,13 +1886,20 @@ function openDrawer(channel){
     document.querySelector('#fCompanySelect .sel-display').classList.add('placeholder');
   }
   document.getElementById('errCompany').style.display = 'none';
+  document.getElementById('fCompanySelect').classList.toggle('disabled', isEdit);
 
+  // ---- 放款比例（有订单时只读）----
   const ratioInput = document.getElementById('fLoanRatio');
   ratioInput.value = channel ? channel.loanRatio : '';
   ratioInput.classList.remove('is-error');
   document.getElementById('errLoanRatio').style.display = 'none';
+  ratioInput.disabled = locked;
 
-  document.querySelectorAll('#fEvalType .radio-item').forEach(r => r.classList.remove('checked'));
+  // ---- 车辆评估（有订单时只读）----
+  document.querySelectorAll('#fEvalType .radio-item').forEach(r => {
+    r.classList.remove('checked');
+    r.classList.toggle('disabled', locked);
+  });
   if (channel){
     document.querySelector(`#fEvalType .radio-item[data-value="${channel.evalType}"]`).classList.add('checked');
   }
@@ -1885,7 +1909,9 @@ function openDrawer(channel){
   renderPlatformDisplay();
   document.getElementById('errPlatform').style.display = 'none';
   togglePlatformField(channel ? channel.evalType : null);
+  document.getElementById('fPlatformSelect').classList.toggle('disabled', locked);
 
+  // ---- 渠道说明（始终可编辑）----
   const descInput = document.getElementById('fDesc');
   descInput.value = channel ? (channel.desc || '') : '';
   document.getElementById('fDescCount').textContent = descInput.value.length;
@@ -2014,34 +2040,36 @@ document.getElementById('drawerClose').addEventListener('click', () => closeDraw
 document.getElementById('drawerCancel').addEventListener('click', () => closeDrawer());
 
 document.getElementById('drawerSave').addEventListener('click', () => {
-  const v1 = validateChannelName();
-  const v2 = validateCompany();
-  const v3 = validateLoanRatio();
-  const v4 = validateEvalType();
-  const v5 = validatePlatform();
+  const isEdit = !!editingId;
+  const target = isEdit ? channels.find(c => c.id === editingId) : null;
+  const locked = isEdit && target.hasOrders;
+
+  // 只读字段跳过校验；其余正常校验
+  const v1 = isEdit ? true : validateChannelName();
+  const v2 = isEdit ? true : validateCompany();
+  const v3 = locked ? true : validateLoanRatio();
+  const v4 = locked ? true : validateEvalType();
+  const v5 = locked ? true : validatePlatform();
   if (!(v1 && v2 && v3 && v4 && v5)) return;
 
-  const channelName = document.getElementById('fChannelName').value.trim();
-  const company = document.querySelector('#fCompanySelect .sel-display').getAttribute('data-value');
-  const loanRatio = Number(document.getElementById('fLoanRatio').value.trim());
-  const evalType = document.querySelector('#fEvalType .radio-item.checked').getAttribute('data-value');
-  const platforms = evalType === 'auto' ? [...selectedPlatforms] : [];
+  // 只读字段沿用原值，可编辑字段取表单值
+  const channelName = isEdit ? target.channelName : document.getElementById('fChannelName').value.trim();
+  const market = isEdit ? target.market : document.querySelector('#fMarketSelect .sel-display').getAttribute('data-value');
+  const company  = isEdit ? target.company  : document.querySelector('#fCompanySelect .sel-display').getAttribute('data-value');
+  const loanRatio = locked ? target.loanRatio : Number(document.getElementById('fLoanRatio').value.trim());
+  const evalType  = locked ? target.evalType  : document.querySelector('#fEvalType .radio-item.checked').getAttribute('data-value');
+  const platforms = locked ? [...target.platforms] : (evalType === 'auto' ? [...selectedPlatforms] : []);
   const desc = document.getElementById('fDesc').value.trim();
 
-  if (editingId){
-    const target = channels.find(c => c.id === editingId);
+  if (isEdit){
     const changes = [];
-    if (target.channelName !== channelName) changes.push(`渠道名称：${target.channelName} → ${channelName}`);
-    if (target.company !== company) changes.push(`所属金融公司：${target.company} → ${company}`);
     if (target.loanRatio !== loanRatio) changes.push(`放款比例：${target.loanRatio}% → ${loanRatio}%`);
     if (target.evalType !== evalType) changes.push(`车辆评估方式：${target.evalType === 'auto' ? '自动评估':'人工评估'} → ${evalType === 'auto' ? '自动评估':'人工评估'}`);
     if (JSON.stringify(target.platforms) !== JSON.stringify(platforms)) changes.push(`评估平台：${target.platforms.join('、') || '—'} → ${platforms.join('、') || '—'}`);
     if ((target.desc || '') !== desc) changes.push(`渠道说明已更新`);
 
-    target.channelName = channelName;
-    target.company = company;
     target.loanRatio = loanRatio;
-    target.evalType = evalType;
+    target.evalType  = evalType;
     target.platforms = platforms;
     target.desc = desc;
 
@@ -2052,8 +2080,7 @@ document.getElementById('drawerSave').addEventListener('click', () => {
   } else {
     channels.unshift({
       id: Math.max(0, ...channels.map(c=>c.id)) + 1,
-      market: MARKET_NAME,
-      company, channelName, loanRatio, evalType, platforms, desc,
+      market, company, channelName, loanRatio, evalType, platforms, desc,
       createdAt: nowStr(),
       hasOrders: false,
       logs: [{ time: nowStr(), user:'王晓明', type:'新增', detail: `创建资金渠道：${channelName}` }]

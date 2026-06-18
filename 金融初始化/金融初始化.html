@@ -592,6 +592,35 @@
   }
   .msg-toast.error{border-color:#fde2e2;color:#F56C6C;}
   .msg-toast.show{display:flex;}
+
+  /* ===================== 市场状态标签 ===================== */
+  .status-tag{display:inline-block;padding:2px 10px;font-size:12px;border-radius:4px;line-height:20px;}
+  .status-tag.success{background:#f0f9eb;color:#67C23A;border:1px solid #e1f3d8;}
+  .status-tag.info{background:#f4f4f5;color:#909399;border:1px solid #e9e9eb;}
+
+  /* ===================== 页面切换 ===================== */
+  #pageMarketList, #pageFinancialInit, #pageMarketConfig{min-height:100%;}
+
+  /* ===================== 市场配置页 ===================== */
+  .config-page-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+  .back-btn{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--text-regular);font-size:14px;padding:6px 12px;border:1px solid var(--border-base);border-radius:4px;background:#fff;}
+  .back-btn:hover{color:var(--primary);border-color:#c6e2ff;}
+  .config-page-title{font-size:16px;font-weight:bold;color:var(--text-primary);}
+  .config-card{background:#fff;border:1px solid var(--border-light);border-radius:6px;padding:24px 24px 2px;margin-bottom:16px;}
+  .config-card-title{font-size:15px;font-weight:bold;color:var(--text-primary);margin-bottom:20px;}
+  .setting-item{display:flex;align-items:flex-start;margin-bottom:22px;}
+  .setting-label{width:160px;flex-shrink:0;text-align:right;padding-right:12px;font-size:14px;color:var(--text-regular);line-height:40px;white-space:nowrap;}
+  .setting-label .required{color:#F56C6C;margin-right:4px;}
+  .setting-control{flex:1;min-width:0;}
+  .config-page-footer{display:flex;justify-content:flex-start;gap:12px;padding:10px 0 22px;margin-left:172px;}
+  .el-switch{width:40px;height:20px;border-radius:10px;background:#DCDFE6;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;margin-top:10px;}
+  .el-switch.on{background:var(--primary);}
+  .el-switch .el-switch-core{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;}
+  .el-switch.on .el-switch-core{left:22px;}
+  .seg-group{display:inline-flex;border:1px solid var(--border-base);border-radius:4px;overflow:hidden;height:40px;}
+  .seg-btn{padding:0 20px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-regular);cursor:pointer;background:#fff;border-right:1px solid var(--border-base);}
+  .seg-btn:last-child{border-right:none;}
+  .seg-btn.active{background:var(--primary);color:#fff;}
 </style>
 </head>
 <body>
@@ -609,14 +638,14 @@
         <span class="arrow">›</span>
       </div>
       <div class="submenu" id="carMarketSubmenu">
-        <div class="submenu-item" onclick="location.href='../市场管理/市场列表.html'">市场列表</div>
+        <div class="submenu-item" id="navMarketList" onclick="showPage('pageMarketList','navMarketList')">市场列表</div>
       </div>
       <div class="menu-item expanded" id="kurongMenu">
         <span>库容管理</span>
         <span class="arrow">›</span>
       </div>
       <div class="submenu" id="kurongSubmenu">
-        <div class="submenu-item active">金融初始化</div>
+        <div class="submenu-item active" id="navFinancialInit" onclick="showPage('pageFinancialInit','navFinancialInit')">金融初始化管理</div>
       </div>
     </div>
   </div>
@@ -637,6 +666,241 @@
 
     <!-- 主内容区 -->
     <div class="main-content">
+
+      <!-- ===== 市场列表页面 ===== -->
+      <div id="pageMarketList" style="display:none;">
+        <div class="content-body">
+
+          <!-- 筛选条件区 -->
+          <div class="search-filter-container">
+            <div class="filter-row">
+              <div class="filter-item">
+                <span class="filter-label">市场名称</span>
+                <input type="text" class="ipt" id="mlFilterName" placeholder="请输入市场名称" style="width:200px;">
+              </div>
+              <div class="filter-item">
+                <span class="filter-label">市场状态</span>
+                <div class="custom-select" id="mlFilterStatus" style="width:200px;">
+                  <div class="sel-display" data-value="">
+                    <span class="sel-text">全部</span>
+                    <span class="sel-arrow">▾</span>
+                  </div>
+                  <div class="select-panel">
+                    <div class="select-option selected" data-value="">全部</div>
+                    <div class="select-option" data-value="正常">正常</div>
+                    <div class="select-option" data-value="停用">停用</div>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-item">
+                <span class="filter-label">市场类型</span>
+                <div class="custom-select" id="mlFilterType" style="width:200px;">
+                  <div class="sel-display placeholder" data-value="">
+                    <span class="sel-text">市场类型</span>
+                    <span class="sel-arrow">▾</span>
+                  </div>
+                  <div class="select-panel">
+                    <div class="select-option" data-value="">全部</div>
+                    <div class="select-option" data-value="场内市场">场内市场</div>
+                    <div class="select-option" data-value="场外市场">场外市场</div>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-item">
+                <span class="filter-label">创建时间</span>
+                <div class="date-range">
+                  <span class="date-range-icon">📅</span>
+                  <input type="text" placeholder="开始日期">
+                  <span class="date-range-sep">-</span>
+                  <input type="text" placeholder="结束日期">
+                </div>
+              </div>
+            </div>
+            <div class="filter-row" style="margin-top:16px;">
+              <div class="filter-actions" style="margin-left:0;">
+                <button class="btn btn-primary btn-large" id="mlBtnSearch">查询</button>
+                <button class="btn btn-large" id="mlBtnReset">重置</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 数据表格 -->
+          <div class="table-wrap">
+            <table class="data-table">
+              <colgroup>
+                <col style="width:90px;">
+                <col style="width:160px;">
+                <col style="width:140px;">
+                <col>
+                <col style="width:110px;">
+                <col style="width:220px;">
+                <col style="width:90px;">
+                <col style="width:120px;">
+                <col style="width:120px;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>市场id</th>
+                  <th>市场名称</th>
+                  <th>服务电话</th>
+                  <th>市场地址</th>
+                  <th>市场类型</th>
+                  <th>负责人信息</th>
+                  <th>市场状态</th>
+                  <th>创建时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="mlMarketTableBody"></tbody>
+            </table>
+          </div>
+
+          <!-- 分页 -->
+          <div class="pagination-container">
+            <span class="pg-total">共 <b id="mlPgTotal">0</b> 条</span>
+            <span class="pg-sizes">
+              <select id="mlPgSizeSelect">
+                <option value="10">10条/页</option>
+                <option value="20">20条/页</option>
+                <option value="50">50条/页</option>
+                <option value="100">100条/页</option>
+              </select>
+            </span>
+            <span class="pg-btn disabled">‹</span>
+            <span class="pg-btn active">1</span>
+            <span class="pg-btn disabled">›</span>
+            <span class="pg-jumper">前往 <input type="text" value="1"> 页</span>
+          </div>
+
+        </div>
+      </div>
+      <!-- ===== 市场配置页面 ===== -->
+      <div id="pageMarketConfig" style="display:none;">
+        <div class="content-body">
+          <div class="config-page-header">
+            <button class="back-btn" onclick="showPage('pageMarketList','navMarketList')">← 返回市场列表</button>
+            <span class="config-page-title" id="configPageTitle">编辑市场</span>
+          </div>
+
+          <div class="config-card">
+            <div class="config-card-title">金融系统设置</div>
+
+            <div class="setting-item">
+              <span class="setting-label"><span class="required">*</span>金融系统</span>
+              <div class="setting-control">
+                <div class="el-switch on" id="mcSwFinance"><span class="el-switch-core"></span></div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <span class="setting-label"><span class="required">*</span>金融订单编号前缀</span>
+              <div class="setting-control">
+                <div style="display:flex;align-items:center;">
+                  <input type="text" class="ipt" style="width:240px;" id="mcOrderPrefix" maxlength="6" placeholder="请输入大写字母，如XCJR">
+                  <span class="lock-icon" id="mcLockIcon" title="已有金融订单，编号前缀不可修改" style="display:none;">
+                    <svg viewBox="0 0 1024 1024" width="16" height="16"><path fill="currentColor" d="M816 448h-40v-96c0-145.6-118.4-264-264-264S248 206.4 248 352v96h-40c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h608c17.7 0 32-14.3 32-32V480c0-17.7-14.3-32-32-32zM320 352c0-105.9 86.1-192 192-192s192 86.1 192 192v96H320v-96zm348 388c0 4.4-3.6 8-8 8h-48v68c0 4.4-3.6 8-8 8h-32c-4.4 0-8-3.6-8-8v-68h-48c-4.4 0-8-3.6-8-8v-32c0-4.4 3.6-8 8-8h136c4.4 0 8 3.6 8 8v32z"/></svg>
+                  </span>
+                </div>
+                <div class="field-tip" id="mcFieldTip" style="display:none;">用于生成该市场的金融订单编号，设置后不可修改</div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <span class="setting-label"><span class="required">*</span>市场核价自动评估</span>
+              <div class="setting-control">
+                <div class="seg-group" id="mcAutoEvalSeg">
+                  <div class="seg-btn" data-value="on">开启</div>
+                  <div class="seg-btn active" data-value="off">关闭</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item" id="mcAutoEvalPlatformItem" style="display:none;">
+              <span class="setting-label"><span class="required">*</span>评估平台</span>
+              <div class="setting-control">
+                <div class="multi-select" id="mcAutoEvalPlatformSelect" style="width:300px;">
+                  <div class="sel-display placeholder">
+                    <span class="sel-text">请选择评估平台（可多选）</span>
+                    <span class="sel-arrow">▾</span>
+                  </div>
+                  <div class="select-panel">
+                    <div class="select-option" data-value="精真估"><span class="chk"></span><span>精真估</span></div>
+                    <div class="select-option" data-value="车300"><span class="chk"></span><span>车300</span></div>
+                    <div class="select-option" data-value="大圣检测"><span class="chk"></span><span>大圣检测</span></div>
+                  </div>
+                </div>
+                <div class="field-error" id="mcErrAutoEvalPlatform" style="display:none;">请选择评估平台</div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <span class="setting-label"><span class="required">*</span>用款申请车辆评估</span>
+              <div class="setting-control">
+                <div class="seg-group">
+                  <div class="seg-btn active">开启</div>
+                  <div class="seg-btn">关闭</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <span class="setting-label"><span class="required">*</span>评估平台</span>
+              <div class="setting-control">
+                <div class="multi-select" style="width:300px;">
+                  <div class="sel-display">
+                    <span class="multi-tag">精真估</span>
+                    <span class="sel-arrow">▾</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <span class="setting-label"><span class="required">*</span>申请金额</span>
+              <div class="setting-control">
+                <div class="radio-group">
+                  <div class="radio-item">
+                    <span class="radio-circle"><span class="dot"></span></span>
+                    <span>保留小数点后两位</span>
+                  </div>
+                  <div class="radio-item checked">
+                    <span class="radio-circle"><span class="dot"></span></span>
+                    <span>保留小数点后一位</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <span class="setting-label"><span class="required">*</span>用款二次审核</span>
+              <div class="setting-control">
+                <div class="seg-group">
+                  <div class="seg-btn">开启</div>
+                  <div class="seg-btn active">关闭</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <span class="setting-label"><span class="required">*</span>临时出场默认限制</span>
+              <div class="setting-control">
+                <div class="seg-group" id="mcTempExitSeg">
+                  <div class="seg-btn active">一次出入</div>
+                  <div class="seg-btn">不限次出入</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="config-page-footer">
+              <button class="btn btn-large" onclick="showPage('pageMarketList','navMarketList')">返回</button>
+              <button class="btn btn-primary btn-large">保存</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 金融初始化管理页面 ===== -->
+      <div id="pageFinancialInit">
       <div class="content-body">
 
         <!-- ===================== 金融公司模块 ===================== -->
@@ -835,7 +1099,6 @@
                 <col style="width:100px;">
                 <col style="width:120px;">
                 <col style="width:160px;">
-                <col style="width:160px;">
                 <col style="width:180px;">
                 <col style="width:200px;">
               </colgroup>
@@ -847,7 +1110,6 @@
                   <th>放款比例</th>
                   <th>车辆评估方式</th>
                   <th>评估平台</th>
-                  <th>渠道说明</th>
                   <th>创建时间</th>
                   <th>操作</th>
                 </tr>
@@ -882,6 +1144,7 @@
         </div>
 
       </div>
+      </div><!-- end pageFinancialInit -->
     </div>
   </div>
 </div>
@@ -1134,21 +1397,6 @@
       </div>
     </div>
 
-    <!-- 渠道说明 -->
-    <div class="form-item">
-      <div class="form-label w100">渠道说明</div>
-      <div class="form-control">
-        <div style="position:relative;">
-          <textarea id="fDesc" rows="3" maxlength="100" placeholder="请输入渠道说明，方便商户了解该渠道特点"
-            style="width:100%;box-sizing:border-box;resize:none;padding:8px 12px;border:1px solid var(--border-base);border-radius:4px;font-size:14px;color:#303133;font-family:inherit;line-height:1.5;outline:none;"
-            oninput="document.getElementById('fDescCount').textContent=this.value.length"
-            onfocus="this.style.borderColor='var(--primary)'"
-            onblur="this.style.borderColor='var(--border-base)'"
-          ></textarea>
-          <span style="position:absolute;bottom:6px;right:8px;font-size:12px;color:#909399;"><span id="fDescCount">0</span>/100</span>
-        </div>
-      </div>
-    </div>
   </div>
   <div class="drawer-footer">
     <button class="btn" id="drawerCancel">取消</button>
@@ -1727,7 +1975,6 @@ function renderTable(){
       <td>${c.loanRatio}%</td>
       <td>${c.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
       <td class="col-platform">${c.evalType === 'auto' ? c.platforms.join('、') : '—'}</td>
-      <td class="col-ellipsis" title="${escapeHtml(c.desc || '')}">${c.desc ? escapeHtml(c.desc) : '—'}</td>
       <td>${c.createdAt}</td>
       <td>
         <div class="op-btns">
@@ -1910,9 +2157,6 @@ function openDrawer(channel){
   document.getElementById('fPlatformSelect').classList.toggle('disabled', locked);
 
   // ---- 渠道说明（始终可编辑）----
-  const descInput = document.getElementById('fDesc');
-  descInput.value = channel ? (channel.desc || '') : '';
-  document.getElementById('fDescCount').textContent = descInput.value.length;
 
   drawer.classList.add('show');
   showOverlay();
@@ -2056,19 +2300,15 @@ document.getElementById('drawerSave').addEventListener('click', () => {
   const loanRatio = locked ? target.loanRatio : Number(document.getElementById('fLoanRatio').value.trim());
   const evalType  = locked ? target.evalType  : document.querySelector('#fEvalType .radio-item.checked').getAttribute('data-value');
   const platforms = locked ? [...target.platforms] : (evalType === 'auto' ? [...selectedPlatforms] : []);
-  const desc = document.getElementById('fDesc').value.trim();
-
   if (isEdit){
     const changes = [];
     if (target.loanRatio !== loanRatio) changes.push(`放款比例：${target.loanRatio}% → ${loanRatio}%`);
     if (target.evalType !== evalType) changes.push(`车辆评估方式：${target.evalType === 'auto' ? '自动评估':'人工评估'} → ${evalType === 'auto' ? '自动评估':'人工评估'}`);
     if (JSON.stringify(target.platforms) !== JSON.stringify(platforms)) changes.push(`评估平台：${target.platforms.join('、') || '—'} → ${platforms.join('、') || '—'}`);
-    if ((target.desc || '') !== desc) changes.push(`渠道说明已更新`);
 
     target.loanRatio = loanRatio;
     target.evalType  = evalType;
     target.platforms = platforms;
-    target.desc = desc;
 
     if (changes.length){
       target.logs.unshift({ time: nowStr(), user: '王晓明', type: '编辑', detail: changes.join('；') });
@@ -2077,7 +2317,7 @@ document.getElementById('drawerSave').addEventListener('click', () => {
   } else {
     channels.unshift({
       id: Math.max(0, ...channels.map(c=>c.id)) + 1,
-      market, company, channelName, loanRatio, evalType, platforms, desc,
+      market, company, channelName, loanRatio, evalType, platforms,
       createdAt: nowStr(),
       hasOrders: false,
       logs: [{ time: nowStr(), user:'王晓明', type:'新增', detail: `创建资金渠道：${channelName}` }]
@@ -2152,6 +2392,183 @@ function openLog(id){
 // ===================== 初始化 =====================
 renderCompanyTable();
 renderTable();
+
+// ===================== 页面切换 =====================
+function showPage(pageId, navId) {
+  document.querySelectorAll('#pageMarketList, #pageFinancialInit, #pageMarketConfig').forEach(el => el.style.display = 'none');
+  document.getElementById(pageId).style.display = '';
+  document.querySelectorAll('.submenu-item').forEach(el => el.classList.remove('active'));
+  if (navId) document.getElementById(navId).classList.add('active');
+}
+
+// ===================== 市场列表数据 =====================
+const markets = [
+  { id: '52a', name: '泸州汽车交易市场', phone: '0830-8888888', address: '四川省泸州市江阳区国窖大道88号泸州汽车交易市场', type: '场内市场', owner: '王晓明', ownerPhone: '0830-8888888', status: '正常', created: '2026-05-26' },
+  { id: 'c48', name: '银地汽车出口', phone: '15852386068', address: '江苏省徐州市贾汪区金龙湖街道城东快速路88号银地二手车交易市场', type: '场外市场', owner: '刘总', ownerPhone: '15852386068', status: '正常', created: '2026-05-19' },
+  { id: '6c4', name: '文昌利星二手车市场', phone: '0898-63265288', address: '海南省文昌市文城镇城南村委会下田村文昌日之星丰田汽车销售服务有限公司一层', type: '场内市场', owner: '纪总', ownerPhone: '0898-63265288', status: '正常', created: '2026-04-30' },
+  { id: 'e5b', name: '中国(广州琶洲)汽车出口基地', phone: '13308350550', address: '广东省广州市海珠区琶洲街道新港东路30号琶洲岛', type: '场外市场', owner: '侯云', ownerPhone: '13308350550', status: '正常', created: '2026-04-23' },
+  { id: '4a8', name: '广东中山鸿源二手车市场', phone: '13822727392', address: '广东省中山市西区街道中山市公安局交警支队车管所鸿源机动车登记服务壹加壹彩虹里', type: '场外市场', owner: '甘总', ownerPhone: '13822727392', status: '正常', created: '2026-04-14' },
+  { id: '239', name: '上海车王二手车市场', phone: '13661868888', address: '上海市浦东新区惠南镇五角兴农城', type: '场内市场', owner: '许征', ownerPhone: '13661868888', status: '正常', created: '2026-04-09' },
+  { id: 'd3b', name: '陕西车坛二弟汽车销售有限公司', phone: '18192892136', address: '陕西省西安市未央区三桥街道天台三路车坛老王品牌二手车', type: '场外市场', owner: '车坛二弟汽车', ownerPhone: '18192892136', status: '正常', created: '2026-03-25' }
+];
+let mlFiltered = [...markets];
+
+function renderMarketTable() {
+  document.getElementById('mlPgTotal').textContent = mlFiltered.length;
+  document.getElementById('mlMarketTableBody').innerHTML = mlFiltered.length === 0
+    ? `<tr><td colspan="9" style="text-align:center;color:#909399;padding:40px 0;">暂无数据</td></tr>`
+    : mlFiltered.map(m => `
+    <tr>
+      <td>${m.id}</td>
+      <td>${escapeHtml(m.name)}</td>
+      <td>${escapeHtml(m.phone)}</td>
+      <td style="text-align:left;white-space:normal;word-break:break-all;">${escapeHtml(m.address)}</td>
+      <td>${escapeHtml(m.type)}</td>
+      <td>负责人姓名:${escapeHtml(m.owner)}<br>负责人电话:${escapeHtml(m.ownerPhone)}</td>
+      <td><span class="status-tag ${m.status === '正常' ? 'success' : 'info'}">${escapeHtml(m.status)}</span></td>
+      <td>${escapeHtml(m.created)}</td>
+      <td>
+        <div class="market-op-btns">
+          <button class="btn btn-small btn-primary" onclick="openMarketEdit('${m.id}')">编辑</button>
+          <div class="more-op">
+            <button class="more-op-btn" onclick="toggleMoreOp(this, event)">更多操作 <span style="font-size:10px;">▾</span></button>
+            <div class="more-op-panel">
+              <div class="more-op-item" onclick="mlToggleStatus('${m.id}')">${m.status === '正常' ? '停用' : '启用'}</div>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openMarketEdit(id) {
+  const market = markets.find(m => m.id === id);
+  document.getElementById('configPageTitle').textContent = '编辑市场：' + (market ? market.name : id);
+  const prefixInput = document.getElementById('mcOrderPrefix');
+  const lockIcon = document.getElementById('mcLockIcon');
+  const fieldTip = document.getElementById('mcFieldTip');
+  if (id === '52a') {
+    prefixInput.value = '';
+    prefixInput.disabled = false;
+    prefixInput.placeholder = '请输入大写字母，如XCJR';
+    lockIcon.style.display = 'none';
+    fieldTip.style.display = '';
+  } else {
+    prefixInput.value = 'JHJR';
+    prefixInput.disabled = true;
+    lockIcon.style.display = '';
+    fieldTip.style.display = '';
+  }
+  showPage('pageMarketConfig', 'navMarketList');
+}
+
+function mlToggleStatus(id) {
+  const m = markets.find(x => x.id === id);
+  if (m) m.status = m.status === '正常' ? '停用' : '正常';
+  mlFiltered = mlFiltered.map(x => x.id === id ? m : x);
+  renderMarketTable();
+}
+
+function mlSetSelectValue(id, value, label) {
+  const el = document.getElementById(id);
+  const display = el.querySelector('.sel-display');
+  display.setAttribute('data-value', value);
+  display.querySelector('.sel-text').textContent = label;
+  el.querySelectorAll('.select-option').forEach(o => o.classList.toggle('selected', o.getAttribute('data-value') === value));
+}
+
+document.getElementById('mlBtnSearch').addEventListener('click', () => {
+  const name = document.getElementById('mlFilterName').value.trim();
+  const status = document.querySelector('#mlFilterStatus .sel-display').getAttribute('data-value');
+  const type = document.querySelector('#mlFilterType .sel-display').getAttribute('data-value');
+  mlFiltered = markets.filter(m => {
+    if (name && !m.name.includes(name)) return false;
+    if (status && m.status !== status) return false;
+    if (type && m.type !== type) return false;
+    return true;
+  });
+  renderMarketTable();
+});
+
+document.getElementById('mlBtnReset').addEventListener('click', () => {
+  document.getElementById('mlFilterName').value = '';
+  mlSetSelectValue('mlFilterStatus', '', '全部');
+  document.querySelector('#mlFilterStatus .sel-display').classList.remove('placeholder');
+  mlSetSelectValue('mlFilterType', '', '市场类型');
+  document.querySelector('#mlFilterType .sel-display').classList.add('placeholder');
+  mlFiltered = [...markets];
+  renderMarketTable();
+});
+
+renderMarketTable();
+
+// ===================== 市场配置页交互 =====================
+document.getElementById('mcSwFinance').addEventListener('click', function(){ this.classList.toggle('on'); });
+
+document.querySelectorAll('#pageMarketConfig .seg-group').forEach(group => {
+  group.querySelectorAll('.seg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      group.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (group.id === 'mcAutoEvalSeg') {
+        const isOn = btn.getAttribute('data-value') === 'on';
+        document.getElementById('mcAutoEvalPlatformItem').style.display = isOn ? 'flex' : 'none';
+        if (!isOn) document.getElementById('mcErrAutoEvalPlatform').style.display = 'none';
+      }
+    });
+  });
+});
+
+(function() {
+  const sel = document.getElementById('mcAutoEvalPlatformSelect');
+  if (!sel) return;
+  const display = sel.querySelector('.sel-display');
+  let mcSelected = [];
+
+  function renderMcPlatform() {
+    const arrow = display.querySelector('.sel-arrow');
+    display.querySelectorAll('.multi-tag, .sel-text').forEach(n => n.remove());
+    if (mcSelected.length === 0) {
+      display.classList.add('placeholder');
+      const span = document.createElement('span');
+      span.className = 'sel-text';
+      span.textContent = '请选择评估平台（可多选）';
+      display.insertBefore(span, arrow);
+    } else {
+      display.classList.remove('placeholder');
+      mcSelected.forEach(v => {
+        const tag = document.createElement('span');
+        tag.className = 'multi-tag';
+        tag.innerHTML = `${v}<span class="tag-close" data-val="${v}">×</span>`;
+        display.insertBefore(tag, arrow);
+      });
+    }
+    sel.querySelectorAll('.select-option').forEach(opt => {
+      const v = opt.getAttribute('data-value');
+      opt.classList.toggle('selected', mcSelected.includes(v));
+      const chk = opt.querySelector('.chk');
+      if (chk) chk.textContent = mcSelected.includes(v) ? '✓' : '';
+    });
+  }
+
+  display.addEventListener('click', e => {
+    const closeVal = e.target.getAttribute('data-val');
+    if (closeVal) { mcSelected = mcSelected.filter(x => x !== closeVal); renderMcPlatform(); return; }
+    document.querySelectorAll('.custom-select.open, .multi-select.open').forEach(o => { if (o !== sel) o.classList.remove('open'); });
+    sel.classList.toggle('open');
+  });
+
+  sel.querySelectorAll('.select-option').forEach(opt => {
+    opt.addEventListener('click', e => {
+      e.stopPropagation();
+      const v = opt.getAttribute('data-value');
+      mcSelected = mcSelected.includes(v) ? mcSelected.filter(x => x !== v) : [...mcSelected, v];
+      renderMcPlatform();
+      if (mcSelected.length > 0) document.getElementById('mcErrAutoEvalPlatform').style.display = 'none';
+    });
+  });
+})();
 </script>
 </body>
 </html>

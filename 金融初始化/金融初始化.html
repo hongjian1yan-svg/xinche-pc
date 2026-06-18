@@ -558,6 +558,58 @@
     background:#F5F7FA;color:var(--text-placeholder);font-size:13px;
   }
 
+  /* ===================== 右侧详情抽屉 ===================== */
+  .right-drawer{
+    position:fixed;top:0;right:0;
+    width:700px;height:100vh;
+    background:#fff;z-index:1001;
+    display:none;flex-direction:column;
+    box-shadow:-4px 0 20px rgba(0,0,0,.18);
+  }
+  .right-drawer.show{display:flex;}
+
+  /* ===================== 树形展开 ===================== */
+  .expand-btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:4px;border:1px solid var(--border-base);
+    cursor:pointer;font-size:11px;color:var(--text-secondary);
+    background:#fff;transition:all .15s;user-select:none;
+  }
+  .expand-btn:hover{border-color:var(--primary);color:var(--primary);}
+  .expand-btn.expanded{background:var(--primary);border-color:var(--primary);color:#fff;}
+
+  .channel-sub-section{
+    padding:12px 20px 16px;background:#f8f9fb;border-top:2px solid var(--primary);
+  }
+  .channel-sub-header{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
+  }
+  .channel-sub-title{font-size:13px;color:var(--text-regular);font-weight:600;}
+  .channel-sub-table{
+    width:100%;border-collapse:collapse;font-size:13px;
+  }
+  .channel-sub-table th{
+    background:#eef2f8;color:var(--text-regular);text-align:center;
+    padding:8px 10px;border:1px solid var(--border-light);font-weight:400;white-space:nowrap;
+  }
+  .channel-sub-table td{
+    text-align:center;padding:8px 10px;border:1px solid var(--border-light);
+    color:var(--text-primary);
+  }
+  .channel-sub-table tr:hover td{background:#f2f7ff;}
+
+  /* 详情抽屉中的只读渠道表格 */
+  .detail-channel-table{
+    width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;
+  }
+  .detail-channel-table th{
+    background:#f5f7fa;color:var(--text-regular);
+    padding:8px 12px;border:1px solid var(--border-light);text-align:center;font-weight:400;white-space:nowrap;
+  }
+  .detail-channel-table td{
+    padding:8px 12px;border:1px solid var(--border-light);text-align:center;color:var(--text-primary);
+  }
+
   /* timeline */
   .timeline{padding:8px 4px;}
   .timeline-item{display:flex;gap:12px;position:relative;padding-bottom:24px;}
@@ -967,17 +1019,19 @@
           <div class="table-wrap">
             <table class="data-table">
               <colgroup>
+                <col style="width:44px;">
                 <col style="width:140px;">
                 <col style="width:160px;">
-                <col style="width:100px;">
-                <col style="width:140px;">
+                <col style="width:90px;">
+                <col style="width:130px;">
+                <col style="width:120px;">
+                <col style="width:110px;">
+                <col style="width:170px;">
                 <col style="width:160px;">
-                <col style="width:160px;">
-                <col style="width:180px;">
-                <col style="width:180px;">
               </colgroup>
               <thead>
                 <tr>
+                  <th></th>
                   <th>所属市场</th>
                   <th>金融公司名称</th>
                   <th>负责人</th>
@@ -1012,136 +1066,6 @@
           </div>
         </div>
 
-        <!-- ===================== 资金渠道模块 ===================== -->
-        <div class="module" id="channelModule">
-          <div class="section-title">资金渠道</div>
-
-          <!-- 操作按钮区 -->
-          <div class="action-bar">
-            <button class="btn btn-primary" id="btnAdd">+ 新增渠道</button>
-          </div>
-
-          <!-- 筛选条件区 -->
-          <div class="search-filter-container">
-            <div class="filter-row">
-              <div class="filter-item">
-                <span class="filter-label">市场名称</span>
-                <div class="custom-select" id="filterMarketSelect" style="width:200px;">
-                  <div class="sel-display placeholder" data-value="">
-                    <span class="sel-text">请选择市场</span>
-                    <span class="sel-arrow">▾</span>
-                  </div>
-                  <div class="select-panel">
-                    <div class="select-option selected" data-value="">全部</div>
-                    <div class="select-option" data-value="泸州汽车交易市场">泸州汽车交易市场</div>
-                    <div class="select-option" data-value="银地汽车出口">银地汽车出口</div>
-                    <div class="select-option" data-value="文昌利星二手车市场">文昌利星二手车市场</div>
-                    <div class="select-option" data-value="中国(广州琶洲)汽车出口基地">中国(广州琶洲)汽车出口基地</div>
-                    <div class="select-option" data-value="广东中山鸿源二手车市场">广东中山鸿源二手车市场</div>
-                    <div class="select-option" data-value="上海车王二手车市场">上海车王二手车市场</div>
-                    <div class="select-option" data-value="陕西车坛二弟汽车销售有限公司">陕西车坛二弟汽车销售有限公司</div>
-                  </div>
-                </div>
-              </div>
-              <div class="filter-item">
-                <span class="filter-label">金融公司</span>
-                <div class="custom-select" id="filterCompanySelect" style="width:200px;">
-                  <div class="sel-display" data-value="">
-                    <span class="sel-text">全部</span>
-                    <span class="sel-arrow">▾</span>
-                  </div>
-                  <div class="select-panel">
-                    <div class="select-option selected" data-value="">全部</div>
-                    <div class="select-option" data-value="泸州银行">泸州银行</div>
-                    <div class="select-option" data-value="工商银行">工商银行</div>
-                    <div class="select-option" data-value="招商银行">招商银行</div>
-                    <div class="select-option" data-value="平安银行">平安银行</div>
-                    <div class="select-option" data-value="建设银行">建设银行</div>
-                  </div>
-                </div>
-              </div>
-              <div class="filter-item">
-                <span class="filter-label">渠道名称</span>
-                <input type="text" class="ipt" id="filterChannelName" placeholder="请输入渠道名称" style="width:200px;">
-              </div>
-              <div class="filter-item">
-                <span class="filter-label" style="width:100px;white-space:nowrap;">车辆评估方式</span>
-                <div class="custom-select" id="filterEvalTypeSelect" style="width:160px;">
-                  <div class="sel-display" data-value="">
-                    <span class="sel-text">全部</span>
-                    <span class="sel-arrow">▾</span>
-                  </div>
-                  <div class="select-panel">
-                    <div class="select-option selected" data-value="">全部</div>
-                    <div class="select-option" data-value="auto">自动评估</div>
-                    <div class="select-option" data-value="manual">人工评估</div>
-                  </div>
-                </div>
-              </div>
-              <div class="filter-item">
-                <span class="filter-label">放款比例</span>
-                <input type="text" class="ipt" id="filterLoanRatio" placeholder="请输入放款比例" style="width:160px;">
-              </div>
-              <div class="filter-actions">
-                <button class="btn btn-primary btn-large" id="btnSearch">查询</button>
-                <button class="btn btn-large" id="btnReset">重置</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 数据表格 -->
-          <div class="table-wrap">
-            <table class="data-table">
-              <colgroup>
-                <col style="width:140px;">
-                <col style="width:160px;">
-                <col style="width:160px;">
-                <col style="width:100px;">
-                <col style="width:120px;">
-                <col style="width:160px;">
-                <col style="width:180px;">
-                <col style="width:200px;">
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>所属市场</th>
-                  <th>金融公司名称</th>
-                  <th>渠道名称</th>
-                  <th>放款比例</th>
-                  <th>车辆评估方式</th>
-                  <th>评估平台</th>
-                  <th>创建时间</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody id="tableBody">
-                <!-- JS渲染 -->
-              </tbody>
-            </table>
-            <div class="empty-state" id="emptyState" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 0;color:#909399;font-size:14px;">
-              <div style="width:80px;height:80px;border-radius:50%;background:#F5F7FA;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:36px;color:#C0C4CC;">📭</div>
-              <div>暂无资金渠道</div>
-              <div style="font-size:12px;color:#C0C4CC;margin-top:4px;">点击「+ 新增渠道」开始配置</div>
-            </div>
-          </div>
-
-          <!-- 分页 -->
-          <div class="pagination-container">
-            <span class="pg-total">共 <b id="pgTotal">5</b> 条</span>
-            <span class="pg-sizes">
-              <select id="pgSizeSelect">
-                <option value="10">10条/页</option>
-                <option value="20">20条/页</option>
-                <option value="50">50条/页</option>
-                <option value="100">100条/页</option>
-              </select>
-            </span>
-            <span class="pg-btn disabled">‹</span>
-            <span class="pg-btn active">1</span>
-            <span class="pg-btn disabled">›</span>
-            <span class="pg-jumper">前往 <input type="text" value="1"> 页</span>
-          </div>
-        </div>
 
       </div>
       </div><!-- end pageFinancialInit -->
@@ -1246,15 +1170,15 @@
   </div>
 </div>
 
-<!-- ===================== 金融公司详情弹窗 ===================== -->
-<div class="dialog dialog-700" id="companyDetailDialog">
-  <div class="dialog-header">
-    <span class="dialog-title">金融公司详情</span>
-    <span class="dialog-close" data-close="companyDetailDialog">
+<!-- ===================== 金融公司详情（右侧抽屉） ===================== -->
+<div class="right-drawer" id="companyDetailDialog">
+  <div class="drawer-header">
+    <span class="drawer-title">金融公司详情</span>
+    <span class="drawer-close" data-close="companyDetailDialog">
       <svg viewBox="0 0 1024 1024" width="16" height="16"><path fill="currentColor" d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"/></svg>
     </span>
   </div>
-  <div class="dialog-body">
+  <div class="drawer-body" style="flex:1;overflow-y:auto;">
     <div class="detail-header">
       <span>所属市场：<b id="detMarket">—</b></span>
       <span>创建时间：<b id="detCreatedAt">—</b></span>
@@ -1278,8 +1202,13 @@
 
     <div class="section-title">图片信息</div>
     <div class="detail-img-area" id="detImageArea">暂无图片</div>
+
+    <div class="section-title" style="margin-top:28px;">资金渠道</div>
+    <div id="detChannelArea">
+      <div style="color:var(--text-placeholder);font-size:13px;padding:12px 0;">暂无资金渠道</div>
+    </div>
   </div>
-  <div class="dialog-footer">
+  <div class="drawer-footer">
     <button class="btn" data-close="companyDetailDialog">关闭</button>
   </div>
 </div>
@@ -1560,7 +1489,6 @@ let channels = [
 ];
 
 let companyFilter = { market:'', name:'', owner:'', ownerPhone:'' };
-let channelFilter = { market:'', company:'', channelName:'', evalType:'' };
 let editingCompanyId = null;
 let editingId = null;
 let pendingDelete = { type:'', id:null };
@@ -1704,6 +1632,41 @@ function toggleMoreOp(btn, e){
 }
 
 // ===================== 金融公司模块：表格渲染 =====================
+function renderChannelSubHtml(company){
+  const companyChannels = channels.filter(ch => ch.company === company.name && ch.market === company.market);
+  const rows = companyChannels.length === 0
+    ? `<div style="text-align:center;color:var(--text-placeholder);padding:16px 0;font-size:13px;">暂无资金渠道，点击「+ 新增渠道」添加</div>`
+    : `<table class="channel-sub-table">
+        <thead><tr>
+          <th>渠道名称</th><th>放款比例</th><th>车辆评估方式</th><th>评估平台</th><th>创建时间</th><th>操作</th>
+        </tr></thead>
+        <tbody>${companyChannels.map(ch => `
+          <tr>
+            <td style="text-align:left;">${escapeHtml(ch.channelName)}</td>
+            <td>${ch.loanRatio}%</td>
+            <td>${ch.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
+            <td>${ch.evalType === 'auto' ? ch.platforms.join('、') : '—'}</td>
+            <td>${ch.createdAt}</td>
+            <td>
+              <div style="display:flex;gap:6px;justify-content:center;">
+                <button class="btn btn-small btn-primary-plain" onclick="openEdit(${ch.id})">编辑</button>
+                <button class="btn btn-small btn-danger-plain" onclick="openChannelDelete(${ch.id})">删除</button>
+                <button class="btn btn-small btn-primary-plain" onclick="openLog(${ch.id})">日志</button>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+
+  return `<div class="channel-sub-section">
+    <div class="channel-sub-header">
+      <span class="channel-sub-title">资金渠道（共 ${companyChannels.length} 个）</span>
+      <button class="btn btn-primary btn-small" onclick="openDrawer(null,${company.id})">+ 新增渠道</button>
+    </div>
+    ${rows}
+  </div>`;
+}
+
 function renderCompanyTable(){
   const tbody = document.getElementById('companyTableBody');
   let list = companies.filter(c => {
@@ -1718,6 +1681,7 @@ function renderCompanyTable(){
 
   tbody.innerHTML = list.map(c => `
     <tr>
+      <td><span class="expand-btn" id="expandBtn-${c.id}" onclick="toggleExpand(${c.id})">▶</span></td>
       <td>${escapeHtml(c.market)}</td>
       <td>${escapeHtml(c.name)}</td>
       <td>${escapeHtml(c.owner)}</td>
@@ -1738,7 +1702,25 @@ function renderCompanyTable(){
         </div>
       </td>
     </tr>
+    <tr id="expandRow-${c.id}" style="display:none;">
+      <td colspan="9" style="padding:0;border-top:none;">${renderChannelSubHtml(c)}</td>
+    </tr>
   `).join('');
+}
+
+function toggleExpand(id){
+  const row = document.getElementById('expandRow-' + id);
+  const btn = document.getElementById('expandBtn-' + id);
+  const isOpen = row.style.display !== 'none';
+  if(isOpen){
+    row.style.display = 'none';
+    btn.textContent = '▶';
+    btn.classList.remove('expanded');
+  } else {
+    row.style.display = '';
+    btn.textContent = '▼';
+    btn.classList.add('expanded');
+  }
 }
 
 // ===================== 金融公司模块：筛选 =====================
@@ -1918,7 +1900,7 @@ document.getElementById('companySaveBtn').addEventListener('click', () => {
   renderCompanyTable();
 });
 
-// ===================== 金融公司详情弹窗 =====================
+// ===================== 金融公司详情（右侧抽屉） =====================
 function openCompanyDetail(id){
   const c = companies.find(x => x.id === id);
   document.getElementById('detMarket').textContent = c.market;
@@ -1930,6 +1912,33 @@ function openCompanyDetail(id){
   document.getElementById('detIdNumber').textContent = c.idNumber || '—';
   document.getElementById('detRemark').textContent = c.remark || '—';
   document.getElementById('detImageArea').textContent = c.image ? '' : '暂无图片';
+
+  // 渲染只读资金渠道列表
+  const companyChannels = channels.filter(ch => ch.company === c.name && ch.market === c.market);
+  const detArea = document.getElementById('detChannelArea');
+  if(companyChannels.length === 0){
+    detArea.innerHTML = '<div style="color:var(--text-placeholder);font-size:13px;padding:12px 0;">暂无资金渠道</div>';
+  } else {
+    detArea.innerHTML = `<table class="detail-channel-table">
+      <thead><tr>
+        <th style="text-align:left;">渠道名称</th>
+        <th>放款比例</th>
+        <th>车辆评估方式</th>
+        <th>评估平台</th>
+        <th>创建时间</th>
+      </tr></thead>
+      <tbody>${companyChannels.map(ch => `
+        <tr>
+          <td style="text-align:left;">${escapeHtml(ch.channelName)}</td>
+          <td>${ch.loanRatio}%</td>
+          <td>${ch.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
+          <td>${ch.evalType === 'auto' ? ch.platforms.join('、') : '—'}</td>
+          <td>${ch.createdAt}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+  }
+
   document.getElementById('companyDetailDialog').classList.add('show');
   showOverlay();
 }
@@ -1944,79 +1953,6 @@ function openCompanyDelete(id){
   showOverlay();
 }
 
-// ===================== 资金渠道模块：表格渲染 =====================
-function renderTable(){
-  const tbody = document.getElementById('tableBody');
-  const empty = document.getElementById('emptyState');
-  let list = channels.filter(c => {
-    if (channelFilter.market && c.market !== channelFilter.market) return false;
-    if (channelFilter.company && c.company !== channelFilter.company) return false;
-    if (channelFilter.channelName && !c.channelName.includes(channelFilter.channelName)) return false;
-    if (channelFilter.evalType && c.evalType !== channelFilter.evalType) return false;
-    return true;
-  });
-
-  document.getElementById('pgTotal').textContent = list.length;
-
-  if (list.length === 0){
-    tbody.innerHTML = '';
-    document.querySelector('#channelModule table.data-table').style.display = 'none';
-    empty.style.display = 'flex';
-    return;
-  }
-  document.querySelector('#channelModule table.data-table').style.display = '';
-  empty.style.display = 'none';
-
-  tbody.innerHTML = list.map(c => `
-    <tr>
-      <td>${escapeHtml(c.market)}</td>
-      <td>${escapeHtml(c.company)}</td>
-      <td>${escapeHtml(c.channelName)}</td>
-      <td>${c.loanRatio}%</td>
-      <td>${c.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
-      <td class="col-platform">${c.evalType === 'auto' ? c.platforms.join('、') : '—'}</td>
-      <td>${c.createdAt}</td>
-      <td>
-        <div class="op-btns">
-          <button class="btn btn-small btn-primary-plain" onclick="openEdit(${c.id})">编辑</button>
-          <button class="btn btn-small btn-danger-plain" onclick="openChannelDelete(${c.id})">删除</button>
-          <button class="btn btn-small btn-primary-plain" onclick="openLog(${c.id})">操作日志</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-}
-
-// ===================== 资金渠道模块：筛选 =====================
-document.getElementById('btnSearch').addEventListener('click', () => {
-  channelFilter.channelName = document.getElementById('filterChannelName').value.trim();
-  renderTable();
-});
-document.getElementById('btnReset').addEventListener('click', () => {
-  channelFilter = { market:'', company:'', channelName:'', evalType:'' };
-  document.getElementById('filterChannelName').value = '';
-  setSelectValue('filterMarketSelect', '', '请选择市场');
-  document.querySelector('#filterMarketSelect .sel-display').classList.add('placeholder');
-  setSelectValue('filterCompanySelect', '', '全部');
-  setSelectValue('filterEvalTypeSelect', '', '全部');
-  renderTable();
-});
-
-setupSingleSelect('filterMarketSelect', (value) => {
-  channelFilter.market = value;
-});
-setupSingleSelect('filterCompanySelect', (value) => {
-  channelFilter.company = value;
-  renderTable();
-}, true);
-setupSingleSelect('filterEvalTypeSelect', (value) => {
-  channelFilter.evalType = value;
-  renderTable();
-}, true);
-
-document.getElementById('pgSizeSelect').addEventListener('change', () => {
-  renderTable();
-});
 
 // ===================== 多选下拉（评估平台）=====================
 const platformSelect = document.getElementById('fPlatformSelect');
@@ -2094,25 +2030,28 @@ setupSingleSelect('fCompanySelect', (value) => {
 });
 
 const drawer = document.getElementById('drawer');
-document.getElementById('btnAdd').addEventListener('click', () => openDrawer(null));
 
-function openDrawer(channel){
+function openDrawer(channel, companyId){
   editingId = channel ? channel.id : null;
   document.getElementById('drawerTitle').textContent = channel ? '编辑资金渠道' : '新增资金渠道';
 
   const isEdit = !!channel;
   const locked = isEdit && channel.hasOrders; // 有质押订单时放款比例/评估方式不可改
 
-  // ---- 所属市场（编辑时只读）----
+  // ---- 所属市场（编辑时只读；从公司行新增时预填）----
   if (channel){
     setSelectValue('fMarketSelect', channel.market, channel.market);
+    document.querySelector('#fMarketSelect .sel-display').classList.remove('placeholder');
+  } else if (companyId){
+    const co = companies.find(c => c.id === companyId);
+    setSelectValue('fMarketSelect', co.market, co.market);
     document.querySelector('#fMarketSelect .sel-display').classList.remove('placeholder');
   } else {
     setSelectValue('fMarketSelect', '', '请选择市场');
     document.querySelector('#fMarketSelect .sel-display').classList.add('placeholder');
   }
   document.getElementById('errFMarket').style.display = 'none';
-  document.getElementById('fMarketSelect').classList.toggle('disabled', isEdit);
+  document.getElementById('fMarketSelect').classList.toggle('disabled', isEdit || !!companyId);
 
   // ---- 渠道名称（编辑时只读）----
   const nameInput = document.getElementById('fChannelName');
@@ -2122,16 +2061,20 @@ function openDrawer(channel){
   nameInput.classList.remove('is-error');
   nameInput.disabled = isEdit;
 
-  // ---- 所属金融公司（编辑时只读）----
+  // ---- 所属金融公司（编辑时只读；从公司行新增时预填）----
   if (channel){
     setSelectValue('fCompanySelect', channel.company, channel.company);
+    document.querySelector('#fCompanySelect .sel-display').classList.remove('placeholder');
+  } else if (companyId){
+    const co = companies.find(c => c.id === companyId);
+    setSelectValue('fCompanySelect', co.name, co.name);
     document.querySelector('#fCompanySelect .sel-display').classList.remove('placeholder');
   } else {
     setSelectValue('fCompanySelect', '', '请选择金融公司');
     document.querySelector('#fCompanySelect .sel-display').classList.add('placeholder');
   }
   document.getElementById('errCompany').style.display = 'none';
-  document.getElementById('fCompanySelect').classList.toggle('disabled', isEdit);
+  document.getElementById('fCompanySelect').classList.toggle('disabled', isEdit || !!companyId);
 
   // ---- 放款比例（有订单时只读）----
   const ratioInput = document.getElementById('fLoanRatio');
@@ -2326,7 +2269,7 @@ document.getElementById('drawerSave').addEventListener('click', () => {
   }
 
   closeDrawer();
-  renderTable();
+  renderCompanyTable();
 });
 
 // ===================== 编辑/删除/日志 入口 =====================
@@ -2368,7 +2311,7 @@ document.getElementById('confirmChannelDeleteBtn').addEventListener('click', () 
   document.getElementById('channelDeleteDialog').classList.remove('show');
   channels = channels.filter(c => c.id !== pendingDelete.id);
   hideOverlayIfNoneOpen();
-  renderTable();
+  renderCompanyTable();
   showMsg('删除成功');
 });
 
@@ -2391,7 +2334,6 @@ function openLog(id){
 
 // ===================== 初始化 =====================
 renderCompanyTable();
-renderTable();
 
 // ===================== 页面切换 =====================
 function showPage(pageId, navId) {

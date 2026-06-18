@@ -568,66 +568,6 @@
   }
   .right-drawer.show{display:flex;}
 
-  /* ===================== 金融公司展开行 ===================== */
-  .company-row{cursor:pointer;}
-  .company-row.expanded > td{background:#f0f5ff;border-bottom:none;}
-  .company-row.expanded > td:first-child{box-shadow:inset 3px 0 0 var(--primary);}
-  .company-row:hover > td{background:#f5f7fa;}
-  .company-row.expanded:hover > td{background:#e8f0ff;}
-
-  /* 展开行容器 */
-  .channel-expand-row > td{
-    padding:0 16px 16px 16px;
-    background:#f0f5ff;
-    border-top:none;
-  }
-
-  /* 渠道卡片 */
-  .channel-card{
-    background:#fff;
-    border:1px solid #c6d9f8;
-    border-radius:6px;
-    overflow:hidden;
-    box-shadow:0 2px 8px rgba(64,158,255,.10);
-  }
-  .channel-card-head{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:10px 16px;
-    background:linear-gradient(to right, #e8f1ff, #f0f5ff);
-    border-bottom:1px solid #c6d9f8;
-  }
-  .channel-card-title{
-    font-size:13px;font-weight:600;color:#2d6abf;
-    display:flex;align-items:center;gap:6px;
-  }
-  .channel-card-count{
-    font-size:12px;color:var(--text-secondary);
-    background:#fff;border:1px solid #c6d9f8;
-    border-radius:10px;padding:1px 8px;
-  }
-  .channel-card-body{padding:12px 16px;}
-
-  /* 渠道卡片内表格 */
-  .channel-card-table{
-    width:100%;border-collapse:collapse;font-size:13px;
-  }
-  .channel-card-table th{
-    background:#f5f8ff;color:var(--text-secondary);
-    padding:8px 10px;border-bottom:1px solid #dde8f8;
-    font-weight:500;text-align:center;white-space:nowrap;font-size:12px;
-  }
-  .channel-card-table td{
-    padding:10px 10px;border-bottom:1px solid var(--border-lighter);
-    text-align:center;color:var(--text-primary);font-size:13px;
-  }
-  .channel-card-table tbody tr:last-child td{border-bottom:none;}
-  .channel-card-table tbody tr:hover td{background:#f5f8ff;}
-
-  /* 渠道空态 */
-  .channel-card-empty{
-    text-align:center;padding:24px 0;
-    color:var(--text-placeholder);font-size:13px;
-  }
 
   /* 详情抽屉中的只读渠道表格 */
   .detail-channel-table{
@@ -1094,6 +1034,95 @@
             <span class="pg-jumper">前往 <input type="text" value="1"> 页</span>
           </div>
         </div><!-- end companyModule -->
+
+        <!-- ===================== 资金渠道模块 ===================== -->
+        <div class="module" id="channelModule">
+          <div class="section-title">资金渠道</div>
+          <div class="action-bar">
+            <button class="btn btn-primary" id="btnAdd">+ 新增渠道</button>
+          </div>
+          <div class="search-filter-container">
+            <div class="filter-row">
+              <div class="filter-item">
+                <span class="filter-label">市场名称</span>
+                <div class="custom-select" id="filterMarketSelect" style="width:200px;">
+                  <div class="sel-display placeholder" data-value=""><span class="sel-text">请选择市场</span><span class="sel-arrow">▾</span></div>
+                  <div class="select-panel">
+                    <div class="select-option selected" data-value="">全部</div>
+                    <div class="select-option" data-value="泸州汽车交易市场">泸州汽车交易市场</div>
+                    <div class="select-option" data-value="银地汽车出口">银地汽车出口</div>
+                    <div class="select-option" data-value="文昌利星二手车市场">文昌利星二手车市场</div>
+                    <div class="select-option" data-value="中国(广州琶洲)汽车出口基地">中国(广州琶洲)汽车出口基地</div>
+                    <div class="select-option" data-value="广东中山鸿源二手车市场">广东中山鸿源二手车市场</div>
+                    <div class="select-option" data-value="上海车王二手车市场">上海车王二手车市场</div>
+                    <div class="select-option" data-value="陕西车坛二弟汽车销售有限公司">陕西车坛二弟汽车销售有限公司</div>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-item">
+                <span class="filter-label">金融公司</span>
+                <div class="custom-select" id="filterCompanySelect" style="width:200px;">
+                  <div class="sel-display" data-value=""><span class="sel-text">全部</span><span class="sel-arrow">▾</span></div>
+                  <div class="select-panel">
+                    <div class="select-option selected" data-value="">全部</div>
+                    <div class="select-option" data-value="泸州银行">泸州银行</div>
+                    <div class="select-option" data-value="工商银行">工商银行</div>
+                    <div class="select-option" data-value="招商银行">招商银行</div>
+                    <div class="select-option" data-value="平安银行">平安银行</div>
+                    <div class="select-option" data-value="建设银行">建设银行</div>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-item">
+                <span class="filter-label">渠道名称</span>
+                <input type="text" class="ipt" id="filterChannelName" placeholder="请输入渠道名称" style="width:200px;">
+              </div>
+              <div class="filter-item">
+                <span class="filter-label" style="white-space:nowrap;">车辆评估方式</span>
+                <div class="custom-select" id="filterEvalTypeSelect" style="width:160px;">
+                  <div class="sel-display" data-value=""><span class="sel-text">全部</span><span class="sel-arrow">▾</span></div>
+                  <div class="select-panel">
+                    <div class="select-option selected" data-value="">全部</div>
+                    <div class="select-option" data-value="auto">自动评估</div>
+                    <div class="select-option" data-value="manual">人工评估</div>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-actions">
+                <button class="btn btn-primary btn-large" id="btnSearch">查询</button>
+                <button class="btn btn-large" id="btnReset">重置</button>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="channelTable">
+              <colgroup>
+                <col style="width:140px;"><col style="width:160px;"><col style="width:180px;">
+                <col style="width:100px;"><col style="width:120px;"><col style="width:160px;">
+                <col style="width:170px;"><col style="width:200px;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>所属市场</th><th>金融公司名称</th><th>渠道名称</th>
+                  <th>放款比例</th><th>车辆评估方式</th><th>评估平台</th>
+                  <th>创建时间</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+            <div class="empty-state" id="emptyState" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 0;color:#909399;font-size:14px;">
+              <div style="width:80px;height:80px;border-radius:50%;background:#F5F7FA;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:36px;color:#C0C4CC;">📭</div>
+              <div>暂无资金渠道</div>
+              <div style="font-size:12px;color:#C0C4CC;margin-top:4px;">点击「+ 新增渠道」开始配置</div>
+            </div>
+          </div>
+          <div class="pagination-container">
+            <span class="pg-total">共 <b id="pgTotal">5</b> 条</span>
+            <span class="pg-sizes"><select id="pgSizeSelect"><option value="10">10条/页</option><option value="20">20条/页</option></select></span>
+            <span class="pg-btn disabled">‹</span><span class="pg-btn active">1</span><span class="pg-btn disabled">›</span>
+            <span class="pg-jumper">前往 <input type="text" value="1"> 页</span>
+          </div>
+        </div><!-- end channelModule -->
 
       </div>
       </div><!-- end pageFinancialInit -->
@@ -1660,50 +1689,6 @@ function toggleMoreOp(btn, e){
 }
 
 // ===================== 金融公司模块：表格渲染 =====================
-let expandedCompanyId = null;
-
-function channelCardHtml(company){
-  const list = channels.filter(ch => ch.company === company.name && ch.market === company.market);
-  const rows = list.length === 0
-    ? `<div class="channel-card-empty">暂无资金渠道，点击右上角「+ 新增渠道」添加</div>`
-    : `<table class="channel-card-table">
-        <thead><tr>
-          <th style="text-align:left;width:220px;">渠道名称</th>
-          <th>放款比例</th>
-          <th>车辆评估方式</th>
-          <th>评估平台</th>
-          <th>创建时间</th>
-          <th>操作</th>
-        </tr></thead>
-        <tbody>${list.map(ch => `
-          <tr>
-            <td style="text-align:left;">${escapeHtml(ch.channelName)}</td>
-            <td>${ch.loanRatio}%</td>
-            <td>${ch.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
-            <td>${ch.evalType === 'auto' ? ch.platforms.join('、') : '—'}</td>
-            <td>${ch.createdAt}</td>
-            <td>
-              <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-                <button class="btn btn-small btn-primary-plain" onclick="openEdit(${ch.id})">编辑</button>
-                <button class="btn btn-small btn-danger-plain" onclick="openChannelDelete(${ch.id})">删除</button>
-                <button class="btn btn-small btn-primary-plain" onclick="openLog(${ch.id})">日志</button>
-              </div>
-            </td>
-          </tr>`).join('')}
-        </tbody>
-      </table>`;
-
-  return `<div class="channel-card">
-    <div class="channel-card-head">
-      <div class="channel-card-title">
-        资金渠道
-        <span class="channel-card-count">${list.length} 个</span>
-      </div>
-    </div>
-    <div class="channel-card-body">${rows}</div>
-  </div>`;
-}
-
 function renderCompanyTable(){
   const tbody = document.getElementById('companyTableBody');
   let list = companies.filter(c => {
@@ -1716,10 +1701,8 @@ function renderCompanyTable(){
 
   document.getElementById('cPgTotal').textContent = list.length;
 
-  tbody.innerHTML = list.map(c => {
-    const isExpanded = expandedCompanyId === c.id;
-    return `
-    <tr class="company-row${isExpanded ? ' expanded' : ''}" onclick="toggleExpand(${c.id})">
+  tbody.innerHTML = list.map(c => `
+    <tr>
       <td>${escapeHtml(c.market)}</td>
       <td>${escapeHtml(c.name)}</td>
       <td>${escapeHtml(c.owner)}</td>
@@ -1727,12 +1710,11 @@ function renderCompanyTable(){
       <td>${c.idNumber ? escapeHtml(c.idNumber) : '—'}</td>
       <td title="${escapeHtml(c.remark)}">${c.remark ? escapeHtml(c.remark) : '—'}</td>
       <td>${c.createdAt}</td>
-      <td onclick="event.stopPropagation()">
+      <td>
         <div class="market-op-btns">
           <button class="btn btn-small btn-primary" onclick="openCompanyDetail(${c.id})">查看</button>
-          <button class="btn btn-small btn-primary-plain" onclick="expandedCompanyId=${c.id};renderCompanyTable();openDrawer(null,${c.id})">新增渠道</button>
           <div class="more-op">
-            <button class="more-op-btn" onclick="toggleMoreOp(this, event)">更多 <span style="font-size:10px;">▾</span></button>
+            <button class="more-op-btn" onclick="toggleMoreOp(this, event)">更多操作 <span style="font-size:10px;">▾</span></button>
             <div class="more-op-panel">
               <div class="more-op-item" onclick="openCompanyEdit(${c.id})">编辑</div>
               <div class="more-op-item danger" onclick="openCompanyDelete(${c.id})">删除</div>
@@ -1741,16 +1723,7 @@ function renderCompanyTable(){
         </div>
       </td>
     </tr>
-    ${isExpanded ? `
-    <tr class="channel-expand-row">
-      <td colspan="8">${channelCardHtml(c)}</td>
-    </tr>` : ''}
-  `;}).join('');
-}
-
-function toggleExpand(id){
-  expandedCompanyId = (expandedCompanyId === id) ? null : id;
-  renderCompanyTable();
+  `).join('');
 }
 
 // ===================== 金融公司模块：筛选 =====================
@@ -2300,6 +2273,7 @@ document.getElementById('drawerSave').addEventListener('click', () => {
 
   closeDrawer();
   renderCompanyTable();
+  renderTable();
 });
 
 // ===================== 编辑/删除/日志 入口 =====================
@@ -2341,7 +2315,7 @@ document.getElementById('confirmChannelDeleteBtn').addEventListener('click', () 
   document.getElementById('channelDeleteDialog').classList.remove('show');
   channels = channels.filter(c => c.id !== pendingDelete.id);
   hideOverlayIfNoneOpen();
-  renderCompanyTable();
+  renderTable();
   showMsg('删除成功');
 });
 
@@ -2362,8 +2336,72 @@ function openLog(id){
   showOverlay();
 }
 
+// ===================== 资金渠道模块：渲染 =====================
+let channelFilter = { market:'', company:'', channelName:'', evalType:'' };
+
+function renderTable(){
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  const table = document.getElementById('channelTable');
+  let list = channels.filter(c => {
+    if (channelFilter.market && c.market !== channelFilter.market) return false;
+    if (channelFilter.company && c.company !== channelFilter.company) return false;
+    if (channelFilter.channelName && !c.channelName.includes(channelFilter.channelName)) return false;
+    if (channelFilter.evalType && c.evalType !== channelFilter.evalType) return false;
+    return true;
+  });
+  document.getElementById('pgTotal').textContent = list.length;
+  if (list.length === 0){
+    tbody.innerHTML = '';
+    table.style.display = 'none';
+    empty.style.display = 'flex';
+    return;
+  }
+  table.style.display = '';
+  empty.style.display = 'none';
+  tbody.innerHTML = list.map(c => `
+    <tr>
+      <td>${escapeHtml(c.market)}</td>
+      <td>${escapeHtml(c.company)}</td>
+      <td>${escapeHtml(c.channelName)}</td>
+      <td>${c.loanRatio}%</td>
+      <td>${c.evalType === 'auto' ? '自动评估' : '人工评估'}</td>
+      <td class="col-platform">${c.evalType === 'auto' ? c.platforms.join('、') : '—'}</td>
+      <td>${c.createdAt}</td>
+      <td>
+        <div class="op-btns">
+          <button class="btn btn-small btn-primary-plain" onclick="openEdit(${c.id})">编辑</button>
+          <button class="btn btn-small btn-danger-plain" onclick="openChannelDelete(${c.id})">删除</button>
+          <button class="btn btn-small btn-primary-plain" onclick="openLog(${c.id})">操作日志</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// 筛选
+document.getElementById('btnSearch').addEventListener('click', () => {
+  channelFilter.channelName = document.getElementById('filterChannelName').value.trim();
+  renderTable();
+});
+document.getElementById('btnReset').addEventListener('click', () => {
+  channelFilter = { market:'', company:'', channelName:'', evalType:'' };
+  document.getElementById('filterChannelName').value = '';
+  setSelectValue('filterMarketSelect', '', '请选择市场');
+  document.querySelector('#filterMarketSelect .sel-display').classList.add('placeholder');
+  setSelectValue('filterCompanySelect', '', '全部');
+  setSelectValue('filterEvalTypeSelect', '', '全部');
+  renderTable();
+});
+setupSingleSelect('filterMarketSelect', (value) => { channelFilter.market = value; });
+setupSingleSelect('filterCompanySelect', (value) => { channelFilter.company = value; renderTable(); }, true);
+setupSingleSelect('filterEvalTypeSelect', (value) => { channelFilter.evalType = value; renderTable(); }, true);
+
+document.getElementById('btnAdd').addEventListener('click', () => openDrawer(null));
+
 // ===================== 初始化 =====================
 renderCompanyTable();
+renderTable();
 
 // ===================== 页面切换 =====================
 function showPage(pageId, navId) {

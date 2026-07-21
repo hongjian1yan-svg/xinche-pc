@@ -72,6 +72,7 @@
             v-if="currentMenu === 'vehicleList'"
             :current-role="currentRole"
             :current-user-market="currentUserMarket"
+            :freeze-reason-configs="freezeSettingsData"
           />
           <div v-if="currentMenu === 'list'" class="content-body">
 
@@ -139,10 +140,10 @@
                   <el-select
                     v-model="filters.source"
                     placeholder="全部"
-                    clearable
                     size="large"
                     @change="handleSourceChange"
                   >
+                    <el-option label="全部" value="" />
                     <el-option label="手动冻结" value="manual" />
                     <el-option label="金融质押冻结" value="finance_pledge" />
                     <el-option label="合同到期冻结" value="contract" />
@@ -300,55 +301,78 @@
           <div v-if="currentMenu === 'settings'" class="content-body">
             <div class="settings-toolbar">
               <el-tabs v-model="settingsActiveTab">
+                <el-tab-pane label="冻结原因" name="freezeReasonSettings" />
                 <el-tab-pane label="解冻原因" name="reasonSettings" />
               </el-tabs>
             </div>
-            <div class="search-filter-container settings-filter-container" style="margin-top: 0;">
-              <el-button type="primary" :icon="Plus" @click="handleAddReason" class="settings-add-btn">添加解冻原因</el-button>
-              <el-form inline class="search-form">
-                <el-form-item label="市场名称">
-                  <el-input placeholder="请输入市场名称" clearable size="large" />
-                </el-form-item>
-                <el-form-item label="创建时间">
-                  <el-date-picker
-                    type="daterange"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    size="large"
-                    style="width: 340px"
-                  />
-                </el-form-item>
-                <el-form-item class="search-actions settings-search-actions">
-                  <el-button type="primary" size="large" :icon="Search">查询</el-button>
-                  <el-button size="large" :icon="Refresh">重置</el-button>
-                </el-form-item>
-              </el-form>
-            </div>
-            <div class="view-container">
-              <el-table
-                :data="settingsData"
-                border
-                class="business-table"
-                style="width: 100%"
-                :header-cell-style="{ background: '#F5F7FA', color: '#909399', fontWeight: 'bold', textAlign: 'center' }"
-              >
-                <el-table-column prop="market" label="市场名称" align="center" min-width="160" />
-                <el-table-column prop="reason" label="解冻原因" align="center" min-width="140" />
-                <el-table-column label="解冻有效期" align="center" width="140">
-                  <template #default="scope">
-                    {{ formatConfigDuration(scope.row.validity) }}
-                  </template>
-                </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" align="center" width="200" />
-                <el-table-column label="操作" width="150" align="center" fixed="right">
-                  <template #default="scope">
-                    <el-button type="primary" link @click="handleEditReason(scope.row, scope.$index)">编辑</el-button>
-                    <el-button type="danger" link>删除</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
+            <!-- 冻结原因 tab -->
+            <template v-if="settingsActiveTab === 'freezeReasonSettings'">
+              <div class="search-filter-container settings-filter-container" style="margin-top: 0;">
+                <el-button type="primary" :icon="Plus" @click="handleAddFreezeReason" class="settings-add-btn">添加冻结原因</el-button>
+                <el-form inline class="search-form">
+                  <el-form-item label="市场名称">
+                    <el-input placeholder="请输入市场名称" clearable size="large" />
+                  </el-form-item>
+                  <el-form-item label="创建时间">
+                    <el-date-picker type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="large" style="width: 340px" />
+                  </el-form-item>
+                  <el-form-item class="search-actions settings-search-actions">
+                    <el-button type="primary" size="large" :icon="Search">查询</el-button>
+                    <el-button size="large" :icon="Refresh">重置</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
+              <div class="view-container">
+                <el-table :data="freezeSettingsData" border class="business-table" style="width: 100%"
+                  :header-cell-style="{ background: '#F5F7FA', color: '#909399', fontWeight: 'bold', textAlign: 'center' }">
+                  <el-table-column prop="market" label="市场名称" align="center" min-width="160" />
+                  <el-table-column prop="reason" label="冻结原因" align="center" min-width="140" />
+                  <el-table-column prop="createTime" label="创建时间" align="center" width="200" />
+                  <el-table-column label="操作" width="150" align="center" fixed="right">
+                    <template #default="scope">
+                      <el-button type="primary" link @click="handleEditFreezeReason(scope.row, scope.$index)">编辑</el-button>
+                      <el-button type="danger" link @click="handleDeleteFreezeReason(scope.$index)">删除</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </template>
+
+            <!-- 解冻原因 tab -->
+            <template v-if="settingsActiveTab === 'reasonSettings'">
+              <div class="search-filter-container settings-filter-container" style="margin-top: 0;">
+                <el-button type="primary" :icon="Plus" @click="handleAddReason" class="settings-add-btn">添加解冻原因</el-button>
+                <el-form inline class="search-form">
+                  <el-form-item label="市场名称">
+                    <el-input placeholder="请输入市场名称" clearable size="large" />
+                  </el-form-item>
+                  <el-form-item label="创建时间">
+                    <el-date-picker type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="large" style="width: 340px" />
+                  </el-form-item>
+                  <el-form-item class="search-actions settings-search-actions">
+                    <el-button type="primary" size="large" :icon="Search">查询</el-button>
+                    <el-button size="large" :icon="Refresh">重置</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
+              <div class="view-container">
+                <el-table :data="settingsData" border class="business-table" style="width: 100%"
+                  :header-cell-style="{ background: '#F5F7FA', color: '#909399', fontWeight: 'bold', textAlign: 'center' }">
+                  <el-table-column prop="market" label="市场名称" align="center" min-width="160" />
+                  <el-table-column prop="reason" label="解冻原因" align="center" min-width="140" />
+                  <el-table-column label="解冻有效期" align="center" width="140">
+                    <template #default="scope">{{ formatConfigDuration(scope.row.validity) }}</template>
+                  </el-table-column>
+                  <el-table-column prop="createTime" label="创建时间" align="center" width="200" />
+                  <el-table-column label="操作" width="150" align="center" fixed="right">
+                    <template #default="scope">
+                      <el-button type="primary" link @click="handleEditReason(scope.row, scope.$index)">编辑</el-button>
+                      <el-button type="danger" link @click="handleDeleteReason(scope.$index)">删除</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </template>
           </div>
 
           <!-- ===== 车辆冻结详情抽屉 ===== -->
@@ -387,6 +411,7 @@
                   <el-descriptions-item label="商户负责人">{{ currentDetail.merchantContact || '-' }}</el-descriptions-item>
                   <el-descriptions-item label="联系电话">{{ currentDetail.merchantPhone || '-' }}</el-descriptions-item>
                   <el-descriptions-item label="冻结时间">{{ currentDetail.freezeTime }}</el-descriptions-item>
+                  <el-descriptions-item v-if="currentDetail.source === 'manual'" label="冻结原因">{{ currentDetail.freezeReason || '-' }}</el-descriptions-item>
                   <el-descriptions-item v-if="currentDetail.source === 'manual' && currentDetail.unfreezeApplyTime" label="申请解冻原因">{{ currentDetail.unfreezeReason || '-' }}</el-descriptions-item>
                   <el-descriptions-item v-if="currentDetail.source === 'manual' && currentDetail.unfreezeApplyTime" label="申请解冻时间">{{ currentDetail.unfreezeApplyTime || '-' }}</el-descriptions-item>
                   <el-descriptions-item v-if="currentDetail.unfreezeTime" label="解冻时间">{{ currentDetail.unfreezeTime }}</el-descriptions-item>
@@ -630,6 +655,29 @@
             </template>
           </el-dialog>
 
+          <!-- ===== 添加/编辑冻结原因对话框 ===== -->
+          <el-dialog
+            v-model="addFreezeReasonDialogVisible"
+            :title="isFreezeEdit ? '编辑冻结原因' : '添加冻结原因'"
+            width="480px"
+            align-center
+          >
+            <el-form :model="freezeReasonForm" label-width="90px">
+              <el-form-item label="市场名称" required>
+                <el-select v-model="freezeReasonForm.market" placeholder="请选择市场" style="width: 100%" :disabled="isFreezeEdit">
+                  <el-option v-for="item in marketOptions" :key="item" :label="item" :value="item" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="冻结原因" required>
+                <el-input v-model="freezeReasonForm.reason" placeholder="请输入冻结原因" />
+              </el-form-item>
+            </el-form>
+            <template #footer>
+              <el-button @click="addFreezeReasonDialogVisible = false">取消</el-button>
+              <el-button type="primary" @click="submitAddFreezeReason">确定</el-button>
+            </template>
+          </el-dialog>
+
         </el-main>
       </el-container>
     </el-container>
@@ -638,7 +686,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import VehicleList from './VehicleList.vue'
 import {
@@ -805,6 +853,7 @@ const tableData = ref([
     market: '上海信车二手车市场', vin: 'LSVCC2B46MN123456', rfid: '123456',
     source: 'manual', status: 'frozen',
     freezeTime: '2026-05-10 09:30:00',
+    freezeReason: '拖欠市场管理费',
     photos: [],
     freezeHistory: [
       { time: '2026-05-10 09:30:00', action: '手动冻结', operator: '张管理员' }
@@ -818,6 +867,7 @@ const tableData = ref([
     market: '北京顺义二手车市场', vin: 'LHGCR2F59MA000001', rfid: '234567',
     source: 'manual', status: 'pending',
     freezeTime: '2026-05-08 14:20:00',
+    freezeReason: '合同纠纷',
     unfreezeReason: '临时提车出售',
     unfreezeApplyTime: '2026-05-12 10:30:00',
     photos: ['https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=200&h=150&fit=crop'],
@@ -834,6 +884,7 @@ const tableData = ref([
     market: '广州南方二手车城', vin: 'JTDBE30K253049671', rfid: '345678',
     source: 'manual', status: 'approved',
     freezeTime: '2026-04-25 10:00:00',
+    freezeReason: '违规停放车辆',
     unfreezeReason: '已结清欠款',
     unfreezeApplyTime: '2026-05-11 09:00:00',
     unfreezeTime: '2026-05-11 14:30:00',
@@ -852,6 +903,7 @@ const tableData = ref([
     market: '郑州智慧车市', vin: 'WBA5X9C56JG123456', rfid: '456789',
     source: 'manual', status: 'rejected',
     freezeTime: '2026-05-01 11:00:00',
+    freezeReason: '违规操作',
     unfreezeReason: '急需资金周转',
     unfreezeApplyTime: '2026-05-10 15:00:00',
     photos: [],
@@ -869,6 +921,7 @@ const tableData = ref([
     market: '上海信车二手车市场', vin: 'WDD2050041A123456', rfid: '567890',
     source: 'manual', status: 'released',
     freezeTime: '2026-04-01 09:00:00',
+    freezeReason: '拖欠市场管理费',
     unfreezeReason: '合规整改完成',
     unfreezeApplyTime: '2026-05-05 09:30:00',
     unfreezeTime: '2026-05-05 14:00:00',
@@ -1056,6 +1109,7 @@ const tableData = ref([
     market: '郑州智慧车市', vin: 'WBANE51060CX12345', rfid: '140123',
     source: 'manual', status: 'frozen',
     freezeTime: '2026-05-12 16:00:00',
+    freezeReason: '违规操作',
     photos: [],
     freezeHistory: [
       { time: '2026-05-12 16:00:00', action: '手动冻结', operator: '周管理员' }
@@ -1266,7 +1320,8 @@ const handleExport = () => {
     { label: '车辆RFID', key: 'rfid' },
     { label: '车牌号', key: 'plate' },
     { label: '冻结来源', key: 'source', format: v => SOURCE_MAP[v] || v },
-    { label: '冻结时间', key: 'freezeTime' }
+    { label: '冻结时间', key: 'freezeTime' },
+    { label: '冻结原因', key: 'freezeReason', format: (v, row) => row.source === 'manual' ? (v || '-') : '-' }
   ]
   const releasedColumns = [
     { label: '申请解冻原因', key: 'unfreezeReason', format: (v, row) => row.source === 'manual' ? (v || '-') : '-' },
@@ -1309,7 +1364,15 @@ const handleCurrentChange = (val) => {
 const currentMenu = ref('list')
 
 // ==================== 冻结车设置 ====================
-const settingsActiveTab = ref('reasonSettings')
+const settingsActiveTab = ref('freezeReasonSettings')
+const freezeSettingsData = ref([
+  { market: '上海信车二手车市场', reason: '拖欠市场管理费', createTime: '2026-01-05 09:00:00' },
+  { market: '上海信车二手车市场', reason: '违规停放车辆', createTime: '2026-01-05 09:30:00' },
+  { market: '上海信车二手车市场', reason: '涉嫌欺诈', createTime: '2026-01-06 10:00:00' },
+  { market: '北京顺义二手车市场', reason: '合同纠纷', createTime: '2026-01-06 14:00:00' },
+  { market: '郑州智慧车市', reason: '违规操作', createTime: '2026-01-07 11:00:00' },
+])
+
 const settingsData = ref([
   { market: '上海信车二手车市场', reason: '临时提车出售', validity: 168, createTime: '2026-01-10 10:00:00' },
   { market: '北京顺义二手车市场', reason: '已结清欠款', validity: 0, createTime: '2026-01-10 11:30:00' },
@@ -1357,6 +1420,70 @@ watch([() => addReasonForm.value.days, () => addReasonForm.value.hours], ([d, h]
     addReasonForm.value.validityType = '关闭'
   }
 })
+
+// ==================== 冻结原因配置 ====================
+const addFreezeReasonDialogVisible = ref(false)
+const isFreezeEdit = ref(false)
+const freezeEditIndex = ref(-1)
+const freezeReasonForm = ref({ market: '', reason: '' })
+
+const handleAddFreezeReason = () => {
+  isFreezeEdit.value = false
+  freezeReasonForm.value = { market: '', reason: '' }
+  addFreezeReasonDialogVisible.value = true
+}
+
+const handleEditFreezeReason = (row, index) => {
+  isFreezeEdit.value = true
+  freezeEditIndex.value = index
+  freezeReasonForm.value = { market: row.market, reason: row.reason }
+  addFreezeReasonDialogVisible.value = true
+}
+
+const submitAddFreezeReason = () => {
+  if (!freezeReasonForm.value.market || !freezeReasonForm.value.reason) {
+    return ElMessage.warning('请填写市场名称和冻结原因')
+  }
+  if (isFreezeEdit.value) {
+    freezeSettingsData.value[freezeEditIndex.value] = {
+      ...freezeSettingsData.value[freezeEditIndex.value],
+      reason: freezeReasonForm.value.reason,
+    }
+    ElMessage.success('配置更新成功')
+  } else {
+    freezeSettingsData.value.unshift({
+      market: freezeReasonForm.value.market,
+      reason: freezeReasonForm.value.reason,
+      createTime: new Date().toLocaleString('zh-CN').replace(/\//g, '-'),
+    })
+    ElMessage.success('配置添加成功')
+  }
+  addFreezeReasonDialogVisible.value = false
+}
+
+const handleDeleteFreezeReason = (index) => {
+  ElMessageBox.confirm('确定删除该冻结原因吗？删除后不可恢复。', '删除确认', {
+    confirmButtonText: '确定删除',
+    cancelButtonText: '取消',
+    type: 'warning',
+    confirmButtonClass: 'el-button--danger',
+  }).then(() => {
+    freezeSettingsData.value.splice(index, 1)
+    ElMessage.success('已删除')
+  }).catch(() => {})
+}
+
+const handleDeleteReason = (index) => {
+  ElMessageBox.confirm('确定删除该解冻原因吗？删除后不可恢复。', '删除确认', {
+    confirmButtonText: '确定删除',
+    cancelButtonText: '取消',
+    type: 'warning',
+    confirmButtonClass: 'el-button--danger',
+  }).then(() => {
+    settingsData.value.splice(index, 1)
+    ElMessage.success('已删除')
+  }).catch(() => {})
+}
 
 const cancelAddReason = () => { addReasonDialogVisible.value = false }
 

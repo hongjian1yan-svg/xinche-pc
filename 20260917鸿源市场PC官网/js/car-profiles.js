@@ -1,0 +1,72 @@
+// #AI:design:file
+/* 车辆档案演示数据：按 js/cars.js 中的车型 ID 维护，每个车型独立显示配置。 */
+(function (global) {
+  function makeProfile(s) {
+    var turbo = /T|涡轮/.test(s.displacement || "") || /增压/.test(s.engine || "");
+    var electric = s.energy === "纯电";
+    var hybrid = /混动/.test(s.energy || "");
+    return [
+      {
+        title: "基本参数",
+        rows: [
+          ["厂商", s.manufacturer], ["级别", s.level], ["发动机", s.engine],
+          ["变速箱", s.transmission], ["车身结构", s.structure], ["长/宽/高(mm)", s.dimensions],
+          ["最大扭矩(N·m)", s.torque], ["最大功率(kW)", s.power], ["能源类型", s.energy]
+        ]
+      },
+      {
+        title: "发动机参数",
+        rows: [
+          ["排量(L)", s.displacement], ["进气形式", electric ? "—" : (turbo ? "涡轮增压" : "自然吸气")],
+          ["气缸数（个）", electric ? "—" : s.cylinders], ["缸径(mm)", "—"],
+          ["最大马力(Ps)", s.horsepower], ["燃料类型", s.fuel],
+          ["燃油标号", electric ? "—" : (hybrid ? "92号" : s.fuelGrade)],
+          ["供油方式", electric ? "—" : (s.supply || (turbo ? "直喷" : "多点电喷"))], ["排放标准", s.emission]
+        ]
+      },
+      {
+        title: "底盘及制动",
+        rows: [
+          ["驱动方式", s.drive], ["助力类型", electric ? "电动助力" : "电动助力"],
+          ["前悬挂类型", s.frontSuspension], ["后悬挂类型", s.rearSuspension],
+          ["前制动类型", s.frontBrake], ["后制动类型", s.rearBrake],
+          ["前轮胎规格", s.frontTire], ["后轮胎规格", s.rearTire]
+        ]
+      }
+    ];
+  }
+
+  var specs = {
+    1: { manufacturer:"一汽-大众", level:"中型车", engine:"2.0T 190马力 L4", transmission:"7挡湿式双离合", structure:"4门5座三厢车", dimensions:"4858×1847×1439", torque:"320", power:"140", energy:"汽油", displacement:"2.0T", cylinders:"4", horsepower:"190", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置前驱", frontSuspension:"五连杆独立悬架", rearSuspension:"五连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"245/40 R18", rearTire:"245/40 R18" },
+    2: { manufacturer:"上汽通用别克", level:"紧凑型车", engine:"1.3T 163马力 L3", transmission:"6挡手自一体", structure:"4门5座三厢车", dimensions:"4609×1798×1464", torque:"230", power:"120", energy:"汽油", displacement:"1.3T", cylinders:"3", horsepower:"163", fuel:"汽油", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"205/55 R16", rearTire:"205/55 R16" },
+    3: { manufacturer:"上汽大众", level:"小型车", engine:"1.4L 90马力 L4", transmission:"6挡自动", structure:"5门5座两厢车", dimensions:"3970×1682×1462", torque:"132", power:"66", energy:"汽油", displacement:"1.4L", cylinders:"4", horsepower:"90", fuel:"汽油", fuelGrade:"92号", emission:"国V", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"扭力梁式非独立悬架", frontBrake:"通风盘式", rearBrake:"鼓式", frontTire:"185/65 R15", rearTire:"185/65 R15" },
+    4: { manufacturer:"比亚迪", level:"紧凑型SUV", engine:"1.5L 110马力 L4 插电式混动", transmission:"E-CVT无级变速", structure:"5门5座SUV", dimensions:"4705×1890×1680", torque:"135/325", power:"81/145", energy:"插电混动", displacement:"1.5L", cylinders:"4", horsepower:"110/197", fuel:"汽油+电动", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"235/50 R19", rearTire:"235/50 R19" },
+    5: { manufacturer:"东风本田", level:"紧凑型SUV", engine:"1.5T 193马力 L4", transmission:"CVT无级变速", structure:"5门5座SUV", dimensions:"4621×1855×1679", torque:"243", power:"142", energy:"汽油", displacement:"1.5T", cylinders:"4", horsepower:"193", fuel:"汽油", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"235/65 R17", rearTire:"235/65 R17" },
+    6: { manufacturer:"一汽丰田", level:"紧凑型车", engine:"1.2T 116马力 L4", transmission:"CVT无级变速", structure:"4门5座三厢车", dimensions:"4630×1775×1480", torque:"185", power:"85", energy:"汽油", displacement:"1.2T", cylinders:"4", horsepower:"116", fuel:"汽油", fuelGrade:"92号", emission:"国V", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"扭力梁式非独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"195/65 R15", rearTire:"195/65 R15" },
+    7: { manufacturer:"东风日产", level:"紧凑型车", engine:"1.6L 135马力 L4", transmission:"CVT无级变速", structure:"4门5座三厢车", dimensions:"4641×1815×1450", torque:"159", power:"99", energy:"汽油", displacement:"1.6L", cylinders:"4", horsepower:"135", fuel:"汽油", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"扭力梁式非独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"195/60 R16", rearTire:"195/60 R16" },
+    8: { manufacturer:"华晨宝马", level:"中型车", engine:"2.0T 184马力 L4", transmission:"8挡手自一体", structure:"4门5座三厢车", dimensions:"4829×1827×1463", torque:"300", power:"135", energy:"汽油", displacement:"2.0T", cylinders:"4", horsepower:"184", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置后驱", frontSuspension:"双球节弹簧减振支柱", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"通风盘式", frontTire:"225/45 R18", rearTire:"255/40 R18" },
+    9: { manufacturer:"北京奔驰", level:"中型车", engine:"1.5T 184马力 L4", transmission:"9挡手自一体", structure:"4门5座三厢车", dimensions:"4784×1810×1457", torque:"280", power:"135", energy:"汽油", displacement:"1.5T", cylinders:"4", horsepower:"184", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置后驱", frontSuspension:"多连杆独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"225/45 R18", rearTire:"245/40 R18" },
+    10: { manufacturer:"吉利汽车", level:"紧凑型SUV", engine:"1.8T 184马力 L4", transmission:"7挡湿式双离合", structure:"5门5座SUV", dimensions:"4544×1831×1713", torque:"300", power:"135", energy:"汽油", displacement:"1.8T", cylinders:"4", horsepower:"184", fuel:"汽油", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"225/60 R18", rearTire:"225/60 R18" },
+    11: { manufacturer:"长城汽车", level:"紧凑型SUV", engine:"1.5T 169马力 L4", transmission:"7挡湿式双离合", structure:"5门5座SUV", dimensions:"4653×1886×1730", torque:"285", power:"124", energy:"汽油", displacement:"1.5T", cylinders:"4", horsepower:"169", fuel:"汽油", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"双横臂式独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"225/65 R17", rearTire:"225/65 R17" },
+    12: { manufacturer:"长安福特", level:"紧凑型车", engine:"1.5T 184马力 L4", transmission:"8挡自动", structure:"5门5座两厢车", dimensions:"4378×1810×1468", torque:"243", power:"135", energy:"汽油", displacement:"1.5T", cylinders:"4", horsepower:"184", fuel:"汽油", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"215/50 R17", rearTire:"215/50 R17" },
+    13: { manufacturer:"上汽大众", level:"中型SUV", engine:"2.0T 186马力 L4", transmission:"7挡湿式双离合", structure:"5门5座SUV", dimensions:"4733×1839×1673", torque:"320", power:"137", energy:"汽油", displacement:"2.0T", cylinders:"4", horsepower:"186", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"235/55 R18", rearTire:"235/55 R18" },
+    14: { manufacturer:"上汽通用别克", level:"中大型MPV", engine:"2.0T 260马力 L4", transmission:"9挡手自一体", structure:"5门7座MPV", dimensions:"5238×1878×1800", torque:"350", power:"191", energy:"汽油", displacement:"2.0T", cylinders:"4", horsepower:"260", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"225/65 R17", rearTire:"225/65 R17" },
+    15: { manufacturer:"上汽通用五菱", level:"微型车", engine:"20kW 电动机", transmission:"电动车单速变速箱", structure:"3门4座两厢车", dimensions:"2920×1493×1621", torque:"85", power:"20", energy:"纯电", displacement:"—", cylinders:"—", horsepower:"27", fuel:"纯电", fuelGrade:"—", emission:"电动", drive:"后置后驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"整体桥式非独立悬架", frontBrake:"盘式", rearBrake:"鼓式", frontTire:"145/70 R12", rearTire:"145/70 R12" },
+    16: { manufacturer:"特斯拉中国", level:"中型车", engine:"275马力电动机", transmission:"电动车单速变速箱", structure:"4门5座三厢车", dimensions:"4694×1850×1443", torque:"404", power:"202", energy:"纯电", displacement:"—", cylinders:"—", horsepower:"275", fuel:"纯电", fuelGrade:"—", emission:"电动", drive:"后置后驱", frontSuspension:"双叉臂式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"235/45 R18", rearTire:"235/45 R18" },
+    17: { manufacturer:"广汽丰田", level:"中型SUV", engine:"2.0T 220马力 L4", transmission:"6挡手自一体", structure:"5门7座SUV", dimensions:"4890×1925×1720", torque:"350", power:"162", energy:"汽油", displacement:"2.0T", cylinders:"4", horsepower:"220", fuel:"汽油", fuelGrade:"95号", emission:"国V", drive:"前置四驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"双叉臂式独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"245/55 R19", rearTire:"245/55 R19" },
+    18: { manufacturer:"广汽本田", level:"小型车", engine:"1.5L 131马力 L4", transmission:"CVT无级变速", structure:"5门5座两厢车", dimensions:"4109×1694×1537", torque:"155", power:"96", energy:"汽油", displacement:"1.5L", cylinders:"4", horsepower:"131", fuel:"汽油", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"扭力梁式非独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"185/55 R16", rearTire:"185/55 R16" },
+    19: { manufacturer:"一汽-大众奥迪", level:"紧凑型SUV", engine:"1.4T 150马力 L4", transmission:"7挡湿式双离合", structure:"5门5座SUV", dimensions:"4495×1848×1616", torque:"250", power:"110", energy:"汽油", displacement:"1.4T", cylinders:"4", horsepower:"150", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"235/55 R18", rearTire:"235/55 R18" },
+    20: { manufacturer:"东风日产", level:"紧凑型SUV", engine:"1.3T 158马力 L4", transmission:"CVT无级变速", structure:"5门5座SUV", dimensions:"4401×1837×1611", torque:"270", power:"116", energy:"汽油", displacement:"1.3T", cylinders:"4", horsepower:"158", fuel:"汽油", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"215/60 R17", rearTire:"215/60 R17" },
+    21: { manufacturer:"比亚迪", level:"紧凑型车", engine:"1.5L 110马力 L4 插电式混动", transmission:"E-CVT无级变速", structure:"4门5座三厢车", dimensions:"4765×1837×1495", torque:"135/180", power:"81/132", energy:"插电混动", displacement:"1.5L", cylinders:"4", horsepower:"110/180", fuel:"汽油+电动", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"扭力梁式非独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"215/55 R17", rearTire:"215/55 R17" },
+    22: { manufacturer:"上汽大众", level:"紧凑型车", engine:"1.6L 110马力 L4", transmission:"6挡手自一体", structure:"4门5座三厢车", dimensions:"4605×1765×1460", torque:"155", power:"81", energy:"汽油", displacement:"1.6L", cylinders:"4", horsepower:"110", fuel:"汽油", fuelGrade:"92号", emission:"国V", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"扭力梁式非独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"205/55 R16", rearTire:"205/55 R16" },
+    23: { manufacturer:"北京现代", level:"紧凑型SUV", engine:"2.0L 160马力 L4", transmission:"6挡手自一体", structure:"5门5座SUV", dimensions:"4435×1850×1715", torque:"193", power:"118", energy:"汽油", displacement:"2.0L", cylinders:"4", horsepower:"160", fuel:"汽油", fuelGrade:"92号", emission:"国V", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"225/55 R18", rearTire:"225/55 R18" },
+    24: { manufacturer:"北京奔驰", level:"中大型车", engine:"2.0T 258马力 L4", transmission:"9挡手自一体", structure:"4门5座三厢车", dimensions:"5078×1860×1480", torque:"370", power:"190", energy:"汽油", displacement:"2.0T", cylinders:"4", horsepower:"258", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置后驱", frontSuspension:"多连杆独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"通风盘式", frontTire:"245/45 R18", rearTire:"275/40 R18" },
+    25: { manufacturer:"华晨宝马", level:"紧凑型SUV", engine:"1.5T 140马力 L3", transmission:"7挡湿式双离合", structure:"5门5座SUV", dimensions:"4565×1821×1620", torque:"220", power:"103", energy:"汽油", displacement:"1.5T", cylinders:"3", horsepower:"140", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置前驱", frontSuspension:"双球节弹簧减振支柱", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"225/50 R18", rearTire:"225/50 R18" },
+    26: { manufacturer:"广汽传祺", level:"中大型MPV", engine:"2.0T 252马力 L4", transmission:"8挡自动", structure:"5门7座MPV", dimensions:"5149×1884×1822", torque:"390", power:"185", energy:"汽油", displacement:"2.0T", cylinders:"4", horsepower:"252", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"225/55 R18", rearTire:"225/55 R18" },
+    27: { manufacturer:"福特汽车", level:"跑车", engine:"2.3T 299马力 L4", transmission:"10挡手自一体", structure:"2门4座硬顶跑车", dimensions:"4810×1916×1408", torque:"434", power:"220", energy:"汽油", displacement:"2.3T", cylinders:"4", horsepower:"299", fuel:"汽油", fuelGrade:"95号", emission:"国VI", drive:"前置后驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"多连杆独立悬架", frontBrake:"通风盘式", rearBrake:"通风盘式", frontTire:"255/40 R19", rearTire:"275/40 R19" },
+    28: { manufacturer:"长安汽车", level:"小型SUV", engine:"1.4T 158马力 L4", transmission:"7挡湿式双离合", structure:"5门5座SUV", dimensions:"4330×1825×1660", torque:"260", power:"116", energy:"汽油", displacement:"1.4T", cylinders:"4", horsepower:"158", fuel:"汽油", fuelGrade:"92号", emission:"国VI", drive:"前置前驱", frontSuspension:"麦弗逊式独立悬架", rearSuspension:"扭力梁式非独立悬架", frontBrake:"通风盘式", rearBrake:"盘式", frontTire:"225/55 R18", rearTire:"225/55 R18" }
+  };
+
+  global.CAR_PROFILES = {};
+  Object.keys(specs).forEach(function (id) { global.CAR_PROFILES[id] = makeProfile(specs[id]); });
+})(window);

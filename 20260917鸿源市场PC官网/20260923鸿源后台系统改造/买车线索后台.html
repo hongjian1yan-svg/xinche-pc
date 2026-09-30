@@ -1,0 +1,177 @@
+<!-- #AI:design:file -->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>买车线索｜信车智慧车市后台预览</title>
+  <style>
+    :root{--primary:#409eff;--text:#606266;--main:#303133;--muted:#909399;--border:#ebeef5;--line:#dcdfe6;--bg:#f2f4f5;--white:#fff;--danger:#f56c6c;--navy:#48528e}
+    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0}body{font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg);overflow:hidden}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}[hidden]{display:none!important}
+    .app{height:100vh;min-width:1366px;display:flex;overflow:hidden}.sidebar{width:180px;flex:0 0 180px;background:#fff;border-right:1px solid #ebeef5;display:flex;flex-direction:column}.brand{height:60px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1px solid #ebeef5;color:#0444a6;font-size:20px;white-space:nowrap}.brand img{width:40px;height:40px;object-fit:contain}.nav{overflow:auto;padding:12px 0}.nav-group{height:56px;display:flex;align-items:center;gap:12px;padding:0 24px;color:#66798c;white-space:nowrap}.nav-group .ico{width:17px;text-align:center;color:#8293a3}.nav-sub{height:48px;padding-left:47px;display:flex;align-items:center;color:#61758a;white-space:nowrap}.nav-sub.active{background:var(--navy);color:#fff}.workspace{min-width:0;flex:1;display:flex;flex-direction:column}.topbar{height:60px;flex:0 0 60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 32px;color:#303133}.top-title{font-weight:600}.user{display:flex;align-items:center;gap:9px}.avatar{width:32px;height:32px;border-radius:50%;background:#b95730;color:#fff;display:grid;place-items:center;font-weight:600}.user-name{font-weight:600}.role{padding:2px 6px;background:#eaf2fb;border:1px solid #d5e3f3;border-radius:3px;color:#47627c;font-size:12px}.caret{color:#a2acb8}
+    .main{height:calc(100vh - 60px);min-height:0;padding:16px 20px 12px;display:flex;flex-direction:column;gap:18px}.filter-panel{flex:0 0 auto;background:#f1f1f1;padding:20px;min-height:218px}.filter-grid{display:grid;grid-template-columns:repeat(6,minmax(190px,1fr));column-gap:16px;row-gap:18px}.filter-item{display:flex;align-items:center;gap:10px;min-width:0}.filter-item label{flex:0 0 auto;white-space:nowrap;color:#606266}.control{height:40px;min-width:0;flex:1;background:#fff;border:1px solid var(--line);border-radius:4px;padding:0 12px;outline:none}.control:focus{border-color:var(--primary)}select.control{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#a8b0ba 50%),linear-gradient(135deg,#a8b0ba 50%,transparent 50%);background-position:calc(100% - 16px) 17px,calc(100% - 11px) 17px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:30px}.date-control{display:flex;align-items:center;gap:10px;padding:0 12px}.date-control input{width:42%;min-width:0;border:0;outline:0}.date-control span{color:#a0a5ad}.actions{display:flex;align-items:center;gap:14px;margin-top:20px}.btn{height:40px;border:1px solid var(--line);border-radius:4px;padding:0 20px;background:#fff;white-space:nowrap}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:#66b1ff}.btn .ico{margin-right:6px}.btn.small{height:32px;padding:0 13px;font-size:12px}.btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+    .table-card{flex:1;min-height:0;background:#fff;padding:0;display:flex;flex-direction:column;border:1px solid var(--border)}.table-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}.lead-table{border-collapse:collapse;table-layout:fixed;min-width:1690px;width:100%;font-size:14px}.lead-table.hongyuan{min-width:2560px}.lead-table th,.lead-table td{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:10px 12px;text-align:center;vertical-align:middle;white-space:normal;overflow-wrap:anywhere}.lead-table th{height:48px;background:#f5f7fa;color:#909399;font-weight:700;position:sticky;top:0;z-index:2}.lead-table td{min-height:56px;color:#606266}.lead-table tr:hover td{background:#f5f7fa}.check{width:14px;height:14px;vertical-align:middle;accent-color:var(--primary)}.name-cell{font-weight:500;color:#50545a}.subtle{color:#909399}.status{white-space:nowrap}.operations{min-width:112px}.op-line{display:flex;justify-content:center;gap:6px}.op-more{height:28px;min-width:102px;margin-top:5px;border:1px solid var(--line);border-radius:3px;background:#fff;font-size:12px}.pagination{height:58px;flex:0 0 58px;display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:0 20px;color:#606266}.page-chip{height:28px;min-width:28px;padding:0 8px;border:0;border-radius:3px;background:#f4f4f5}.page-chip.active{background:var(--primary);color:#fff}.extra-tag{display:inline-block;padding:2px 7px;border:1px solid #d9ecff;background:#ecf5ff;border-radius:3px;color:#409eff;font-size:12px;white-space:nowrap}
+    .mask{position:fixed;inset:0;background:rgba(0,0,0,.48);display:none;align-items:center;justify-content:center;padding:24px;z-index:20}.mask.open{display:flex}.dialog{width:min(1144px,94vw);max-height:88vh;background:#fff;border-radius:3px;display:flex;flex-direction:column;overflow:hidden}.dialog-head{height:64px;flex:0 0 64px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid transparent;color:#303133;font-size:16px}.close{border:0;background:none;color:#909399;font-size:22px;line-height:1;padding:4px}.dialog-body{overflow:auto;padding:12px 24px 16px}.form{width:min(780px,100%);margin:0 auto}.form-row{display:grid;grid-template-columns:100px minmax(0,672px);gap:12px;align-items:center;margin:10px auto 20px}.form-row>label{text-align:right;white-space:nowrap;color:#606266}.req{color:var(--danger);margin-right:4px}.form-control{width:100%;height:40px;border:1px solid var(--line);border-radius:4px;background:#fff;padding:0 12px;outline:none}.form-control:focus{border-color:var(--primary)}select.form-control{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#b4bbc4 50%),linear-gradient(135deg,#b4bbc4 50%,transparent 50%);background-position:calc(100% - 16px) 17px,calc(100% - 11px) 17px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:30px}.form-control::placeholder{color:#c0c4cc}.paired{display:grid;grid-template-columns:1fr 1fr;gap:12px}.number-control{display:flex}.number-control input{border-radius:4px 0 0 4px}.unit{height:40px;min-width:56px;padding:0 12px;display:grid;place-items:center;background:#f5f7fa;border:1px solid var(--line);border-left:0;border-radius:0 4px 4px 0;color:#909399}.textarea{height:74px;padding:8px 12px;resize:vertical}.checkbox-line{height:40px;display:flex;align-items:center;gap:8px}.form-hint{font-size:12px;color:#909399;margin:-9px 0 14px 112px}.dialog-foot{height:72px;flex:0 0 72px;display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:0 20px;border-top:1px solid #f5f7fa}.toast{position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:40;padding:9px 16px;border:1px solid #e1f3d8;border-radius:4px;background:#f0f9eb;color:#67c23a;display:none}.toast.show{display:block}
+    @media(max-width:1500px){.filter-grid{grid-template-columns:repeat(3,minmax(210px,1fr))}.filter-panel{min-height:0}.actions{flex-wrap:wrap}.main{gap:12px}.form-row{margin-bottom:14px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><img src="../潜客中心/src/logo.png" alt=""><span>智慧车市</span></div>
+      <nav class="nav" aria-label="主导航">
+        <div class="nav-group"><span class="ico">▤</span>商户评级管理</div>
+        <div class="nav-group"><span class="ico">▤</span>商管考核管理</div>
+        <div class="nav-group"><span class="ico">⬡</span>C端会员管理</div>
+        <div class="nav-group"><span class="ico">♧</span>车管业务 <span class="caret">⌄</span></div>
+        <div class="nav-group"><span class="ico">▯</span>导购员管理 <span class="caret">⌄</span></div>
+        <div class="nav-group"><span class="ico">▣</span>微店管理 <span class="caret">⌄</span></div>
+        <div class="nav-group"><span class="ico">▤</span>消息管理 <span class="caret">⌄</span></div>
+        <div class="nav-group" style="color:#409eff"><span class="ico">⚙</span>线索管理 <span class="caret">⌃</span></div>
+        <div class="nav-sub">卖车线索推送管理</div><div class="nav-sub">卖车线索</div><div class="nav-sub">卖车线索获取报表</div>
+        <div class="nav-sub active">买车线索</div><div class="nav-sub">国内物流线索</div><div class="nav-sub">车务手续线索</div><div class="nav-sub">检测认证线索</div><div class="nav-sub">培训考证线索</div>
+      </nav>
+    </aside>
+    <section class="workspace">
+      <header class="topbar"><div class="top-title">【信车智慧车市】</div><div class="user"><span class="avatar">严</span><span class="user-name">严洪健</span><span class="role">超级管理员</span><span class="caret">⌄</span></div></header>
+      <main class="main" id="leadArea">
+        <section class="filter-panel">
+          <div class="filter-grid">
+            <div class="filter-item"><label for="marketFilter">所属市场</label><select class="control" id="marketFilter"><option value="广东中山鸿源二手车市场">广东中山鸿源二手车市场</option><option value="其他市场（演示）">其他市场（演示）</option></select></div>
+            <div class="filter-item"><label for="cityFilter">所属城市</label><input class="control" id="cityFilter" placeholder="所属城市"></div>
+            <div class="filter-item"><label for="platformFilter">合作平台</label><select class="control" id="platformFilter"><option>请选择</option><option>鸿源PC官网</option><option>其他平台</option></select></div>
+            <div class="filter-item"><label for="modelFilter">车型</label><input class="control" id="modelFilter" placeholder="输入车型"></div>
+            <div class="filter-item"><label for="phoneFilter">联系电话</label><input class="control" id="phoneFilter" placeholder="输入联系电话"></div>
+            <div class="filter-item"><label for="sourceFilter">来源</label><select class="control" id="sourceFilter"><option>全部</option><option>鸿源PC官网</option><option>主站</option><option>人员录入</option></select></div>
+            <div class="filter-item"><label for="typeFilter">类型</label><select class="control" id="typeFilter"><option>全部</option><option>非自有车源</option><option>自有车源</option></select></div>
+            <div class="filter-item"><label for="statusFilter">状态</label><select class="control" id="statusFilter"><option>全部</option><option>未推送</option><option>已推送</option></select></div>
+            <div class="filter-item"><label>推送时间</label><div class="control date-control"><input placeholder="开始日期"><span>至</span><input placeholder="结束日期"></div></div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="button" id="searchBtn"><span class="ico">⌕</span>查询</button><button class="btn" type="button" id="resetBtn">↻　重置</button>
+            <button class="btn primary" type="button" id="addBtn">添加</button><button class="btn primary" type="button" data-toast="下载导入模板">下载导入模板</button><button class="btn primary" type="button" data-toast="导入线索">导入线索</button><button class="btn primary" type="button" data-toast="查询导出">查询导出</button><button class="btn primary" type="button" data-toast="线索推送">线索推送</button>
+          </div>
+        </section>
+        <section class="table-card" aria-label="买车线索列表">
+          <div class="table-scroll"><table class="lead-table" id="leadTable"><thead><tr>
+            <th style="width:54px"><input class="check" type="checkbox" aria-label="全选"></th><th style="width:150px">姓名</th><th style="width:150px">手机号</th>
+            <th data-hongyuan-only hidden style="width:190px">邮箱</th><th data-hongyuan-only hidden style="width:150px">国家/地区</th><th data-hongyuan-only hidden style="width:145px">省份</th>
+            <th style="width:140px">微信</th><th style="width:230px">车型</th><th style="width:170px">来源</th><th style="width:140px">类型</th><th style="width:140px">所属城市</th>
+            <th data-hongyuan-only hidden style="width:170px">咨询类型</th><th data-hongyuan-only hidden style="width:150px">车源ID</th><th data-hongyuan-only hidden style="width:240px">用户留言</th><th style="width:200px">备注</th><th data-hongyuan-only hidden style="width:150px">信息使用同意</th>
+            <th style="width:160px">录入时间</th><th style="width:110px">状态</th><th class="operations" style="width:140px">操作</th>
+          </tr></thead><tbody id="leadRows">
+            <tr><td><input class="check" type="checkbox" aria-label="选择线索"></td><td class="name-cell">陈*</td><td>+86 138****1026</td><td data-hongyuan-only hidden>li***@mail.test</td><td data-hongyuan-only hidden>中国</td><td data-hongyuan-only hidden>广东省</td><td class="subtle">—</td><td>奔驰 C 级 2021款 C 260 L 运动版</td><td data-source-cell>鸿源PC官网</td><td>非自有车源</td><td>中山市</td><td data-hongyuan-only hidden>车况细节</td><td data-hongyuan-only hidden>HY-V-092301</td><td data-hongyuan-only hidden>想了解车辆保养和事故情况。</td><td>—</td><td data-hongyuan-only hidden><span class="extra-tag">已同意</span></td><td>2026-09-23 10:18</td><td class="status">未推送</td><td><div class="op-line"><button class="btn small primary" data-toast="编辑线索">编辑</button><button class="btn small danger" data-toast="删除线索">删除</button></div><button class="op-more" data-toast="更多操作">更多操作　⌄</button></td></tr>
+            <tr><td><input class="check" type="checkbox" aria-label="选择线索"></td><td class="name-cell">林*</td><td>+7 916****4830</td><td data-hongyuan-only hidden>an***@mail.test</td><td data-hongyuan-only hidden>俄罗斯</td><td data-hongyuan-only hidden>—</td><td class="subtle">—</td><td>宝马 3 系 2020款 325Li M运动套装</td><td data-source-cell>鸿源PC官网</td><td>非自有车源</td><td>莫斯科</td><td data-hongyuan-only hidden>报价与砍价</td><td data-hongyuan-only hidden>HY-V-092302</td><td data-hongyuan-only hidden>请提供出口报价。</td><td>—</td><td data-hongyuan-only hidden><span class="extra-tag">已同意</span></td><td>2026-09-22 16:42</td><td class="status">未推送</td><td><div class="op-line"><button class="btn small primary" data-toast="编辑线索">编辑</button><button class="btn small danger" data-toast="删除线索">删除</button></div><button class="op-more" data-toast="更多操作">更多操作　⌄</button></td></tr>
+            <tr><td><input class="check" type="checkbox" aria-label="选择线索"></td><td class="name-cell">周*</td><td>+86 186****7051</td><td data-hongyuan-only hidden>zo***@mail.test</td><td data-hongyuan-only hidden>中国</td><td data-hongyuan-only hidden>河北省</td><td class="subtle">—</td><td>奥迪 A4L 2021款 40 TFSI 豪华动感型</td><td data-source-cell>鸿源PC官网</td><td>非自有车源</td><td>石家庄市</td><td data-hongyuan-only hidden>预约看车</td><td data-hongyuan-only hidden>HY-V-092303</td><td data-hongyuan-only hidden>周末可以到店看车。</td><td>—</td><td data-hongyuan-only hidden><span class="extra-tag">已同意</span></td><td>2026-09-21 14:06</td><td class="status">未推送</td><td><div class="op-line"><button class="btn small primary" data-toast="编辑线索">编辑</button><button class="btn small danger" data-toast="删除线索">删除</button></div><button class="op-more" data-toast="更多操作">更多操作　⌄</button></td></tr>
+            <tr><td><input class="check" type="checkbox" aria-label="选择线索"></td><td class="name-cell">杨*</td><td>+86 159****3274</td><td data-hongyuan-only hidden>ya***@mail.test</td><td data-hongyuan-only hidden>中国</td><td data-hongyuan-only hidden>上海市</td><td class="subtle">—</td><td>特斯拉 Model 3 2021款 标准续航后驱升级版</td><td data-source-cell>鸿源PC官网</td><td>非自有车源</td><td>上海市</td><td data-hongyuan-only hidden>更多实拍图/视频</td><td data-hongyuan-only hidden>HY-V-092304</td><td data-hongyuan-only hidden>麻烦发送车辆细节图片。</td><td>—</td><td data-hongyuan-only hidden><span class="extra-tag">已同意</span></td><td>2026-09-20 09:35</td><td class="status">未推送</td><td><div class="op-line"><button class="btn small primary" data-toast="编辑线索">编辑</button><button class="btn small danger" data-toast="删除线索">删除</button></div><button class="op-more" data-toast="更多操作">更多操作　⌄</button></td></tr>
+          </tbody></table></div>
+          <div class="pagination"><span>共 4 条</span><button class="page-chip">‹</button><button class="page-chip active">1</button><button class="page-chip">›</button><span>前往</span><button class="page-chip">1</button><span>页</span></div>
+        </section>
+      </main>
+    </section>
+  </div>
+  <div class="mask" id="addMask" role="presentation"><section class="dialog" id="addDialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+    <header class="dialog-head"><span id="dialogTitle">新增</span><button class="close" type="button" id="closeDialog" aria-label="关闭">×</button></header>
+    <div class="dialog-body"><form class="form" id="leadForm">
+      <div class="form-row"><label for="addMarket"><b class="req">*</b>所属市场</label><select class="form-control" id="addMarket" required><option value="广东中山鸿源二手车市场">广东中山鸿源二手车市场</option><option value="其他市场（演示）">其他市场（演示）</option></select></div>
+      <div class="form-row"><label for="contact"><b class="req">*</b><span id="contactLabel">联系人</span></label><input class="form-control" id="contact" placeholder="请输入联系人" required></div>
+      <div class="form-row"><label for="mobile"><b class="req" data-hongyuan-only hidden>*</b>手机号</label><input class="form-control" id="mobile" placeholder="请输入手机号" data-hy-required></div>
+      <div class="form-row"><label for="wechat">微信</label><input class="form-control" id="wechat" placeholder="请输入微信"></div>
+      <div class="form-row" data-hongyuan-only hidden><label for="email"><b class="req">*</b>邮箱</label><input class="form-control" id="email" type="email" placeholder="请输入邮箱" data-hy-required></div>
+      <div class="form-row" data-hongyuan-only hidden><label for="country"><b class="req">*</b>国家/地区</label><select class="form-control" id="country" data-hy-required><option value="">请选择国家/地区</option><option>中国</option><option>俄罗斯</option><option>哈萨克斯坦</option><option>吉尔吉斯斯坦</option><option>乌兹别克斯坦</option><option>格鲁吉亚</option><option>阿塞拜疆</option><option>阿联酋</option><option>沙特阿拉伯</option><option>泰国</option><option>越南</option><option>菲律宾</option><option>马来西亚</option><option>柬埔寨</option><option>缅甸</option><option>其他</option></select></div>
+      <div class="form-row"><label for="vehicle"><b class="req">*</b>品牌</label><select class="form-control" id="vehicle" required><option value="">请选择品牌车系车型</option><option>奔驰 / C级 / 2021款 C 260 L 运动版</option><option>宝马 / 3系 / 2020款 325Li M运动套装</option><option>奥迪 / A4L / 2021款 40 TFSI 豪华动感型</option></select></div>
+      <div class="form-row" data-hongyuan-only hidden><label for="vehicleId">车源ID</label><input class="form-control" id="vehicleId" readonly placeholder="选择当前车源后自动带出"></div>
+      <div class="form-row" data-hongyuan-only hidden><label for="consultType"><b class="req">*</b>咨询内容</label><select class="form-control" id="consultType" data-hy-required><option value="">请选择咨询内容</option><option>车况细节</option><option>更多实拍图/视频</option><option>报价与砍价</option><option>出口运输与文件</option><option>预约看车</option><option>其他</option></select></div>
+      <div class="form-row" data-hongyuan-only hidden id="chinaLocation"><label>省份/城市<b class="req">*</b></label><div class="paired"><select class="form-control" id="province" data-china-required><option value="">请选择省份</option><option>河北省</option><option>广东省</option><option>上海市</option><option>北京市</option><option>浙江省</option></select><select class="form-control" id="city" data-china-required><option value="">请选择城市</option></select></div></div>
+      <div class="form-row" data-other-market-only><label for="cityOther"><b class="req">*</b>城市</label><input class="form-control" id="cityOther" placeholder="请输入内容" data-other-required></div>
+      <div class="form-row" data-hongyuan-only hidden><label for="userMessage">用户留言</label><textarea class="form-control textarea" id="userMessage" placeholder="请输入用户留言"></textarea></div>
+      <div class="form-row" data-hongyuan-only hidden><label for="consent"><b class="req">*</b>信息使用同意</label><div class="checkbox-line"><input class="check" type="checkbox" id="consent" data-hy-required><span>用户已同意市场为回复本次咨询使用其提交的信息</span></div></div>
+      <div class="form-row"><label for="mileage">行驶里程</label><div class="number-control"><input class="form-control" id="mileage" placeholder="请输入行驶里程"><span class="unit">万公里</span></div></div>
+      <div class="form-row"><label for="age">车龄</label><input class="form-control" id="age" placeholder="请输入车龄（单位：年）"></div>
+      <div class="form-row"><label for="price">价格(万)</label><div class="number-control"><input class="form-control" id="price" placeholder="请输入价格"><span class="unit">万</span></div></div>
+      <div class="form-row"><label for="remark">备注</label><textarea class="form-control textarea" id="remark" placeholder="请输入备注"></textarea></div>
+      <div class="form-hint" data-hongyuan-only hidden>用户留言与后台处理备注分别留存；官网来源由渠道自动识别。</div>
+    </form></div>
+    <footer class="dialog-foot"><button class="btn" type="button" id="cancelDialog">取 消</button><button class="btn primary" type="submit" form="leadForm">确 定</button></footer>
+  </section></div>
+  <div class="toast" id="toast" role="status"></div>
+  <script id="leadPreviewLogic">
+    // #AI:design:start
+    const HONGYUAN_MARKET = "广东中山鸿源二手车市场";
+    function marketKind(market) { return market === HONGYUAN_MARKET ? "hongyuan" : "other"; }
+    function setMarketVariant(market, scope) {
+      const isHongyuan = marketKind(market) === "hongyuan";
+      document.querySelectorAll(scope + " [data-hongyuan-only]").forEach((field) => { field.hidden = !isHongyuan; });
+      document.querySelectorAll(scope + " [data-other-market-only]").forEach((field) => { field.hidden = isHongyuan; });
+      document.querySelectorAll(scope + " [data-source-cell]").forEach((cell, index) => { cell.textContent = isHongyuan ? "鸿源PC官网" : (index % 2 ? "人员录入" : "主站"); });
+      if (scope === "#leadArea") document.getElementById("leadTable").classList.toggle("hongyuan", isHongyuan);
+      return isHongyuan;
+    }
+    // #AI:design:end
+  </script>
+  <script>
+    // #AI:design:start
+    const marketFilter = document.getElementById("marketFilter");
+    const addMarket = document.getElementById("addMarket");
+    const addMask = document.getElementById("addMask");
+    const leadForm = document.getElementById("leadForm");
+    const country = document.getElementById("country");
+    const province = document.getElementById("province");
+    const city = document.getElementById("city");
+    const chinaLocation = document.getElementById("chinaLocation");
+    const vehicle = document.getElementById("vehicle");
+    const vehicleId = document.getElementById("vehicleId");
+    const toast = document.getElementById("toast");
+    const CITY_OPTIONS = { "河北省": ["石家庄市", "唐山市", "秦皇岛市"], "广东省": ["广州市", "深圳市", "中山市", "东莞市"], "上海市": ["上海市"], "北京市": ["北京市"], "浙江省": ["杭州市", "宁波市", "温州市"] };
+
+    function toggleChinaLocation() {
+      const visible = marketKind(addMarket.value) === "hongyuan" && country.value === "中国";
+      chinaLocation.hidden = !visible;
+      document.querySelectorAll("[data-china-required]").forEach((field) => { field.required = visible; });
+      if (!visible) { province.value = ""; city.value = ""; }
+    }
+    function updateProvince() {
+      const values = CITY_OPTIONS[province.value] || [];
+      city.innerHTML = '<option value="">请选择城市</option>' + values.map((name) => '<option>' + name + '</option>').join("");
+    }
+    function setFormMarket() {
+      const isHongyuan = setMarketVariant(addMarket.value, "#addDialog");
+      document.getElementById("contactLabel").textContent = isHongyuan ? "姓名" : "联系人";
+      document.getElementById("contact").placeholder = isHongyuan ? "请输入姓名" : "请输入联系人";
+      document.querySelectorAll("#addDialog [data-hy-required]").forEach((field) => { field.required = isHongyuan; });
+      document.querySelectorAll("#addDialog [data-other-required]").forEach((field) => { field.required = !isHongyuan; });
+      toggleChinaLocation();
+    }
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+    function openDialog() {
+      addMarket.value = marketFilter.value;
+      setFormMarket();
+      leadForm.reset();
+      addMarket.value = marketFilter.value;
+      setFormMarket();
+      addMask.classList.add("open");
+    }
+    function closeDialog() { addMask.classList.remove("open"); }
+
+    marketFilter.addEventListener("change", () => setMarketVariant(marketFilter.value, "#leadArea"));
+    addMarket.addEventListener("change", setFormMarket);
+    country.addEventListener("change", toggleChinaLocation);
+    province.addEventListener("change", updateProvince);
+    vehicle.addEventListener("change", () => { vehicleId.value = vehicle.selectedIndex ? "HY-V-09230" + vehicle.selectedIndex : ""; });
+    document.getElementById("addBtn").addEventListener("click", openDialog);
+    document.getElementById("closeDialog").addEventListener("click", closeDialog);
+    document.getElementById("cancelDialog").addEventListener("click", closeDialog);
+    document.getElementById("searchBtn").addEventListener("click", () => showToast("查询完成（演示数据）"));
+    document.getElementById("resetBtn").addEventListener("click", () => { document.querySelectorAll(".filter-panel input").forEach((field) => { field.value = ""; }); document.querySelectorAll(".filter-panel select").forEach((field) => { if (field.id !== "marketFilter") field.selectedIndex = 0; }); showToast("筛选条件已重置"); });
+    document.querySelectorAll("[data-toast]").forEach((button) => button.addEventListener("click", () => showToast(button.dataset.toast + "（演示页面，不会真实执行）")));
+    leadForm.addEventListener("submit", (event) => { event.preventDefault(); if (!leadForm.reportValidity()) return; showToast("演示完成，未写入后台"); closeDialog(); });
+    setMarketVariant(marketFilter.value, "#leadArea");
+    setFormMarket();
+    // #AI:design:end
+  </script>
+</body>
+</html>

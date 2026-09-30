@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- #AI:design 二手车市场官网复用模板 · 卖车提交成功页
+     ⚙ 公共替换项见 js/config.js -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- #AI:design:start --><title>提交成功 - 中山市鸿源二手车经销有限公司</title><!-- #AI:design:end --> <!-- REPLACE: 页面title市场名 -->
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/element-icons.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<div class="wrap">
+  <div class="success-box">
+    <div class="success-icon el-icon-success"></div>
+    <h2 data-i18n="sc.title">提交成功</h2>
+    <p id="sucTip"></p>
+    <p><span data-i18n="ui.hotline">服务热线</span>：<b id="sucTel"></b></p>
+    <div class="success-btns">
+      <a class="btn btn-primary" href="shouye.html" data-i18n="sc.btn1">返回首页</a>
+      <a class="btn btn-ghost" href="buycar.html" data-i18n="sc.btn2">去逛逛车源</a>
+    </div>
+  </div>
+</div>
+
+<footer id="site-footer"></footer>
+<div id="float-bar"></div>
+
+<!-- STAT CODE -->
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/common.js"></script>
+<script>
+initPage("sell");
+function renderSuc() {
+  document.title = t("pt.success") + " - " + marketName();
+  document.getElementById("sucTip").innerHTML =
+    tf("sc.tip", { m: esc(marketName()) });
+  document.getElementById("sucTel").textContent = SITE_CONFIG.hotline;
+  document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.dataset.i18n); });
+}
+renderSuc();
+window.__rerenderPage = renderSuc;
+</script>
+<!-- STAT CODE END -->
+</body>
+</html>

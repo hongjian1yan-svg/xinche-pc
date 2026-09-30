@@ -1,0 +1,22 @@
+{
+  "name": "hongyuan-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "中山鸿源市场PC官网 Vue2 + ElementUI 2.15.14 前端工程（演示态，无后端）",
+  "scripts": {
+    "dev": "vite",
+    "serve": "vite",
+    "test": "node --test",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "element-ui": "2.15.14",
+    "vue": "2.7.16",
+    "vue-router": "3.6.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue2": "2.3.3",
+    "vite": "5.4.11"
+  }
+}

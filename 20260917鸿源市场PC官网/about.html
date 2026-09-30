@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!-- #AI:design 二手车市场官网复用模板 · 关于我们页
+     ⚙ 公共替换项见 js/config.js；本页文案与照片为占位，换市场时直接改本页文本 + img/about/* -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- #AI:design:start --><title>关于我们 - 中山市鸿源二手车经销有限公司</title><!-- #AI:design:end --> <!-- REPLACE: 页面title市场名 -->
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/element-icons.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<div class="wrap">
+  <h1 class="about-title" data-i18n="nav.about">关于我们</h1>
+
+  <!-- 市场简介长文（REPLACE: 全部为占位文案，按市场真实情况改写） -->
+  <div class="about-text" id="aboutText"></div>
+
+  <!-- #AI:design:start -->
+  <!-- 场地照片墙（REPLACE: 正式使用时将生成图替换为市场实拍图） -->
+  <div class="about-photos">
+    <div class="ap-item" style="background-image:url('img/about/about1.png')"><span class="ap-cap">市场交易大厅外景</span></div>
+    <div class="ap-item" style="background-image:url('img/about/about2.png')"><span class="ap-cap">室内展示场一区</span></div>
+    <div class="ap-item" style="background-image:url('img/about/about3.png')"><span class="ap-cap">新能源展区</span></div>
+    <div class="ap-item" style="background-image:url('img/about/about4.png')"><span class="ap-cap">综合服务中心·过户大厅</span></div>
+    <div class="ap-item" style="background-image:url('img/about/about5.png')"><span class="ap-cap">检测中心</span></div>
+    <div class="ap-item" style="background-image:url('img/about/about6.png')"><span class="ap-cap">夜间停车场</span></div>
+  </div>
+  <!-- #AI:design:end -->
+</div>
+
+<!-- 联系方式条（地址/电话/交通，config.js 注入） -->
+<div class="contact-bar">
+  <div class="wrap">
+    <div class="cb-item">
+      <span class="cb-icon el-icon-location"></span>
+      <div><h5 data-i18n="ab.addrLabel">市场地址</h5><p id="cbAddr"></p></div>
+    </div>
+    <div class="cb-item">
+      <span class="cb-icon el-icon-phone-outline"></span>
+      <div><h5 data-i18n="ab.telLabel">联系我们</h5><p><b id="cbTel"></b></p></div>
+    </div>
+    <div class="cb-item">
+      <span class="cb-icon el-icon-guide"></span>
+      <div><h5 data-i18n="ab.trafficLabel">交通信息</h5><p id="cbTraffic"></p></div>
+    </div>
+  </div>
+</div>
+
+<footer id="site-footer"></footer>
+<div id="float-bar"></div>
+
+<!-- STAT CODE -->
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/common.js"></script>
+<script>
+initPage("about");
+
+var cfg = SITE_CONFIG;
+function renderAbout() {
+  document.title = t("pt.about") + " - " + marketName();
+  var x = aboutI();
+  var mn = esc(marketName());
+  if (x) {
+    document.getElementById("aboutText").innerHTML =
+      // #AI:design:start
+      "<p>" + x.p1.replace("{m}", mn).replace("{address}", addressI()) + "</p><p>" + x.p2 + "</p><p class='slogan'>" + x.p3 + "</p>";
+      // #AI:design:end
+  } else {
+    document.getElementById("aboutText").innerHTML =
+      // #AI:design:start
+      "<p><b>" + mn + "</b>成立于 2011 年，地址：" + addressI() + "，是中山市物资集团（中物集团）旧车板块旗下主力市场，深耕二手车行业多年，为中山市旧机动车流通核心交易平台之一。</p>" +
+      // #AI:design:end
+      "<p>中物集团旧车板块首创全国旧车交易集市及一站式服务模式，打造“选车-评估-过户-售后”全链路智慧服务平台，配备金融、维修、保险等全方位服务，并拥有二手车出口资质，集出口、物流、报关、国际金融结算全链路服务，连续获评广东省二手车市场十强。市场依托集团资源，与多家大型二手车交易市场长期战略合作、共享车源。<span style='color:#999'>（以上根据工商登记及中物集团官网公开资料整理，2026-09-18；正式对外发布前请市场方校核确认）</span></p>" +
+      "<p class='slogan'>————我们以诚信、创新、服务为核心，倾力打造消费者放心、舒心的购车环境！</p>";
+  }
+  document.getElementById("cbAddr").textContent = addressI();   /* REPLACE: 地址 */
+  document.getElementById("cbTel").textContent = cfg.hotline;    /* REPLACE: 电话 */
+  document.getElementById("cbTraffic").textContent = trafficI(); /* REPLACE: 交通 */
+  document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll(".ap-cap").forEach(function (el, i) { el.textContent = t("ab.cap" + (i + 1)); });
+}
+renderAbout();
+window.__rerenderPage = renderAbout;
+</script>
+<!-- STAT CODE END -->
+</body>
+</html>

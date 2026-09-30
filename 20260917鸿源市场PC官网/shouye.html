@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<!-- #AI:design 二手车市场官网复用模板 · 首页（唯一入口）
+     ⚙ 模板替换配置：市场名/电话/标签/轮播等公共项在 js/config.js；本页个性化内容旁均有 REPLACE 注释 -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- #AI:design:start --><title>中山市鸿源二手车经销有限公司 - 首页</title><!-- #AI:design:end --> <!-- REPLACE: 页面title市场名 -->
+<meta name="keywords" content="二手车,二手车市场,二手车交易">
+<meta name="description" content="鸿源二手车市场官网（模板演示）"> <!-- REPLACE: meta描述 -->
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/element-icons.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- 顶部导航（公共，由 js/common.js 渲染） -->
+<header id="site-header"></header>
+
+<!-- ① Banner 轮播：自动播放 + 左右箭头 + 圆点；数据源 config.banners -->
+<div class="banner" id="banner">
+  <div class="banner-track" id="bannerTrack"></div>
+  <button class="banner-arrow ba-prev" id="bannerPrev" aria-label="上一张"><i class="el-icon-arrow-left"></i></button>
+  <button class="banner-arrow ba-next" id="bannerNext" aria-label="下一张"><i class="el-icon-arrow-right"></i></button>
+  <div class="banner-dots" id="bannerDots"></div>
+</div>
+
+<!-- ② 我要买车区 + 快速卖车卡片（灰底分区） -->
+<div class="home-buy">
+  <!-- #AI:design:start -->
+  <form class="home-search wrap" id="homeSearchForm" role="search">
+    <button type="submit" id="siteSearchBtn" aria-label="搜索"><i class="el-icon-search"></i></button>
+    <div class="home-search-field">
+      <input type="search" id="siteSearchInput" placeholder=" " autocomplete="off" aria-labelledby="homeSearchLabel">
+      <label id="homeSearchLabel" for="siteSearchInput" data-i18n="ui.searchPh">搜您喜欢的品牌或车系</label>
+    </div>
+  </form>
+  <!-- #AI:design:end -->
+  <div class="wrap home-buy-panels">
+    <div class="buy-panel">
+      <h2 class="sec-title"><span data-i18n="home.buyTitle">我要买车</span><a class="st-arrow" href="buycar.html" aria-label="进入买车列表"><i class="el-icon-arrow-right"></i></a></h2>
+      <!-- 品牌 logo 轮播行（左右箭头翻页，末页末尾「更多」→列表页） -->
+      <div class="buy-row">
+        <span class="br-label" data-i18n="f.brand">品牌</span>
+        <button class="br-arrow" id="brandPrev" type="button" aria-label="上一页"><i class="el-icon-arrow-left"></i></button>
+        <div class="br-viewport"><div class="br-track" id="brandTrack"></div></div>
+        <button class="br-arrow" id="brandNext" type="button" aria-label="下一页"><i class="el-icon-arrow-right"></i></button>
+      </div>
+      <!-- 价格区间行 -->
+      <div class="buy-row">
+        <span class="br-label" data-i18n="f.price">价格</span>
+        <div class="br-chips" id="priceRow"></div>
+      </div>
+      <!-- 级别行 -->
+      <div class="buy-row">
+        <span class="br-label" data-i18n="f.level">级别</span>
+        <div class="br-chips" id="bodyRow"></div>
+      </div>
+    </div>
+    <div class="sell-card">
+      <h2 class="sec-title"><span data-i18n="home.sellTitle">快速卖车</span><a class="st-arrow" href="sellcars.html" aria-label="进入卖车页"><i class="el-icon-arrow-right"></i></a></h2>
+      <!-- REPLACE: 三大卖点文案（config.js sellAdvantages） -->
+      <ul id="sellAdvList"></ul>
+      <div class="sc-btns">
+        <a class="btn btn-primary" href="sellcars.html" data-i18n="home.btnSell">快速卖车</a>
+        <a class="btn btn-light" href="sellcars.html" data-i18n="home.btnVal">免费估价</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ 今日推荐：Tab 前端切换本地数据 -->
+<div class="home-reco">
+  <div class="reco-tabs" id="recoTabs"></div>
+  <div class="reco-grid" id="recoGrid"></div>
+  <div class="reco-more"><a class="btn btn-ghost" href="buycar.html"><span data-i18n="home.viewMore">查看更多</span> <i class="el-icon-arrow-right"></i></a></div>
+</div>
+
+<!-- ④ 汇率展示 -->
+<div class="home-rates">
+  <h2 class="sec-title-mid" data-i18n="home.ratesTitle">实时汇率</h2>
+  <!-- REPLACE: 汇率数据在 js/rates.js（演示数据，正式接入时替换为实时汇率接口） -->
+  <div class="rates-list" id="ratesList"></div>
+</div>
+
+<!-- 页脚 + 悬浮栏（公共） -->
+<footer id="site-footer"></footer>
+<div id="float-bar"></div>
+
+<!-- STAT CODE -->
+<!-- REPLACE: 统计代码（百度统计/GA 等）粘贴到此注释区；模板演示不引外网脚本 -->
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/cars.js"></script>
+<script src="js/rates.js"></script>
+<script src="js/common.js"></script>
+<script>
+initPage("home");
+/* 默认语言 ru（2026-09-28）：首帧同步 title（其余 7 页均在初始渲染设置，本页此前仅切换时更新） */
+document.title = marketName() + " - " + t("pt.home");
+// #AI:design:start
+bindSiteSearch("homeSearchForm", "siteSearchInput");
+// #AI:design:end
+var cfg = SITE_CONFIG;
+/* 用户系统开启减弱动效时，停掉自动轮播（taste skill §6.B） */
+var REDUCE_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- ① Banner 轮播 ---------- */
+var bannerState = { cur: 0, timer: null };
+function renderBanner() {
+  var track = document.getElementById("bannerTrack");
+  var dots = document.getElementById("bannerDots");
+  var bs = SITE_CONFIG.banners;
+  track.innerHTML = bs.map(function (b, i) {
+    var bgStyle = b.img
+      ? 'background-image:linear-gradient(90deg,rgba(0,22,58,.82) 0%,rgba(0,22,58,.55) 38%,rgba(0,22,58,.12) 62%,rgba(0,22,58,0) 78%),url(' + b.img + ');background-size:cover;background-position:right center'
+      : 'background:' + b.bg;
+    return '<div class="banner-slide' + (i === bannerState.cur ? " on" : "") + '" style="' + bgStyle + '">' +
+      '<div class="bs-inner">' +
+        '<div class="bs-name">' + esc(tOr("home.banner" + (i + 1) + ".title", b.title)) + '</div>' + /* REPLACE: Banner 主标题（config.banners / i18n.js） */
+        '<div class="bs-sub">' + esc(tOr("home.banner" + (i + 1) + ".sub", b.sub)) + '</div>' +    /* REPLACE: Banner 副标题 */
+        '<div class="bs-tags">' + tArr("home.serviceTags", SITE_CONFIG.serviceTags).map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("") + '</div>' + /* REPLACE: 服务标签 */
+        '<div class="bs-phone"><small>' + esc(t("ui.hotline")) + '</small>' + esc(SITE_CONFIG.hotline) + '</div>' + /* REPLACE: 电话 */
+      '</div></div>';
+  }).join("");
+  dots.innerHTML = bs.map(function (_, i) { return "<i" + (i === bannerState.cur ? ' class="on"' : "") + " data-i='" + i + "'></i>"; }).join("");
+}
+(function () {
+  var track = document.getElementById("bannerTrack");
+  var dots = document.getElementById("bannerDots");
+  var bs = SITE_CONFIG.banners;
+  renderBanner();
+  function go(i) {
+    bannerState.cur = (i + bs.length) % bs.length;
+    renderBanner();
+  }
+  function auto() { if (REDUCE_MOTION) return; bannerState.timer = setInterval(function () { go(bannerState.cur + 1); }, 4000); }
+  function reset() { clearInterval(bannerState.timer); auto(); }
+  document.getElementById("bannerPrev").addEventListener("click", function () { go(bannerState.cur - 1); reset(); });
+  document.getElementById("bannerNext").addEventListener("click", function () { go(bannerState.cur + 1); reset(); });
+  dots.addEventListener("click", function (e) {
+    if (e.target.dataset.i != null) { go(+e.target.dataset.i); reset(); }
+  });
+  document.getElementById("banner").addEventListener("mouseenter", function () { clearInterval(bannerState.timer); });
+  document.getElementById("banner").addEventListener("mouseleave", auto);
+  auto();
+})();
+
+/* ---------- ② 我要买车区 ---------- */
+var brandPage = 0, BRAND_PER = 8;
+function renderBuyArea() {
+  var brandColors = ["#333", "#5a7ea6", "#8a4f2a", "#274b77", "#37624a", "#6b3434", "#4c5f73", "#1d3557"];
+  var pages = 2; /* 固定两排：第一排 8 个品牌；第二排 7 个品牌 + 末尾「更多」 */
+  if (brandPage >= pages) brandPage = 0;
+  var slice = brandPage === 0 ? HOME_BRANDS.slice(0, 8) : HOME_BRANDS.slice(8, 15);
+  var items = slice.map(function (b, i) {
+    var gi = brandPage * BRAND_PER + i;
+    var fbChar = esc(window.__lang === "zh" ? b.slice(0, 1) : brandName(b).slice(0, 1).toUpperCase());
+    var fb = '<span class="bb-logo bb-fallback" style="background:' + brandColors[gi % brandColors.length] + '">' + fbChar + '</span>';
+    var logo = (typeof BRAND_LOGOS !== "undefined" && BRAND_LOGOS[b])
+      ? '<span class="bb-logo bb-img"><img src="' + BRAND_LOGOS[b] + '" alt="" loading="lazy" onerror="this.parentNode.style.display=&quot;none&quot;;this.parentNode.nextElementSibling.style.display=&quot;flex&quot;"></span>' + fb.replace('class="bb-logo bb-fallback"', 'class="bb-logo bb-fallback" style="display:none;background:' + brandColors[gi % brandColors.length] + '"')
+      : fb;
+    return '<a class="buy-brand" href="buycar.html?brand=' + encodeURIComponent(b) + '">' + logo +
+      '<span class="bb-name">' + esc(brandName(b)) + '</span></a>';
+  }).join("");
+  /* 第二排末尾展示「更多」入口 → 我要买车页 */
+  if (brandPage === 1) {
+    items += '<a class="buy-brand br-more" href="buycar.html"><span class="bb-logo"><i class="el-icon-more"></i></span><span class="bb-name">' + esc(t("f.more")) + '</span></a>';
+  }
+  document.getElementById("brandTrack").innerHTML = items;
+  document.getElementById("brandPrev").disabled = brandPage === 0;
+  document.getElementById("brandNext").disabled = brandPage >= pages - 1;
+  document.getElementById("priceRow").innerHTML =
+    '<a class="buy-chip is-on" href="buycar.html">' + esc(t("f.any")) + '</a>' +
+    HOME_PRICE_RANGES.map(function (p) {
+      return '<a class="buy-chip" href="buycar.html?pmin=' + p.min + "&pmax=" + p.max + '">' + esc(priceLabel(p.min, p.max)) + "</a>";
+    }).join("");
+  document.getElementById("bodyRow").innerHTML =
+    '<a class="buy-chip is-on" href="buycar.html">' + esc(t("f.any")) + '</a>' +
+    HOME_BODY_TYPES.map(function (x) {
+      return '<a class="buy-chip" href="buycar.html?body=' + encodeURIComponent(x) + '">' + esc(bodyLabel(x)) + "</a>";
+    }).join("");
+  document.getElementById("sellAdvList").innerHTML =
+    tArr("home.sellAdvantages", SITE_CONFIG.sellAdvantages).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("");
+}
+document.getElementById("brandPrev").addEventListener("click", function () { if (brandPage > 0) { brandPage--; renderBuyArea(); } });
+document.getElementById("brandNext").addEventListener("click", function () { brandPage++; renderBuyArea(); });
+renderBuyArea();
+
+/* ---------- ③ 今日推荐 Tab ---------- */
+var recoState = { key: RECO_TABS[0].key };
+function renderReco() {
+  var tabsEl = document.getElementById("recoTabs"), gridEl = document.getElementById("recoGrid");
+  tabsEl.innerHTML = RECO_TABS.map(function (x) {
+    return '<span class="reco-tab' + (x.key === recoState.key ? " active" : "") + '" data-k="' + x.key + '">' + esc(t("tabs." + x.key)) + "</span>";
+  }).join("");
+  var list = CARS_DATA.filter(function (c) { return c.tags.indexOf(recoState.key) > -1; }).slice(0, 8);
+  gridEl.innerHTML = list.length ? list.map(carCardHTML).join("") : '<div class="empty">' + esc(t("home.empty")) + '</div>';
+}
+(function () {
+  var tabsEl = document.getElementById("recoTabs");
+  renderReco();
+  tabsEl.addEventListener("click", function (e) {
+    var x = e.target.closest(".reco-tab");
+    if (!x) return;
+    recoState.key = x.dataset.k;
+    renderReco();
+  });
+})();
+
+/* ---------- ④ 汇率展示（三张卡片：国旗对 + 币种 + 汇率 + 更新时间） ---------- */
+function renderRates() {
+  document.getElementById("ratesList").innerHTML = RATES_DATA.map(function (r) {
+    var val = r.to === "cny" ? r.rate.toFixed(3) : r.rate.toFixed(2);
+    var big = r.rate.toFixed(2);
+    return '<div class="rate-card">' +
+      '<div class="rc-updated">' + esc(r.updated) + ' ' + esc(t("rates.updated")) + '</div>' +
+      '<div class="rc-left">' +
+        '<div class="rc-flags">' + flagSVG(r.from) + flagSVG(r.to) + '</div>' +
+        '<div class="rc-title">' + esc(t("rate." + r.from)) + ' — ' + esc(t("rate." + r.to)) + '</div>' +
+      '</div>' +
+      '<div class="rc-right">' +
+        '<div class="rc-value">' + big + '</div>' +
+        '<div class="rc-sub">' + esc(t("rates.rateLabel")) + ' 1' + r.from.toUpperCase() + ' = ' + val + r.to.toUpperCase() + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join("");
+}
+renderRates();
+/* ---------- 语言切换时重渲染首页内容区 ---------- */
+window.__rerenderPage = function () {
+  // #AI:design:start
+  document.title = marketName() + " - " + t("pt.home");
+  // #AI:design:end
+  renderBanner();
+  renderBuyArea();
+  renderReco();
+  renderRates();
+  document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.dataset.i18n); });
+};</script>
+<!-- STAT CODE END -->
+</body>
+</html>

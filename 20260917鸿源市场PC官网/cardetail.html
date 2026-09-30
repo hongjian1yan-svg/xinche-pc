@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<!-- #AI:design 二手车市场官网复用模板 · 车源详情页
+     ⚙ 公共替换项见 js/config.js；本页按 ?id= 读取 js/cars.js 示例数据渲染（演示态，默认展示第 1 条） -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- #AI:design:start --><title>车源详情 - 中山市鸿源二手车经销有限公司</title><!-- #AI:design:end --> <!-- REPLACE: 页面title市场名 -->
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/element-icons.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<!-- 面包屑：市场名 > 我要买车 > 车型名 -->
+<div class="breadcrumb">
+  <div class="wrap" id="crumb"></div>
+</div>
+
+<div class="wrap">
+  <!-- 上半：图集 + 信息 -->
+  <div class="detail-main">
+    <div class="detail-gallery">
+      <div class="dg-main" id="dgMain" title="点击查看大图"></div>
+      <div class="dg-thumbs" id="dgThumbs"></div>
+    </div>
+    <div class="detail-info">
+      <h1 class="di-title" id="diTitle"></h1>
+      <div class="di-tags" id="diTags"></div>
+      <div class="di-price-box">
+        <span class="di-price" id="diPrice"></span>
+        <span class="di-price-old" id="diOldPrice"></span>
+      </div>
+      <table class="di-params" id="diParams"></table>
+      <div class="di-btns">
+        <button class="btn btn-primary" id="btnInquiry"><i class="el-icon-s-comment"></i><span data-i18n="inq.btn">咨询车况</span></button>
+        <button class="btn btn-ghost" id="btnCall"><i class="el-icon-phone-outline"></i><span data-i18n="dt.callBtn">立即联系</span></button>
+        <button type="button" class="btn btn-light" id="btnCopyLink"><i class="el-icon-document-copy"></i><span data-i18n="dt.copyLink">复制链接</span></button>
+        <button type="button" class="btn btn-light" id="btnMakeNote"><i class="el-icon-document"></i><span data-i18n="dt.makeNote">生成笔记</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- #AI:design:start -->
+  <!-- 检测报告：放在车辆档案之前 -->
+  <section class="detail-report ds-block">
+    <h3 class="ds-title" data-i18n="dt.report">检测报告</h3>
+    <!-- REPLACE: 正式使用时替换为真实检测报告图片 -->
+    <div class="report-box">
+      <!-- REPLACE: 检测认证图 img/report-268v.png（268V 买车无忧检，换市场时替换此图） -->
+      <img class="report-img" src="img/report-268v.png" alt="268V买车无忧检认证">
+      <div class="report-side">
+        <p id="dtReportTxt" data-i18n-html="dt.reportTxt">本车已通过市场检测中心 128 项检测：外观漆面、骨架结构、水泡/火烧排查、发动机工况、变速箱换挡、底盘悬挂、电气系统、轮胎制动等。<br>
+        检测结论：非事故、非水泡、非火烧；具体以随车纸质检测报告为准。</p>
+        <!-- REPLACE: 检测报告链接（当前为 268V 真实报告示例链接，换车源/换市场时替换 orderNo） -->
+        <button type="button" class="btn btn-primary rp-btn" id="viewReportBtn" data-i18n="dt.viewReport">查看检测报告</button>
+      </div>
+    </div>
+  </section>
+  <!-- #AI:design:end -->
+
+  <!-- #AI:design:start -->
+  <!-- 车辆档案：每个车型读取 js/car-profiles.js 中的独立配置 -->
+  <section class="detail-archive ds-block">
+    <h3 class="ds-title">车辆档案</h3>
+    <div class="archive-grid" id="vehicleProfile"></div>
+    <p class="archive-note">以上参配信息仅供参考，实际参数配置以售卖车辆为准（详细配置状况备注：• 标配 • 选配 • 无）</p>
+  </section>
+
+  <!-- 车辆图片：复用当前车源的完整图片数组 -->
+  <section class="detail-images ds-block">
+    <h3 class="ds-title">车辆图片</h3>
+    <div class="vehicle-images-grid" id="vehicleImages"></div>
+  </section>
+  <!-- #AI:design:end -->
+
+  <!-- 下半：商户信息 / 分享 -->
+  <div class="detail-sub">
+    <div class="ds-block">
+      <h3 class="ds-title" data-i18n="dt.contact">联系方式</h3>
+      <!-- REPLACE: 市场名称取 config.js marketName，市场介绍取 config.js marketIntro -->
+      <div class="merchant-bar">
+        <span class="mb-logo" id="mbLogo"></span>
+        <div>
+          <div class="mb-name" id="mbName"></div>
+          <div class="mb-desc" id="mbDesc"></div>
+        </div>
+        <span class="mb-tel" id="mbTel"></span>
+      </div>
+    </div>
+    <div class="ds-block">
+      <h3 class="ds-title" data-i18n="dt.share">分享该车源</h3>
+      <div class="share-box">
+        <!-- REPLACE: 分享二维码占位，正式使用时替换为真实链接二维码 -->
+        <div class="qr-ph" id="shareQr" data-label="微信扫一扫"></div>
+        <div class="sb-tip" id="shareTip">扫码在手机上查看本车源<br>或转发给需要的朋友</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 大图弹层 -->
+<div class="img-modal" id="imgModal">
+  <div class="im-stage" id="imStage">
+    <button class="im-close" id="imClose" aria-label="关闭"><i class="el-icon-close"></i></button>
+    <span id="imText"></span>
+  </div>
+</div>
+<!-- 咨询车况弹层（表单演示态：校验通过后弹层内显示成功态，不真实提交） -->
+<div class="mask" id="inqMask"></div>
+<div class="inquiry-pop" id="inqPop" role="dialog" aria-modal="true" aria-labelledby="inqTitle">
+  <button class="ip-close" id="inqClose" aria-label="关闭"><i class="el-icon-close"></i></button>
+  <div class="inquiry-car" id="inqCar"></div>
+  <h4 id="inqTitle">咨询车况</h4>
+  <form id="inqForm" novalidate>
+    <div class="iq-row iq-two">
+      <div class="iq-field"><label for="iqName">姓名 <b>*</b></label><input id="iqName" type="text" autocomplete="name"></div>
+      <div class="iq-field"><label for="iqMail">邮箱 <b>*</b></label><input id="iqMail" type="email" autocomplete="email" placeholder="name@example.com"></div>
+    </div>
+    <div class="iq-err" id="eName">请填写姓名</div>
+    <div class="iq-err" id="eMail">请填写正确的邮箱地址</div>
+    <div class="iq-row iq-two">
+      <div class="iq-field"><label for="iqPhone">电话（含国家区号） <b>*</b></label><input id="iqPhone" type="tel" placeholder="+7 900 000-00-00"></div>
+      <div class="iq-field"><label for="iqCountry">国家/地区 <b>*</b></label><select id="iqCountry"></select></div>
+    </div>
+    <div class="iq-err" id="ePhone">请填写电话</div>
+    <div class="iq-err" id="eCountry">请选择国家/地区</div>
+    <div class="iq-row iq-two" id="iqChinaRegion" style="display:none">
+      <div class="iq-field"><label for="iqProvince">省份 <b>*</b></label><select id="iqProvince"></select></div>
+      <div class="iq-field"><label for="iqCity">城市 <b>*</b></label><select id="iqCity"></select></div>
+    </div>
+    <div class="iq-err" id="eProvince">请选择省份</div>
+    <div class="iq-err" id="eCity">请选择城市</div>
+    <div class="iq-row">
+      <div class="iq-field"><label for="iqType">咨询内容 <b>*</b></label>
+        <select id="iqType">
+          <option value="">请选择</option>
+          <option>车况细节</option><option>更多实拍图/视频</option><option>报价与砍价</option><option>出口运输与文件</option><option>预约看车</option><option>其他</option>
+        </select>
+      </div>
+    </div>
+    <div class="iq-err" id="eType">请选择咨询内容</div>
+    <div class="iq-row">
+      <div class="iq-field"><label for="iqMsg">留言</label><textarea id="iqMsg" rows="3"></textarea></div>
+    </div>
+    <div class="iq-row iq-agree">
+      <label class="iq-check"><input type="checkbox" id="iqAgree"><i class="el-icon-check"></i></label>
+      <span id="agreeTxt">我同意市场为回复本次咨询使用我提交的信息 <b class="req">*</b></span>
+    </div>
+    <div class="iq-err" id="eAgree">请先勾选同意</div>
+    <button type="submit" class="btn btn-primary iq-submit" data-i18n="inq.submit">提交咨询</button>
+  </form>
+  <div class="inq-done" id="inqDone">
+    <div class="el-icon-success"></div>
+    <h5>已提交，等待市场回复</h5>
+    <p>市场将在工作时间内尽快与您联系</p>
+    <button class="iq-done-btn" id="inqBack" type="button">关闭</button>
+  </div>
+</div>
+
+<!-- 立即联系下拉浮层（2026-09-28 YAN 确认：无遮罩、不锁滚动，锚定「立即联系」按钮正下方；四行联系方式均为点击复制，数值取 config.js contact/hotline，不随语言翻译） -->
+<div class="contact-pop" id="ctPop" role="dialog" aria-label="立即联系" aria-labelledby="ctTitle">
+  <h4 id="ctTitle" data-i18n="dt.contactTitle">立即联系</h4>
+  <div class="cp-list" id="ctList"></div>
+</div>
+
+<footer id="site-footer"></footer>
+<div id="float-bar"></div>
+
+<!-- STAT CODE -->
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/cars.js"></script>
+<script src="js/car-profiles.js"></script>
+
+<script src="js/common.js"></script>
+<script src="js/el-select.js"></script>
+<script>
+initPage("buy");
+
+/* ---------- 取车源（?id= 演示态，默认第 1 条） ---------- */
+var id = parseInt(getQuery("id"), 10) || 1;
+var car = CARS_DATA.filter(function (c) { return c.id === id; })[0] || CARS_DATA[0];
+
+/* ---------- 面包屑 ---------- */
+function renderCrumb() {
+  document.getElementById("crumb").innerHTML =
+    '<a href="shouye.html">' + esc(marketName()) + "</a><span class='bc-sep el-icon-arrow-right'></span>" +
+    '<a href="buycar.html">' + esc(t("nav.buy")) + '</a><span class="bc-sep el-icon-arrow-right"></span><span>' + esc(carName(car)) + "</span>";
+}
+renderCrumb();
+
+/* ---------- 图集（有真图用真图，无图回退渐变占位；点击换主图/放大） ---------- */
+var shots = ["dt.shot1", "dt.shot2", "dt.shot3", "dt.shot4"];
+var curShot = 0;
+function shotLabel(i) { return (car.imgs && car.imgs[i]) ? t("dt.view") + " " + (i + 1) : t(shots[i]); }
+function galleryColor(i) {
+  return i === 0 ? car.imgColor : "linear-gradient(135deg," + shade(car.imgColor, i) + ")";
+}
+/* 简单色相偏移生成不同角度的占位图色块 */
+function shade(grad, i) {
+  var m = grad.match(/#[0-9a-f]{6}/gi) || ["#5a7ea6", "#2f4d70"];
+  function rot(hex) {
+    var n = parseInt(hex.slice(1), 16);
+    var r = (n >> 16) + i * 22, g = (n >> 8 & 255) + i * 14, b = (n & 255) + i * 8;
+    r = Math.max(0, Math.min(255, r)); g = Math.max(0, Math.min(255, g)); b = Math.max(0, Math.min(255, b));
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+  return rot(m[0]) + "," + rot(m[1]);
+}
+function renderGallery() {
+  var main = document.getElementById("dgMain");
+  var hasImg = car.imgs && car.imgs[curShot];
+  main.style.background = hasImg ? "#fff" : galleryColor(curShot);
+  main.innerHTML = (hasImg ? '<img class="dg-img" src="' + car.imgs[curShot] + '" alt="' + esc(car.imgText) + '">' : '<span class="ci-text">' + esc(car.imgText) + " · " + esc(t(shots[curShot])) + '</span>') + '<span class="dg-zoom-tip">' + esc(t("dt.zoom")) + '</span>';
+  document.getElementById("dgThumbs").innerHTML = shots.map(function (s, i) {
+    var thumbImg = car.imgs && car.imgs[i];
+    return '<div class="dg-thumb' + (i === curShot ? " on" : "") + '" data-i="' + i + '"' + (thumbImg ? '' : ' style="background:' + galleryColor(i) + '"') + '>' + (thumbImg ? '<img src="' + car.imgs[i] + '" alt="">' : esc(shotLabel(i))) + "</div>";
+  }).join("");
+}
+renderGallery();
+/* 图集自动轮播（有真图时生效；hover/大图打开/系统减弱动效时暂停） */
+var galTimer = null, galPaused = false;
+var REDUCE_G = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function galAuto() {
+  clearInterval(galTimer);
+  if (REDUCE_G || !car.imgs) return;
+  galTimer = setInterval(function () {
+    if (galPaused || modalOpen()) return;
+    var has = false;
+    for (var q = 0; q < 4; q++) { if (car.imgs && car.imgs[q]) { has = true; break; } }
+    if (!has) return;
+    var nxt = curShot;
+    for (var k = 1; k <= 4; k++) {
+      var cand = (curShot + k) % 4;
+      if (car.imgs[cand]) { nxt = cand; break; }
+    }
+    if (nxt !== curShot) { curShot = nxt; renderGallery(); }
+  }, 4000);
+}
+function modalOpen() { return document.getElementById("imgModal").classList.contains("on"); }
+document.querySelector(".detail-gallery").addEventListener("mouseenter", function () { galPaused = true; });
+document.querySelector(".detail-gallery").addEventListener("mouseleave", function () { galPaused = false; });
+galAuto();
+document.getElementById("dgThumbs").addEventListener("click", function (e) {
+  var t = e.target.closest(".dg-thumb");
+  if (t) { curShot = +t.dataset.i; renderGallery(); }
+});
+var modal = document.getElementById("imgModal");
+document.getElementById("dgMain").addEventListener("click", function () {
+  var hasImg = car.imgs && car.imgs[curShot];
+  document.getElementById("imStage").style.background = hasImg ? "#fff" : galleryColor(curShot);
+  document.getElementById("imStage").querySelectorAll('img.dg-img').forEach(function(n){n.remove();});
+  document.getElementById("imStage").classList.toggle("has-img", !!hasImg);
+  if (hasImg) {
+    var im = document.createElement('img'); im.className = 'dg-img'; im.src = car.imgs[curShot];
+    document.getElementById("imStage").appendChild(im);
+  }
+  document.getElementById("imText").textContent = car.imgText + " · " + shotLabel(curShot);
+  modal.className = "img-modal on";
+});
+document.getElementById("imClose").addEventListener("click", function () { modal.className = "img-modal"; });
+modal.addEventListener("click", function (e) { if (e.target === modal) modal.className = "img-modal"; });
+
+/* 检测报告：查看检测报告 → 打开真实检测报告链接（新窗口） */
+document.getElementById("viewReportBtn").addEventListener("click", function () {
+  window.open("https://assets.souche.com/projects/cheyipai_wireless/cheyipai_f2e/web-app-report-analyse/#/analysis?orderNo=102023050615060857676957528&type=1", "_blank");
+});
+
+/* ---------- 信息区 ---------- */
+// #AI:design:start
+function provinceCityLabel() {
+  var address = SITE_CONFIG.address || "";
+  var match = address.match(/^(.+?省.+?市)/);
+  return match ? match[1] : address;
+}
+// #AI:design:end
+function renderInfo() {
+  document.title = carName(car) + " - " + marketName();
+  document.getElementById("diTitle").textContent = carName(car);
+  document.getElementById("diTags").innerHTML =
+    (car.tags.indexOf("cert") > -1 ? "<span>" + esc(t("card.certTag")) + "</span>" : "") +
+    "<span>" + esc(V(car.emission)) + "</span><span>" + esc(bodyLabel(car.bodyType)) + "</span><span>" + esc(V(car.color) + (window.__lang === "zh" ? "色" : "")) + "</span>" +
+    (car.tradeType ? "<span>" + esc(car.tradeType) + "</span>" : "");
+  var oldPrice = (car.price * 1.35).toFixed(1);
+  /* 现价：售价双币展示（2026-09-28 YAN 确认，ru=卢布+美元，en/zh 维持原样）；指导价 diOldPrice 不改仍单币种 */
+  document.getElementById("diPrice").innerHTML = window.__lang === "zh" ? car.price + "<small>万</small>" : fmtPriceDualHTML(car.price);
+  document.getElementById("diOldPrice").textContent = tf("dt.oldPrice", { p: fmtPrice(oldPrice) });
+
+  var rows = [
+    [t("dt.p.reg"), car.reg], [t("dt.p.mileage"), fmtMileage(car.mileage)],
+    [t("dt.p.gearbox"), fmtGear(car.gearbox)], [t("dt.p.displacement"), car.displacement],
+    [t("dt.p.fuel"), V(car.fuel)], [t("dt.p.emission"), V(car.emission)],
+    [t("dt.p.color"), V(car.color)], [t("dt.p.location"), provinceCityLabel()]
+  ];
+  var pHtml = "";
+  for (var pi = 0; pi < rows.length; pi += 2) {
+    pHtml += "<tr>";
+    for (var pj = pi; pj < pi + 2; pj++) {
+      pHtml += '<td class="pf">' + esc(rows[pj][0]) + '</td><td class="pv">' + esc(rows[pj][1]) + "</td>";
+    }
+    pHtml += "</tr>";
+  }
+  document.getElementById("diParams").innerHTML = pHtml;
+}
+renderInfo();
+
+// #AI:design:start
+/* ---------- 车辆档案与车辆图片 ---------- */
+function renderVehicleProfile() {
+  var groups = (window.CAR_PROFILES && window.CAR_PROFILES[car.id]) || [];
+  document.getElementById("vehicleProfile").innerHTML = groups.map(function (group) {
+    return '<div class="archive-card"><h4>' + esc(group.title) + '</h4><table><tbody>' +
+      group.rows.map(function (row) {
+        return '<tr><th>' + esc(row[0]) + '</th><td>' + esc(row[1] == null || row[1] === "" ? "—" : row[1]) + '</td></tr>';
+      }).join("") + '</tbody></table></div>';
+  }).join("");
+}
+function renderVehicleImages() {
+  var images = (car.imgs || []).filter(function (src) { return !!src; });
+  document.getElementById("vehicleImages").innerHTML = images.length ? images.map(function (src, index) {
+    return '<figure class="vehicle-image"><img src="' + esc(src) + '" alt="' + esc(carName(car) + " 车辆图片 " + (index + 1)) + '" loading="lazy"></figure>';
+  }).join("") : '<div class="vehicle-images-empty">暂无车辆图片</div>';
+}
+renderVehicleProfile();
+renderVehicleImages();
+// #AI:design:end
+
+/* ---------- 联系方式条（展示市场信息，取自 config.js / i18n） ---------- */
+function renderContactBlock() {
+  document.getElementById("mbLogo").textContent = SITE_CONFIG.logoMark;
+  document.getElementById("mbName").textContent = marketName();
+  // #AI:design:start
+  document.getElementById("mbDesc").textContent = marketIntroI().replace("{address}", addressI());
+  // #AI:design:end
+  document.getElementById("mbTel").textContent = t("ui.hotline") + " " + SITE_CONFIG.hotline;
+  document.getElementById("dtReportTxt").innerHTML = t("dt.reportTxt");
+  document.getElementById("shareQr").dataset.label = t("dt.scanWechat");
+  document.getElementById("shareTip").innerHTML = t("dt.shareTip");
+  renderInquiry();
+}
+
+// #AI:design:start
+/* 预览用省市选项：正式接入行政区划数据时替换此映射。 */
+var CHINA_REGIONS = {
+  "北京市": ["北京市"], "天津市": ["天津市"], "河北省": ["石家庄市", "唐山市", "秦皇岛市", "邯郸市", "保定市"],
+  "山西省": ["太原市", "大同市", "临汾市"], "内蒙古自治区": ["呼和浩特市", "包头市", "鄂尔多斯市"],
+  "辽宁省": ["沈阳市", "大连市", "鞍山市"], "吉林省": ["长春市", "吉林市", "延边州"],
+  "黑龙江省": ["哈尔滨市", "齐齐哈尔市", "牡丹江市"], "上海市": ["上海市"],
+  "江苏省": ["南京市", "苏州市", "无锡市", "常州市", "徐州市"], "浙江省": ["杭州市", "宁波市", "温州市", "嘉兴市", "金华市"],
+  "安徽省": ["合肥市", "芜湖市", "蚌埠市", "安庆市"], "福建省": ["福州市", "厦门市", "泉州市", "漳州市"],
+  "江西省": ["南昌市", "九江市", "赣州市"], "山东省": ["济南市", "青岛市", "烟台市", "潍坊市", "临沂市"],
+  "河南省": ["郑州市", "洛阳市", "开封市", "安阳市"], "湖北省": ["武汉市", "宜昌市", "襄阳市", "荆州市"],
+  "湖南省": ["长沙市", "株洲市", "湘潭市", "岳阳市"], "广东省": ["广州市", "深圳市", "珠海市", "汕头市", "佛山市", "江门市", "东莞市", "中山市", "惠州市"],
+  "广西壮族自治区": ["南宁市", "柳州市", "桂林市", "北海市"], "海南省": ["海口市", "三亚市"],
+  "重庆市": ["重庆市"], "四川省": ["成都市", "绵阳市", "德阳市", "乐山市"], "贵州省": ["贵阳市", "遵义市", "六盘水市"],
+  "云南省": ["昆明市", "曲靖市", "玉溪市", "大理州"], "西藏自治区": ["拉萨市"],
+  "陕西省": ["西安市", "宝鸡市", "咸阳市", "榆林市"], "甘肃省": ["兰州市", "天水市", "酒泉市"],
+  "青海省": ["西宁市"], "宁夏回族自治区": ["银川市", "石嘴山市"], "新疆维吾尔自治区": ["乌鲁木齐市", "克拉玛依市", "喀什地区"],
+  "香港特别行政区": ["香港"], "澳门特别行政区": ["澳门"], "台湾省": ["台北市", "高雄市"]
+};
+// #AI:design:end
+renderContactBlock();
+
+/* ---------- 咨询车况弹层（面向海外用户的留资表单，演示态） ---------- */
+var inqPop = document.getElementById("inqPop"), inqMask = document.getElementById("inqMask");
+function renderInquiry() {
+  document.getElementById("inqTitle").textContent = t("inq.title");
+  document.getElementById("inqForm").reset();
+  document.getElementById("inqForm").style.display = "";
+  document.getElementById("inqDone").style.display = "none";
+  /* 咨询车辆信息卡 */
+  document.getElementById("inqCar").innerHTML =
+    (car.imgs && car.imgs[0] ? '<img src="' + car.imgs[0] + '" alt="">' : "") +
+    '<div><div class="ic-name">' + esc(carName(car)) + '</div>' +
+    '<div class="ic-meta">' + esc(car.reg) + ' · ' + esc(fmtMileage(car.mileage)) + ' · <b>' + fmtPriceDualHTML(car.price) + '</b></div></div>';
+  /* 字段 label 与选项、错误文案本地化 */
+  var L = function (id, key) { document.querySelector('[for="' + id + '"]').innerHTML = t(key); };
+  L("iqName", "inq.fName"); L("iqMail", "inq.fMail"); L("iqPhone", "inq.fPhone"); L("iqCountry", "inq.fCountry"); L("iqProvince", "inq.fProvince"); L("iqCity", "inq.fCity");
+  L("iqType", "inq.fType"); L("iqMsg", "inq.fMsg");
+  /* 国家/地区下拉 */
+  var cSel = document.getElementById("iqCountry"), cVal = cSel.value;
+  var ch = '<option value="">' + esc(t("inq.opt0")) + '</option>';
+  COUNTRIES.forEach(function (c) { ch += '<option value="' + esc(c[0]) + '"' + (c[0] === cVal ? " selected" : "") + '>' + esc(c[window.__lang === "zh" ? 0 : (window.__lang === "en" ? 1 : 2)]) + '</option>'; });
+  cSel.innerHTML = ch;
+  var ph = { iqMail: "name@example.com", iqPhone: "+7 900 000-00-00" };
+  Object.keys(ph).forEach(function (k) { document.getElementById(k).placeholder = ph[k]; });
+  var sel = document.getElementById("iqType");
+  sel.options[0].text = t("inq.opt0");
+  ["q1","q2","q3","q4","q5","q6"].forEach(function (k, i) { sel.options[i + 1].text = t("inq." + k); });
+  document.getElementById("agreeTxt").innerHTML = t("inq.agree") + ' <b class="req">*</b>';
+  document.getElementById("eName").textContent = t("inq.eName");
+  document.getElementById("eMail").textContent = t("inq.eMail");
+  document.getElementById("ePhone").textContent = t("inq.ePhone");
+  document.getElementById("eCountry").textContent = t("inq.eCountry");
+  document.getElementById("eProvince").textContent = t("inq.eProvince");
+  document.getElementById("eCity").textContent = t("inq.eCity");
+  document.getElementById("eType").textContent = t("inq.eType");
+  document.getElementById("eAgree").textContent = t("inq.eAgree");
+  document.getElementById("inqBack").textContent = t("inq.close");
+  document.querySelector("#inqDone h5").textContent = t("inq.doneT");
+  document.querySelector("#inqDone p").textContent = t("inq.doneD");
+  renderChinaRegions();
+  syncChinaRegion();
+  if (window.refreshSelectPh) window.refreshSelectPh();
+}
+function renderChinaRegions(selectedProvince, selectedCity) {
+  var provinceSel = document.getElementById("iqProvince");
+  var provinceVal = selectedProvince || provinceSel.value || "";
+  provinceSel.innerHTML = '<option value="">' + esc(t("inq.opt0")) + '</option>' + Object.keys(CHINA_REGIONS).map(function (province) {
+    return '<option value="' + esc(province) + '"' + (province === provinceVal ? " selected" : "") + '>' + esc(province) + '</option>';
+  }).join("");
+  updateChinaCities(selectedCity);
+}
+function updateChinaCities(selectedCity) {
+  var province = document.getElementById("iqProvince").value;
+  var citySel = document.getElementById("iqCity");
+  var cityVal = selectedCity || citySel.value || "";
+  var cities = CHINA_REGIONS[province] || [];
+  citySel.innerHTML = '<option value="">' + esc(t("inq.opt0")) + '</option>' + cities.map(function (city) {
+    return '<option value="' + esc(city) + '"' + (city === cityVal ? " selected" : "") + '>' + esc(city) + '</option>';
+  }).join("");
+}
+function syncChinaRegion() {
+  var isChina = document.getElementById("iqCountry").value === "中国";
+  document.getElementById("iqChinaRegion").style.display = isChina ? "" : "none";
+  if (isChina) {
+    renderChinaRegions();
+  } else {
+    document.getElementById("iqProvince").value = "";
+    document.getElementById("iqCity").innerHTML = '<option value="">' + esc(t("inq.opt0")) + '</option>';
+  }
+}
+function openInq() {
+  /* 上次已提交成功则重置回表单态 */
+  if (document.getElementById("inqDone").style.display === "block") {
+    document.getElementById("inqDone").style.display = "none";
+    document.getElementById("inqForm").style.display = "";
+    document.getElementById("inqForm").reset();
+    document.querySelectorAll(".iq-err.on").forEach(function (e) { e.classList.remove("on"); });
+    document.querySelectorAll(".iq-field.err, .iq-agree.err").forEach(function (e) { e.classList.remove("err"); });
+    if (window.enhanceAllSelects) window.enhanceAllSelects();
+    if (window.refreshSelectPh) window.refreshSelectPh();
+  }
+  inqPop.classList.add("on"); inqMask.classList.add("on"); document.body.style.overflow = "hidden";
+}
+function closeInq() { inqPop.classList.remove("on"); inqMask.classList.remove("on"); document.body.style.overflow = ""; }
+function markInqErr(fieldId, errId, bad) {
+  var f = document.getElementById(fieldId).closest(".iq-field") || document.getElementById(fieldId).closest(".iq-agree");
+  if (f) f.classList.toggle("err", !!bad);
+  document.getElementById(errId).classList.toggle("on", !!bad);
+  return bad;
+}
+document.getElementById("btnInquiry").addEventListener("click", openInq);
+document.getElementById("iqCountry").addEventListener("change", function () {
+  syncChinaRegion();
+  ["eCountry", "eProvince", "eCity"].forEach(function (id) { document.getElementById(id).classList.remove("on"); });
+});
+document.getElementById("iqProvince").addEventListener("change", function () {
+  updateChinaCities();
+  document.getElementById("eProvince").classList.remove("on");
+  document.getElementById("eCity").classList.remove("on");
+});
+document.getElementById("iqCity").addEventListener("change", function () { document.getElementById("eCity").classList.remove("on"); });
+
+/* ---------- 立即联系下拉浮层（2026-09-28 YAN 确认：替代居中弹窗；无遮罩、不锁 body 滚动） ----------
+   四行列表统一为 <button>，点击仅复制该行展示值（热线/邮箱/WhatsApp/Facebook），无任何跳转；
+   数值取 config.js（hotline / contact），三语下不翻译，仅行标题走 i18n 字典；
+   定位：锚定 #btnCall 正下方左对齐，右侧/下方超出视口时自动钉回（positionCt） */
+var ctPop = document.getElementById("ctPop"), btnCall = document.getElementById("btnCall");
+function renderContactPop() {
+  var c = SITE_CONFIG.contact || {};
+  function row(icon, nameKey, value) {
+    return '<button type="button" class="cp-item" data-copy="' + esc(value) + '">' +
+      '<img src="img/contact/' + icon + '" alt=""><span class="cp-text">' +
+      '<span class="cp-name" data-i18n="' + nameKey + '">' + esc(t(nameKey)) + '</span>' +
+      '<span class="cp-value">' + esc(value) + '</span></span></button>';
+  }
+  var rows = '';
+  if (SITE_CONFIG.hotline) rows += row("phone.svg", "dt.ctHotline", SITE_CONFIG.hotline);
+  if (c.email) rows += row("mail.svg", "dt.ctEmail", c.email);
+  if (c.whatsapp) rows += row("whatsapp.svg", "dt.ctWhats", c.whatsapp);
+  if (c.facebook) rows += row("facebook.svg", "dt.ctFb", c.facebook);
+  var list = document.getElementById("ctList");
+  list.innerHTML = rows;
+  list.querySelectorAll(".cp-item").forEach(function (b) {
+    b.addEventListener("click", function () { copyText(b.dataset.copy, t("dt.copied")); });
+  });
+}
+renderContactPop();
+/* 下拉定位：优先锚定按钮正下方；下方空间不足时向上翻转，上下都放不下则钳制在视口内（2026-09-28 YAN 确认：完整展示四行，任何情况下不做内部滚动） */
+function positionCt() {
+  var r = btnCall.getBoundingClientRect();
+  var vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+  var M = 16, GAP = 8;
+  /* 按钮滚出视口时收起浮层，避免悬停在无锚点的屏幕外 */
+  if (r.bottom < M || r.top > vh - M) { closeCt(); return; }
+  var pw = ctPop.offsetWidth, ph = ctPop.offsetHeight;
+  var top = r.bottom + GAP;
+  if (vh - M - top < ph) {
+    if (r.top - GAP - ph >= M) {
+      top = r.top - GAP - ph; /* 下方放不下，向上翻转展开 */
+    } else {
+      top = Math.max(M, vh - M - ph); /* 上下均不足时钳制在视口内，仍完整展示不滚动 */
+    }
+  }
+  var left = r.left;
+  if (left + pw > vw - M) left = Math.max(M, vw - M - pw);
+  ctPop.style.left = left + "px";
+  ctPop.style.top = top + "px";
+}
+function ctOpen() { return ctPop.classList.contains("on"); }
+function openCt() {
+  renderContactPop();
+  ctPop.classList.add("on");
+  btnCall.setAttribute("aria-expanded", "true");
+  positionCt();
+}
+function closeCt() {
+  if (!ctOpen()) return;
+  ctPop.classList.remove("on");
+  btnCall.setAttribute("aria-expanded", "false");
+}
+btnCall.addEventListener("click", function () {
+  if (ctOpen()) closeCt(); else openCt();
+});
+/* 点击浮层外部收起（按钮自身除外，已在上方 toggle 中处理；行内点击冒泡到此仍在浮层内，不会误收） */
+document.addEventListener("click", function (e) {
+  if (!ctOpen()) return;
+  if (ctPop.contains(e.target) || btnCall.contains(e.target)) return;
+  closeCt();
+});
+/* 滚动/缩放时保持锚定 */
+window.addEventListener("scroll", function () { if (ctOpen()) positionCt(); }, true);
+window.addEventListener("resize", function () { if (ctOpen()) positionCt(); });
+document.getElementById("inqClose").addEventListener("click", closeInq);
+document.getElementById("inqBack").addEventListener("click", closeInq);
+inqMask.addEventListener("click", closeInq);
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeInq(); closeCt(); } });
+document.getElementById("inqForm").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var bad = false;
+  bad = markInqErr("iqName", "eName", !document.getElementById("iqName").value.trim()) || bad;
+  bad = markInqErr("iqMail", "eMail", !/^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$/.test(document.getElementById("iqMail").value.trim())) || bad;
+  bad = markInqErr("iqPhone", "ePhone", !document.getElementById("iqPhone").value.trim()) || bad;
+  bad = markInqErr("iqCountry", "eCountry", !document.getElementById("iqCountry").value) || bad;
+  if (document.getElementById("iqCountry").value === "中国") {
+    bad = markInqErr("iqProvince", "eProvince", !document.getElementById("iqProvince").value) || bad;
+    bad = markInqErr("iqCity", "eCity", !document.getElementById("iqCity").value) || bad;
+  }
+  bad = markInqErr("iqType", "eType", !document.getElementById("iqType").value) || bad;
+  bad = markInqErr("iqAgree", "eAgree", !document.getElementById("iqAgree").checked) || bad;
+  if (bad) {
+    var first = document.querySelector(".iq-field.err, .iq-agree.err");
+    if (first) first.scrollIntoView({ block: "center", behavior: "smooth" });
+    return;
+  }
+  /* 演示态：弹层内切换为成功态 */
+  document.getElementById("inqForm").style.display = "none";
+  document.getElementById("inqDone").style.display = "block";
+});
+[
+  ["iqName", "eName"], ["iqMail", "eMail"], ["iqPhone", "ePhone"], ["iqCountry", "eCountry"],
+  ["iqProvince", "eProvince"], ["iqCity", "eCity"], ["iqType", "eType"], ["iqAgree", "eAgree"]
+].forEach(function (pair) {
+  var id = pair[0];
+  var el = document.getElementById(id);
+  var errId = pair[1];
+  el.addEventListener("input", clear); el.addEventListener("change", clear);
+  function clear() {
+    var f = el.closest(".iq-field") || el.closest(".iq-agree");
+    if (f) f.classList.remove("err");
+    document.getElementById(errId).classList.remove("on");
+  }
+});
+
+/* ---------- 轻提示（el-message 规格） ---------- */
+var toastTimer = null;
+function showToast(msg) {
+  var el = document.getElementById("dtToast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "dtToast";
+    el.className = "dt-toast";
+    document.body.appendChild(el);
+  }
+  el.innerHTML = '<i class="el-icon-success"></i><span></span>';
+  el.querySelector("span").textContent = msg;
+  el.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { el.classList.remove("on"); }, 2200);
+}
+function copyText(text, okMsg) {
+  function fallback() {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;left:-9999px;top:0";
+    document.body.appendChild(ta);
+    ta.select();
+    var done = false;
+    try { done = document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+    if (done) showToast(okMsg);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () { showToast(okMsg); }, fallback);
+  } else fallback();
+}
+/* ---------- 分享链接（不展示，直接复制到剪贴板） ---------- */
+function carUrl() { return location.href.split("#")[0].split("?")[0] + "?id=" + car.id; }
+document.getElementById("btnCopyLink").addEventListener("click", function () {
+  copyText(carUrl(), t("dt.copiedLink"));
+});
+/* ---------- 生成笔记：复制车辆信息文案 ---------- */
+function buildNote() {
+  var L = window.__lang;
+  var lines = [];
+  var priceTxt = L === "zh" ? car.price + "万" : fmtPriceDualText(car.price); /* 售价双币（ru 文本用 / 分隔），2026-09-28 */
+  if (L === "ru") {
+    lines.push("🚗 " + carName(car));
+    lines.push("Цена: " + priceTxt + " | Пробег: " + fmtMileage(car.mileage) + " | Рег.: " + car.reg);
+    lines.push("КПП: " + fmtGear(car.gearbox) + " | Двигатель: " + car.displacement + " | Топливо: " + V(car.fuel));
+    lines.push("Экокласс: " + V(car.emission) + " | Кузов: " + bodyLabel(car.bodyType) + " | Цвет: " + V(car.color));
+    lines.push("Рынок: " + marketName() + " | Тел.: " + SITE_CONFIG.hotline);
+    lines.push(carUrl());
+  } else if (L === "en") {
+    lines.push("🚗 " + carName(car));
+    lines.push("Price: " + priceTxt + " | Mileage: " + fmtMileage(car.mileage) + " | Reg.: " + car.reg);
+    lines.push("Gearbox: " + fmtGear(car.gearbox) + " | Engine: " + car.displacement + " | Fuel: " + V(car.fuel));
+    lines.push("Emission: " + V(car.emission) + " | Body: " + bodyLabel(car.bodyType) + " | Color: " + V(car.color));
+    lines.push("Market: " + marketName() + " | Tel: " + SITE_CONFIG.hotline);
+    lines.push(carUrl());
+  } else {
+    lines.push("🚗 " + car.name);
+    lines.push("价格：" + car.price + "万 | 里程：" + car.mileage + "万公里 | 上牌：" + car.reg);
+    lines.push("变速箱：" + car.gearbox + " | 排量：" + car.displacement + " | 燃料：" + car.fuel);
+    lines.push("排放：" + car.emission + " | 车型：" + car.bodyType + " | 颜色：" + car.color);
+    lines.push("市场：" + SITE_CONFIG.marketName + " | 热线：" + SITE_CONFIG.hotline);
+    lines.push(carUrl());
+  }
+  return lines.join("\n");
+}
+document.getElementById("btnMakeNote").addEventListener("click", function () {
+  copyText(buildNote(), t("dt.copiedNote"));
+});
+
+/* ---------- 语言切换钩子 ---------- */
+window.__rerenderPage = function () {
+  renderCrumb(); renderGallery(); renderInfo(); renderContactBlock();
+  document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.dataset.i18n); });
+  /* 浮层打开时重渲染并重新定位（行标题随语言更新） */
+  if (ctOpen()) { renderContactPop(); positionCt(); }
+};
+</script>
+<!-- STAT CODE END -->
+</body>
+</html>

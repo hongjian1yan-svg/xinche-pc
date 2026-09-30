@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<!-- #AI:design 二手车市场官网复用模板 · 我要买车（车源列表页）
+     ⚙ 公共替换项见 js/config.js；示例车源数据在 js/cars.js（演示内容，非替换项）
+     筛选/排序/分页均为前端对本地数据的演示态过滤，非真实检索 -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- #AI:design:start --><title>我要买车 - 中山市鸿源二手车经销有限公司</title><!-- #AI:design:end --> <!-- REPLACE: 页面title市场名 -->
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/element-icons.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<!-- 面包屑：市场名 > 全国二手车 -->
+<div class="breadcrumb">
+  <div class="wrap" id="crumb">
+    <!-- REPLACE: 面包屑市场名由 config.js 注入 -->
+  </div>
+</div>
+
+<!-- 多条件筛选区（品牌/车系/燃料/价格/其它，前端过滤） -->
+<div class="filter-wrap">
+  <div class="wrap">
+    <div class="filter-row" data-f="brand">
+      <span class="fr-label" data-i18n="f.brand">品牌</span>
+      <div class="fr-opts" id="optsBrand"></div>
+    </div>
+    <div class="filter-row" data-f="series">
+      <span class="fr-label" data-i18n="f.series">车系</span>
+      <div class="fr-opts" id="optsSeries"></div>
+    </div>
+    <div class="filter-row" data-f="fuel">
+      <span class="fr-label" data-i18n="f.fuel">燃料类型</span>
+      <div class="fr-opts" id="optsFuel"></div>
+    </div>
+    <div class="filter-row" data-f="price">
+      <span class="fr-label" data-i18n="f.price">价格</span>
+      <div class="fr-opts" id="optsPrice">
+        <span class="price-custom">
+          <input type="number" id="pmin" min="0" placeholder="0"> -
+          <input type="number" id="pmax" min="0" placeholder="0"> <span data-i18n="pc.unit">万</span>
+          <button class="pc-ok" id="pcOk" data-i18n="pc.ok">确定</button>
+        </span>
+      </div>
+    </div>
+    <div class="filter-row" data-f="other">
+      <span class="fr-label" data-i18n="f.other">其它</span>
+      <div class="fr-opts" id="optsOther"></div>
+    </div>
+    <!-- 已选条件标签回显（点 × 移除） -->
+    <div class="chosen-bar" id="chosenBar"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- 结果计数 + 排序栏 -->
+  <div class="result-bar">
+    <div class="result-count" id="resultCount"></div>
+    <div class="sort-bar" id="sortBar">
+      <span class="sort-item active" data-s="default" data-i18n="sort.default">默认排序</span>
+      <span class="sort-item" data-s="new" data-i18n="sort.new">最新发布</span>
+      <span class="sort-item" data-s="price"><span data-i18n="sort.price">价格</span><span class="s-arrows"><i class="el-icon-caret-top" data-d="asc"></i><i class="el-icon-caret-bottom" data-d="desc"></i></span></span>
+      <span class="sort-item" data-s="age"><span data-i18n="sort.age">车龄</span><span class="s-arrows"><i class="el-icon-caret-top" data-d="asc"></i><i class="el-icon-caret-bottom" data-d="desc"></i></span></span>
+      <span class="sort-item" data-s="mileage"><span data-i18n="sort.mileage">里程</span><span class="s-arrows"><i class="el-icon-caret-top" data-d="asc"></i><i class="el-icon-caret-bottom" data-d="desc"></i></span></span>
+    </div>
+  </div>
+
+  <!-- 车源卡片网格（每行 4 张） -->
+  <div class="car-list" id="carList"></div>
+  <div class="empty hidden" id="listEmpty" data-i18n="list.empty">没有符合筛选条件的车源，试试移除部分条件</div>
+
+  <!-- 分页（前端切片） -->
+  <div class="pager" id="pager"></div>
+</div>
+
+<footer id="site-footer"></footer>
+<div id="float-bar"></div>
+
+<!-- STAT CODE -->
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/cars.js"></script>
+<script src="js/common.js"></script>
+<script>
+initPage("buy");
+function renderCrumb() {
+  document.getElementById("crumb").innerHTML =
+    '<a href="shouye.html">' + esc(marketName()) + "</a><span class='bc-sep el-icon-arrow-right'></span><span>" + esc(t("crumb.national")) + "</span>";
+}
+renderCrumb();
+document.title = t("pt.buy") + " - " + marketName();
+
+/* ================== 状态 ================== */
+var state = {
+  kw: getQuery("kw") || "",
+  brand: getQuery("brand") || "",
+  series: "",
+  priceKey: "", pmin: null, pmax: null,   // 预设区间或自定义
+  body: getQuery("body") || "",
+  carAge: "", gearbox: "", mileage: "", emission: "", displacement: "", fuel: "",
+  sort: "default", dir: "asc",
+  page: 1
+};
+var PAGE_SIZE = 8;
+
+/* 选项枚举（由数据动态汇总，品牌/车系精简手造版；待确认项#8） */
+var uniq = function (arr) { return arr.filter(function (v, i) { return arr.indexOf(v) === i; }); };
+var ALL_BRANDS = uniq(CARS_DATA.map(function (c) { return c.brand; }));
+var GEARBOXES = uniq(CARS_DATA.map(function (c) { return c.gearbox.split("(")[0]; }));
+var BODY_TYPES = uniq(CARS_DATA.map(function (c) { return c.bodyType; }));
+var MILEAGE_OPTS = [
+  { label: "1万公里以下", ikey: "opt.mil1", test: function (c) { return c.mileage < 1; } },
+  { label: "1-3万公里",   ikey: "opt.mil2", test: function (c) { return c.mileage >= 1 && c.mileage < 3; } },
+  { label: "3-5万公里",   ikey: "opt.mil3", test: function (c) { return c.mileage >= 3 && c.mileage < 5; } },
+  { label: "5-10万公里",  ikey: "opt.mil4", test: function (c) { return c.mileage >= 5 && c.mileage < 10; } },
+  { label: "10万公里以上", ikey: "opt.mil5", test: function (c) { return c.mileage >= 10; } }
+];
+var AGE_OPTS = [
+  { label: "3年以下", ikey: "opt.age1", test: function (c) { return c.carAge <= 3; } },
+  { label: "3-5年",   ikey: "opt.age2", test: function (c) { return c.carAge > 3 && c.carAge <= 5; } },
+  { label: "5-8年",   ikey: "opt.age3", test: function (c) { return c.carAge > 5 && c.carAge <= 8; } },
+  { label: "8年以上", ikey: "opt.age4", test: function (c) { return c.carAge > 8; } }
+];
+var EMISSION_OPTS = uniq(CARS_DATA.map(function (c) { return c.emission; }));
+var FUEL_OPTS = uniq(CARS_DATA.map(function (c) { return c.fuel; }));
+var DISPLACE_OPTS = [
+  { label: "1.0L及以下", ikey: "opt.dis1" }, { label: "1.0-1.6L", ikey: "opt.dis2" },
+  { label: "1.6-2.0L", ikey: "opt.dis3" }, { label: "2.0L以上", ikey: "opt.dis4" }
+];
+/* 选项显示文案本地化（内部 state 始终存中文 label，保证过滤逻辑不变） */
+function optLabel(zhLabel, ikey) {
+  if (window.__lang === "zh") return zhLabel;
+  if (ikey) return t(ikey);
+  return V(zhLabel);
+}
+function displaceMatch(c, label) {
+  var d = parseFloat(c.displacement);
+  if (isNaN(d)) return label === "1.0L及以下" && c.fuel === "纯电";
+  if (label === "1.0L及以下") return d <= 1.0;
+  if (label === "1.0-1.6L") return d > 1.0 && d <= 1.6;
+  if (label === "1.6-2.0L") return d > 1.6 && d <= 2.0;
+  return d > 2.0;
+}
+
+/* ================== 过滤 ================== */
+function filtered() {
+  return CARS_DATA.filter(function (c) {
+    if (state.kw) {
+      var kw = state.kw.toLowerCase();
+      if ((c.name + c.brand + c.series).toLowerCase().indexOf(kw) === -1) return false;
+    }
+    if (state.brand && c.brand !== state.brand) return false;
+    if (state.series && c.series !== state.series) return false;
+    if (state.pmin != null && c.price < state.pmin) return false;
+    if (state.pmax != null && c.price > state.pmax) return false;
+    if (state.body && c.bodyType !== state.body) return false;
+    if (state.gearbox && c.gearbox.split("(")[0] !== state.gearbox) return false;
+    if (state.fuel && c.fuel !== state.fuel) return false;
+    if (state.emission && c.emission !== state.emission) return false;
+    if (state.carAge) { var a = AGE_OPTS.filter(function (o) { return o.label === state.carAge; })[0]; if (a && !a.test(c)) return false; }
+    if (state.mileage) { var m = MILEAGE_OPTS.filter(function (o) { return o.label === state.mileage; })[0]; if (m && !m.test(c)) return false; }
+    if (state.displacement) { if (!displaceMatch(c, state.displacement)) return false; }
+    return true;
+  });
+}
+function sorted(list) {
+  var l = list.slice();
+  if (state.sort === "new") l.sort(function (a, b) { return b.reg.localeCompare(a.reg); });
+  else if (state.sort === "price") l.sort(function (a, b) { return state.dir === "asc" ? a.price - b.price : b.price - a.price; });
+  else if (state.sort === "age") l.sort(function (a, b) { return state.dir === "asc" ? a.carAge - b.carAge : b.carAge - a.carAge; });
+  else if (state.sort === "mileage") l.sort(function (a, b) { return state.dir === "asc" ? a.mileage - b.mileage : b.mileage - a.mileage; });
+  return l;
+}
+
+/* ================== 渲染筛选行 ================== */
+function optSpan(label, on, attr) {
+  return '<span class="fr-opt' + (on ? " on" : "") + '" ' + attr + ">" + esc(label) + "</span>";
+}
+function dropBox(key, label, options, current) {
+  var on = !!current;
+  var show = function (o) {
+    if (typeof o === "string") return o;
+    if (o.ikey) return t(o.ikey);
+    if (o.loc != null) return o.loc;
+    return o.label;
+  };
+  return '<span class="fr-drop' + (on ? " open-self" : "") + '" data-drop="' + key + '">' +
+    '<span class="fr-drop-btn' + (on ? " on" : "") + '">' + esc(current ? show(options.filter(function (o) { return (typeof o === "string" ? o : o.label) === current; })[0] || { label: current }) : label) + '<i class="el-icon-caret-bottom"></i></span>' +
+    '<ul class="fr-drop-menu"><li data-v="">' + esc(t("f.any")) + '</li>' +
+    options.map(function (o) {
+      var v = typeof o === "string" ? o : o.label;
+      return '<li data-v="' + esc(v) + '"' + (v === current ? ' class="on"' : "") + ">" + esc(show(o)) + "</li>";
+    }).join("") + "</ul></span>";
+}
+
+function renderFilters() {
+  /* 品牌行 */
+  var brandOpts = uniq(ALL_BRANDS);
+  document.getElementById("optsBrand").innerHTML =
+    optSpan(t("f.any"), !state.brand, 'data-set="brand" data-v=""') +
+    brandOpts.map(function (b) { return optSpan(brandName(b), state.brand === b, 'data-set="brand" data-v="' + esc(b) + '"'); }).join("") +
+    '<span class="fr-drop" data-drop="brandMore"><span class="fr-drop-btn">' + esc(t("f.more")) + '<i class="el-icon-caret-bottom"></i></span>' +
+    '<ul class="fr-drop-menu"><li data-v="">' + esc(t("f.any")) + '</li>' +
+    brandOpts.map(function (b) { return '<li data-v="' + esc(b) + '"' + (b === state.brand ? ' class="on"' : "") + ">" + esc(brandName(b)) + "</li>"; }).join("") +
+    "</ul></span>";
+
+  /* 车系行（跟随品牌联动） */
+  var seriesList = state.brand
+    ? uniq(CARS_DATA.filter(function (c) { return c.brand === state.brand; }).map(function (c) { return c.series; }))
+    : uniq(CARS_DATA.map(function (c) { return c.series; })).slice(0, 10);
+  document.getElementById("optsSeries").innerHTML =
+    optSpan(t("f.any"), !state.series, 'data-set="series" data-v=""') +
+    seriesList.map(function (s) { return optSpan(seriesName(s), state.series === s, 'data-set="series" data-v="' + esc(s) + '"'); }).join("");
+
+  /* 价格行（先清空重建，自定义输入框节点保留复用） */
+  var pc = document.querySelector(".price-custom");
+  var priceBox = document.getElementById("optsPrice");
+  priceBox.innerHTML =
+    optSpan(t("f.any"), !state.priceKey, 'data-set="price" data-v=""') +
+    HOME_PRICE_RANGES.map(function (p) {
+      return optSpan(priceLabel(p.min, p.max), state.priceKey === p.label, 'data-set="price" data-v="' + esc(p.label) + '"');
+    }).join("");
+  priceBox.appendChild(pc);
+
+  /* 燃料行（独立胶囊行，YAN 2026-09-29：从「其它」下拉组拆出，置于车系下方） */
+  document.getElementById("optsFuel").innerHTML =
+    optSpan(t("f.any"), !state.fuel, 'data-set="fuel" data-v=""') +
+    FUEL_OPTS.map(function (f) { return optSpan(V(f), state.fuel === f, 'data-set="fuel" data-v="' + esc(f) + '"'); }).join("");
+
+  /* 其它行（下拉组） */
+  document.getElementById("optsOther").innerHTML =
+    dropBox("carAge", t("f.age"), AGE_OPTS, state.carAge) +
+    dropBox("gearbox", t("f.gearbox"), GEARBOXES.map(function (g) { return { label: g, loc: fmtGear(g) }; }), state.gearbox) +
+    dropBox("body", t("f.body"), BODY_TYPES.map(function (b) { return { label: b, loc: bodyLabel(b) }; }), state.body) +
+    dropBox("mileage", t("f.mileage"), MILEAGE_OPTS, state.mileage) +
+    dropBox("emission", t("f.emission"), EMISSION_OPTS.map(function (e) { return { label: e, loc: V(e) }; }), state.emission) +
+    dropBox("displacement", t("f.displacement"), DISPLACE_OPTS, state.displacement);
+}
+
+/* ================== 已选条件回显 ================== */
+function renderChosen() {
+  var tags = [];
+  if (state.kw) tags.push({ k: "kw", t: t("cf.kw") + ": " + state.kw });
+  if (state.brand) tags.push({ k: "brand", t: t("cf.brand") + ": " + brandName(state.brand) });
+  if (state.series) tags.push({ k: "series", t: t("cf.series") + ": " + seriesName(state.series) });
+  if (state.priceKey) {
+    var pr = HOME_PRICE_RANGES.filter(function (x) { return x.label === state.priceKey; })[0];
+    tags.push({ k: "price", t: t("cf.price") + ": " + (pr ? priceLabel(pr.min, pr.max) : state.priceKey) });
+  }
+  else if (state.pmin != null || state.pmax != null)
+    tags.push({ k: "pcustom", t: t("cf.price") + ": " + (state.pmin == null ? 0 : state.pmin) + "-" + (state.pmax == null ? t("pc.unlimited") : state.pmax) + " " + t("pc.unit") });
+  if (state.body) tags.push({ k: "body", t: t("cf.body") + ": " + bodyLabel(state.body) });
+  if (state.carAge) tags.push({ k: "carAge", t: t("cf.age") + ": " + optLabel(state.carAge, (AGE_OPTS.filter(function (o) { return o.label === state.carAge; })[0] || {}).ikey) });
+  if (state.gearbox) tags.push({ k: "gearbox", t: t("cf.gearbox") + ": " + fmtGear(state.gearbox) });
+  if (state.mileage) tags.push({ k: "mileage", t: t("cf.mileage") + ": " + optLabel(state.mileage, (MILEAGE_OPTS.filter(function (o) { return o.label === state.mileage; })[0] || {}).ikey) });
+  if (state.emission) tags.push({ k: "emission", t: t("cf.emission") + ": " + V(state.emission) });
+  if (state.displacement) tags.push({ k: "displacement", t: t("cf.displacement") + ": " + optLabel(state.displacement, (DISPLACE_OPTS.filter(function (o) { return o.label === state.displacement; })[0] || {}).ikey) });
+  if (state.fuel) tags.push({ k: "fuel", t: t("cf.fuel") + ": " + V(state.fuel) });
+
+  var bar = document.getElementById("chosenBar");
+  if (!tags.length) { bar.innerHTML = ""; return; }
+  bar.innerHTML = "<span>" + esc(t("chosen.label")) + "</span>" +
+    tags.map(function (g) { return '<span class="chosen-tag">' + esc(g.t) + "<b data-rm='" + g.k + "' class='el-icon-close'></b></span>"; }).join("") +
+    '<span class="chosen-tag" style="background:#fff;border-style:dashed;cursor:pointer" data-rm="all">' + esc(t("chosen.clear")) + "</span>";
+}
+
+/* ================== 渲染结果 ================== */
+function render() {
+  renderFilters();
+  renderChosen();
+  var list = sorted(filtered());
+  document.getElementById("resultCount").innerHTML = esc(tf("rc.text", { n: "@N@", m: marketShort() })).replace("@N@", "<b id=\"rcCount\">" + list.length + "</b>");
+  var pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  if (state.page > pages) state.page = pages;
+  var slice = list.slice((state.page - 1) * PAGE_SIZE, state.page * PAGE_SIZE);
+  var grid = document.getElementById("carList");
+  grid.innerHTML = slice.map(carCardHTML).join("");
+  document.getElementById("listEmpty").className = "empty" + (slice.length ? " hidden" : "");
+  /* 分页 */
+  var pager = document.getElementById("pager");
+  if (pages <= 1) { pager.innerHTML = ""; return; }
+  var html = "<button data-p='" + (state.page - 1) + "'" + (state.page === 1 ? " disabled" : "") + '><i class="el-icon-arrow-left"></i></button>';
+  for (var i = 1; i <= pages; i++) html += "<button data-p='" + i + "'" + (i === state.page ? ' class="cur"' : "") + ">" + i + "</button>";
+  html += "<button data-p='" + (state.page + 1) + "'" + (state.page === pages ? " disabled" : "") + '><i class="el-icon-arrow-right"></i></button>';
+  pager.innerHTML = html;
+}
+
+function safeClearUrl() {
+  /* file:// 下部分浏览器限制 replaceState，失败不影响功能 */
+  try { history.replaceState(null, "", location.pathname); } catch (e) {}
+}
+
+/* ================== 事件（委托） ================== */
+function setPriceByKey(label) {
+  var p = HOME_PRICE_RANGES.filter(function (x) { return x.label === label; })[0];
+  if (p) { state.priceKey = label; state.pmin = p.min === 0 ? null : p.min; state.pmax = p.max === 999 ? null : p.max; }
+}
+
+document.querySelector(".filter-wrap").addEventListener("click", function (e) {
+  var t = e.target;
+  /* 普通选项 */
+  if (t.dataset.set != null) {
+    var k = t.dataset.set, v = t.dataset.v;
+    if (k === "price") {
+      state.priceKey = v;
+      if (!v) { state.pmin = null; state.pmax = null; }
+      else setPriceByKey(v);
+    } else {
+      state[k] = v;
+      if (k === "brand") state.series = ""; /* 品牌变化重置车系 */
+    }
+    state.page = 1; render(); return;
+  }
+  /* 下拉菜单项 */
+  if (t.tagName === "LI" && t.dataset.v != null && t.closest(".fr-drop-menu")) {
+    var key = t.closest(".fr-drop").dataset.drop, val = t.dataset.v;
+    if (key === "brandMore") { state.brand = val; state.series = ""; }
+    else { state[key] = val; }
+    state.page = 1; closeDrops(); render(); return;
+  }
+  /* 下拉开关 */
+  var db = t.closest(".fr-drop-btn");
+  if (db) {
+    var drop = db.closest(".fr-drop");
+    var wasOpen = drop.className.indexOf("open") > -1;
+    closeDrops();
+    if (!wasOpen) drop.className = "fr-drop open";
+    return;
+  }
+  /* 已选标签移除 */
+  if (t.dataset.rm) {
+    var rm = t.dataset.rm;
+    if (rm === "all") {
+      state.kw = ""; state.brand = ""; state.series = ""; state.priceKey = ""; state.pmin = null; state.pmax = null;
+      state.body = ""; state.carAge = ""; state.gearbox = ""; state.mileage = ""; state.emission = ""; state.displacement = ""; state.fuel = "";
+      safeClearUrl();
+    } else if (rm === "kw") { state.kw = ""; safeClearUrl(); }
+    else if (rm === "price") { state.priceKey = ""; state.pmin = null; state.pmax = null; }
+    else if (rm === "pcustom") { state.pmin = null; state.pmax = null; state.priceKey = ""; document.getElementById("pmin").value = ""; document.getElementById("pmax").value = ""; }
+    else { state[rm] = ""; if (rm === "brand") state.series = ""; }
+    state.page = 1; render(); return;
+  }
+  /* 点击空白处关闭下拉 */
+  if (!t.closest(".fr-drop")) closeDrops();
+});
+function closeDrops() {
+  var ds = document.querySelectorAll(".fr-drop.open");
+  for (var i = 0; i < ds.length; i++) ds[i].className = "fr-drop";
+}
+
+/* 自定义价格 */
+document.getElementById("pcOk").addEventListener("click", function () {
+  var a = parseFloat(document.getElementById("pmin").value);
+  var b = parseFloat(document.getElementById("pmax").value);
+  state.pmin = isNaN(a) ? null : a;
+  state.pmax = isNaN(b) ? null : b;
+  state.priceKey = "";
+  state.page = 1; render();
+});
+
+/* 排序 */
+document.getElementById("sortBar").addEventListener("click", function (e) {
+  var arrow = e.target.closest(".s-arrows i");
+  var item = e.target.closest(".sort-item");
+  if (!item) return;
+  var s = item.dataset.s;
+  if (arrow) {
+    state.sort = s; state.dir = arrow.dataset.d;
+  } else {
+    state.sort = s; state.dir = "asc";
+  }
+  var items = document.querySelectorAll(".sort-item");
+  for (var i = 0; i < items.length; i++) {
+    items[i].classList.toggle("active", items[i] === item);
+    var as = items[i].querySelectorAll(".s-arrows i");
+    for (var j = 0; j < as.length; j++)
+      as[j].classList.toggle("on", items[i] === item && as[j].dataset.d === state.dir);
+  }
+  state.page = 1; render();
+});
+
+/* 分页 */
+document.getElementById("pager").addEventListener("click", function (e) {
+  var b = e.target.closest("button");
+  if (!b || b.disabled) return;
+  state.page = +b.dataset.p;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+/* 初始：URL 带入价格/关键词 */
+(function () {
+  var q1 = getQuery("pmin"), q2 = getQuery("pmax");
+  if (q1 !== "" || q2 !== "") {
+    state.pmin = q1 === "" ? null : parseFloat(q1);
+    state.pmax = q2 === "" ? null : parseFloat(q2);
+    var hit = HOME_PRICE_RANGES.filter(function (p) { return p.min === state.pmin && p.max === state.pmax; })[0];
+    if (hit) state.priceKey = hit.label;
+  }
+  render();
+})();
+
+/* 语言切换时重渲染列表页（筛选/回显/卡片/面包屑） */
+window.__rerenderPage = function () {
+  // #AI:design:start
+  document.title = t("pt.buy") + " - " + marketName();
+  // #AI:design:end
+  renderCrumb(); render();
+};
+</script>
+<!-- STAT CODE END -->
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- #AI:design 二手车市场官网复用模板 · 公司动态列表页
+     ⚙ 公共替换项见 js/config.js；新闻数据在 js/news.js（演示内容，整体替换即可） -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- #AI:design:start --><title>公司动态 - 中山市鸿源二手车经销有限公司</title><!-- #AI:design:end --> <!-- REPLACE: 页面title市场名 -->
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/element-icons.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<div class="wrap">
+  <div class="news-layout">
+    <!-- 主栏：新闻列表 + 分页 -->
+    <div class="news-main">
+      <div id="newsList"></div>
+      <div class="pager" id="newsPager"></div>
+    </div>
+    <!-- 侧栏：热门文章榜 + 市场宣传块 -->
+    <div class="news-side">
+      <div class="ns-box">
+        <h4>热门文章</h4>
+        <ul class="hot-list" id="hotList"></ul>
+      </div>
+      <div class="ns-box" style="padding:0;border:0">
+        <!-- REPLACE: 侧栏宣传块（正式使用时替换为实拍图/活动图） -->
+        <div class="ns-banner">
+          <b id="sbName"></b>
+          <span>——诚信、规范、市场化二手车市场</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer id="site-footer"></footer>
+<div id="float-bar"></div>
+
+<!-- STAT CODE -->
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/news.js"></script>
+<script src="js/common.js"></script>
+<script>
+initPage("news");
+var nPage = { p: 1 };
+var PAGE_SIZE = 4;
+var pages = Math.max(1, Math.ceil(NEWS_DATA.length / PAGE_SIZE));
+
+function renderNews() {
+  document.title = t("pt.news") + " - " + marketName();
+  document.getElementById("sbName").textContent = marketName();
+  document.querySelector(".ns-box h4").textContent = t("nl.hot");
+  document.querySelector(".ns-banner span").textContent = t("nl.slogan");
+  var slice = NEWS_DATA.slice((nPage.p - 1) * PAGE_SIZE, nPage.p * PAGE_SIZE);
+  document.getElementById("newsList").innerHTML = slice.map(function (n) {
+    var x = newsI(n);
+    // #AI:design:start
+    return '<div class="news-item">' +
+      '<div class="ni-img" style="background-image:url(\'' + n.img + '\')" onclick="location.href=\'news-detail.html?id=' + n.id + '\'"></div>' +
+      '<div class="ni-body">' +
+        '<a class="ni-title" href="news-detail.html?id=' + n.id + '">' + esc(x.title) + "</a>" +
+        '<p class="ni-desc">' + esc(x.summary) + "</p>" +
+        '<div class="ni-date">' + esc(n.date) + "</div>" +
+      "</div></div>";
+    // #AI:design:end
+  }).join("");
+  var pager = document.getElementById("newsPager");
+  if (pages <= 1) { pager.innerHTML = ""; return; }
+  var html = "<button data-p='" + (nPage.p - 1) + "'" + (nPage.p === 1 ? " disabled" : "") + '><i class="el-icon-arrow-left"></i></button>';
+  for (var i = 1; i <= pages; i++) html += "<button data-p='" + i + "'" + (i === nPage.p ? ' class="cur"' : "") + ">" + i + "</button>";
+  html += "<button data-p='" + (nPage.p + 1) + "'" + (nPage.p === pages ? " disabled" : "") + '><i class="el-icon-arrow-right"></i></button>';
+  pager.innerHTML = html;
+}
+renderNews();
+window.__rerenderPage = function () { renderNews(); renderHot(); };
+
+/* 热门榜：按 views 排序取前 5 */
+var hot = NEWS_DATA.slice().sort(function (a, b) { return b.views - a.views; }).slice(0, 5);
+document.getElementById("newsPager").addEventListener("click", function (e) {
+  var b = e.target.closest("button");
+  if (!b || b.disabled) return;
+  nPage.p = +b.dataset.p;
+  renderNews();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+function renderHot() {
+  document.getElementById("hotList").innerHTML = hot.map(function (n, i) {
+    return '<li><span class="rk">' + (i + 1) + '</span><a href="news-detail.html?id=' + n.id + '">' + esc(newsI(n).title) + "</a></li>";
+  }).join("");
+}
+renderHot();
+</script>
+<!-- STAT CODE END -->
+</body>
+</html>

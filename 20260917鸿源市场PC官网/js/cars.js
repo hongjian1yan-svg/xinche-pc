@@ -1,0 +1,89 @@
+/* #AI:design —— 示例车源数据（演示内容，非市场替换项；市场方有真实数据时整体替换本文件）
+   以全局变量内嵌，file:// 双击可用，无 fetch。
+   字段说明：
+   id 编号 | name 车型全称 | brand 品牌 | series 车系 | price 价格(万) | mileage 里程(万公里)
+   reg 上牌时间 | carAge 车龄(年,数值) | gearbox 变速箱 | displacement 排量 | fuel 燃料类型
+   emission 排放标准 | bodyType 车型(轿车/SUV/MPV/紧凑型/跑车/新能源) | color 车身颜色
+   location 所在地 | tradeType 贸易类型(FOB/CIF/EXW/FCA) | tags 推荐标签(newest最新上架/new准新车/lowSuv低价SUV/practice练手车/cert认证车)
+   imgColor 占位图渐变色 | imgText 占位图文字 */
+
+var CARS_DATA = [
+  { id: 1,  name: "奥迪A4L 2021款 40TFSI 豪华动感型", brand: "奥迪", series: "奥迪A4L", price: 21.8, mileage: 3.2, reg: "2021-06", carAge: 5,  gearbox: "自动", tradeType: "FOB", displacement: "2.0T", fuel: "汽油", emission: "国VI", bodyType: "轿车", color: "白", location: "本市场A区", tags: ["new", "cert"],        imgColor: "linear-gradient(135deg,#5a7ea6,#2f4d70)", imgText: "奥迪A4L", imgs: ["img/cars/car1-1.webp","img/cars/car1-2.webp","img/cars/car1-3.webp","img/cars/car1-4.webp"] },
+  { id: 2,  name: "别克英朗 2019款 18T 自动互联精英型 国VI", brand: "别克", series: "英朗", price: 3.68, mileage: 8.0, reg: "2019-03", carAge: 7,  gearbox: "自动", tradeType: "CIF", displacement: "1.3T", fuel: "汽油", emission: "国VI", bodyType: "紧凑型", color: "白", location: "本市场B区", tags: ["newest", "practice"], imgColor: "linear-gradient(135deg,#7d93a8,#48627c)", imgText: "别克英朗", imgs: ["img/cars/car2-1.webp","img/cars/car2-2.webp","img/cars/car2-3.webp","img/cars/car2-4.webp"] },
+  { id: 3,  name: "大众Polo 2016款 1.4L 自动风尚型", brand: "大众", series: "Polo", price: 2.7,  mileage: 9.0, reg: "2016-09", carAge: 10, gearbox: "自动", tradeType: "EXW", displacement: "1.4L", fuel: "汽油", emission: "国V",  bodyType: "小型车", color: "白", location: "本市场B区", tags: ["practice"],           imgColor: "linear-gradient(135deg,#8fa3b8,#5b7893)", imgText: "大众Polo", imgs: ["img/cars/car3-1.webp","img/cars/car3-2.webp","img/cars/car3-3.webp","img/cars/car3-4.webp"] },
+  { id: 4,  name: "比亚迪宋PLUS新能源 2021款 DM-i 110KM 旗舰型", brand: "比亚迪", series: "宋PLUS", price: 7.0, mileage: 6.0, reg: "2021-11", carAge: 5, gearbox: "自动(E-CVT)", tradeType: "FCA", displacement: "1.5L", fuel: "插电混动", emission: "国VI", bodyType: "新能源", color: "灰", location: "新能源展区", tags: ["newest", "lowSuv"], imgColor: "linear-gradient(135deg,#3e7c6a,#1f4c40)", imgText: "宋PLUS DM-i", imgs: ["img/cars/car4-1.webp","img/cars/car4-2.webp","img/cars/car4-3.webp","img/cars/car4-4.webp"] },
+  { id: 5,  name: "本田CR-V 2020款 240TURBO 两驱都市版", brand: "本田", series: "CR-V", price: 12.6, mileage: 6.8, reg: "2020-05", carAge: 6,  gearbox: "自动", tradeType: "FOB", displacement: "1.5T", fuel: "汽油", emission: "国VI", bodyType: "SUV", color: "黑", location: "本市场A区", tags: ["lowSuv", "cert"],   imgColor: "linear-gradient(135deg,#4f6d8f,#2b4460)", imgText: "本田CR-V", imgs: ["img/cars/car5-1.webp","img/cars/car5-2.webp","img/cars/car5-3.webp","img/cars/car5-4.webp"] },
+  { id: 6,  name: "丰田卡罗拉 2018款 1.2T 自动先锋版", brand: "丰田", series: "卡罗拉", price: 5.9, mileage: 11.0, reg: "2018-04", carAge: 8, gearbox: "自动", tradeType: "CIF", displacement: "1.2T", fuel: "汽油", emission: "国V", bodyType: "紧凑型", color: "银", location: "本市场C区", tags: ["practice"],      imgColor: "linear-gradient(135deg,#93a7bb,#607d99)", imgText: "丰田卡罗拉", imgs: ["img/cars/car6-1.webp","img/cars/car6-2.webp","img/cars/car6-3.webp","img/cars/car6-4.webp"] },
+  { id: 7,  name: "日产轩逸 2022款 1.6L CVT XL 智享版", brand: "日产", series: "轩逸", price: 7.8,  mileage: 2.1, reg: "2022-08", carAge: 4,  gearbox: "自动(CVT)", tradeType: "EXW", displacement: "1.6L", fuel: "汽油", emission: "国VI", bodyType: "轿车", color: "白", location: "本市场C区", tags: ["new", "newest"],  imgColor: "linear-gradient(135deg,#6c88a6,#41597a)", imgText: "日产轩逸", imgs: ["img/cars/car7-1.webp","img/cars/car7-2.webp","img/cars/car7-3.webp","img/cars/car7-4.webp"] },
+  { id: 8,  name: "宝马3系 2020款 325Li M运动套装", brand: "宝马", series: "3系", price: 22.9, mileage: 5.5, reg: "2020-10", carAge: 6,  gearbox: "自动", tradeType: "FCA", displacement: "2.0T", fuel: "汽油", emission: "国VI", bodyType: "轿车", color: "黑", location: "豪华车馆", tags: ["cert"],            imgColor: "linear-gradient(135deg,#3d5a80,#1d3557)", imgText: "宝马3系", imgs: ["img/cars/car8-1.webp","img/cars/car8-2.webp","img/cars/car8-3.webp","img/cars/car8-4.webp"] },
+  { id: 9,  name: "奔驰C级 2019款 C 260 L 运动版", brand: "奔驰", series: "C级", price: 18.6, mileage: 7.9, reg: "2019-07", carAge: 7,  gearbox: "自动", tradeType: "FOB", displacement: "1.5T", fuel: "汽油", emission: "国VI", bodyType: "轿车", color: "白", location: "豪华车馆", tags: ["cert"],           imgColor: "linear-gradient(135deg,#546e7a,#263238)", imgText: "奔驰C级", imgs: ["img/cars/car9-1.webp","img/cars/car9-2.webp","img/cars/car9-3.webp","img/cars/car9-4.webp"] },
+  { id: 10, name: "吉利博越 2021款 1.8TD 自动两驱亚运版", brand: "吉利", series: "博越", price: 6.2, mileage: 5.4, reg: "2021-03", carAge: 5, gearbox: "自动", tradeType: "CIF", displacement: "1.8T", fuel: "汽油", emission: "国VI", bodyType: "SUV", color: "红", location: "本市场B区", tags: ["lowSuv", "newest"], imgColor: "linear-gradient(135deg,#a05c5c,#6b3434)", imgText: "吉利博越", imgs: ["img/cars/car10-1.webp","img/cars/car10-2.webp","img/cars/car10-3.webp","img/cars/car10-4.webp"] },
+  { id: 11, name: "哈弗H6 2020款 1.5T 自动铂金都市版", brand: "哈弗", series: "H6", price: 5.8,  mileage: 8.6, reg: "2020-01", carAge: 6,  gearbox: "自动", tradeType: "EXW", displacement: "1.5T", fuel: "汽油", emission: "国VI", bodyType: "SUV", color: "灰", location: "本市场B区", tags: ["lowSuv"],        imgColor: "linear-gradient(135deg,#7a7f86,#494e55)", imgText: "哈弗H6", imgs: ["img/cars/car11-1.webp","img/cars/car11-2.webp","img/cars/car11-3.webp","img/cars/car11-4.webp"] },
+  { id: 12, name: "福特福克斯 2019款 两厢 EcoBoost 180 自动锋潮型", brand: "福特", series: "福克斯", price: 4.9, mileage: 9.2, reg: "2019-05", carAge: 7, gearbox: "自动", tradeType: "FCA", displacement: "1.5T", fuel: "汽油", emission: "国VI", bodyType: "紧凑型", color: "蓝", location: "本市场C区", tags: ["practice"], imgColor: "linear-gradient(135deg,#45699e,#274b77)", imgText: "福特福克斯", imgs: ["img/cars/car12-1.webp","img/cars/car12-2.webp","img/cars/car12-3.webp","img/cars/car12-4.webp"] },
+  { id: 13, name: "大众途观L 2021款 330TSI 自动两驱智享版", brand: "大众", series: "途观L", price: 15.2, mileage: 4.8, reg: "2021-09", carAge: 5, gearbox: "自动", tradeType: "FOB", displacement: "2.0T", fuel: "汽油", emission: "国VI", bodyType: "SUV", color: "白", location: "本市场A区", tags: ["lowSuv", "cert"], imgColor: "linear-gradient(135deg,#5b7d9e,#33587c)", imgText: "大众途观L", imgs: ["img/cars/car13-1.webp","img/cars/car13-2.webp","img/cars/car13-3.webp","img/cars/car13-4.webp"] },
+  { id: 14, name: "别克GL8 2018款 ES 28T 舒适型 国VI", brand: "别克", series: "GL8", price: 16.8, mileage: 12.5, reg: "2018-11", carAge: 8, gearbox: "自动", tradeType: "CIF", displacement: "2.0T", fuel: "汽油", emission: "国VI", bodyType: "MPV", color: "金", location: "商务车馆", tags: ["cert"],         imgColor: "linear-gradient(135deg,#8a7a55,#5c4f31)", imgText: "别克GL8", imgs: ["img/cars/car14-1.webp","img/cars/car14-2.webp","img/cars/car14-3.webp","img/cars/car14-4.webp"] },
+  { id: 15, name: "五菱宏光MINI EV 2022款 悦享款 三元锂", brand: "五菱", series: "宏光MINI EV", price: 1.9, mileage: 2.3, reg: "2022-06", carAge: 4, gearbox: "自动(单速)", tradeType: "EXW", displacement: "—", fuel: "纯电", emission: "电动", bodyType: "新能源", color: "绿", location: "新能源展区", tags: ["newest", "practice"], imgColor: "linear-gradient(135deg,#5f8f6b,#37624a)", imgText: "宏光MINI EV", imgs: ["img/cars/car15-1.webp","img/cars/car15-2.webp","img/cars/car15-3.webp","img/cars/car15-4.webp"] },
+  { id: 16, name: "特斯拉Model 3 2021款 标准续航后驱升级版", brand: "特斯拉", series: "Model 3", price: 13.9, mileage: 4.1, reg: "2021-05", carAge: 5, gearbox: "自动(单速)", tradeType: "FCA", displacement: "—", fuel: "纯电", emission: "电动", bodyType: "新能源", color: "白", location: "新能源展区", tags: ["new", "cert"], imgColor: "linear-gradient(135deg,#b0b7bd,#78838c)", imgText: "Model 3", imgs: ["img/cars/car16-1.webp","img/cars/car16-2.webp","img/cars/car16-3.webp","img/cars/car16-4.webp"] },
+  { id: 17, name: "丰田汉兰达 2017款 2.0T 四驱豪华版 7座", brand: "丰田", series: "汉兰达", price: 14.5, mileage: 13.8, reg: "2017-10", carAge: 9, gearbox: "自动", tradeType: "FOB", displacement: "2.0T", fuel: "汽油", emission: "国V", bodyType: "SUV", color: "银", location: "本市场A区", tags: ["lowSuv"],   imgColor: "linear-gradient(135deg,#75879a,#4c5f73)", imgText: "汉兰达", imgs: ["img/cars/car17-1.webp","img/cars/car17-2.webp","img/cars/car17-3.webp","img/cars/car17-4.webp"] },
+  { id: 18, name: "本田飞度 2021款 1.5L CVT潮跑版", brand: "本田", series: "飞度", price: 6.5,  mileage: 3.6, reg: "2021-12", carAge: 4,  gearbox: "自动(CVT)", tradeType: "CIF", displacement: "1.5L", fuel: "汽油", emission: "国VI", bodyType: "小型车", color: "橙", location: "本市场C区", tags: ["new", "practice"], imgColor: "linear-gradient(135deg,#c07a45,#8a4f2a)", imgText: "本田飞度", imgs: ["img/cars/car18-1.webp","img/cars/car18-2.webp","img/cars/car18-3.webp","img/cars/car18-4.webp"] },
+  { id: 19, name: "奥迪Q3 2019款 35TFSI 时尚动感型", brand: "奥迪", series: "Q3", price: 15.9,  mileage: 6.2, reg: "2019-09", carAge: 7,  gearbox: "自动", tradeType: "EXW", displacement: "1.4T", fuel: "汽油", emission: "国VI", bodyType: "SUV", color: "灰", location: "豪华车馆", tags: ["lowSuv", "cert"],  imgColor: "linear-gradient(135deg,#64758a,#3b4d63)", imgText: "奥迪Q3", imgs: ["img/cars/car19-1.webp","img/cars/car19-2.webp","img/cars/car19-3.webp","img/cars/car19-4.webp"] },
+  { id: 20, name: "日产逍客 2023款 1.3T CVT领航版", brand: "日产", series: "逍客", price: 9.9,  mileage: 1.2, reg: "2023-04", carAge: 3,  gearbox: "自动(CVT)", tradeType: "FCA", displacement: "1.3T", fuel: "汽油", emission: "国VI", bodyType: "SUV", color: "白", location: "本市场C区", tags: ["new", "newest"], imgColor: "linear-gradient(135deg,#7e9bb3,#527691)", imgText: "日产逍客", imgs: ["img/cars/car20-1.webp","img/cars/car20-2.webp","img/cars/car20-3.webp","img/cars/car20-4.webp"] },
+  { id: 21, name: "比亚迪秦PLUS 2023款 DM-i 冠军版 55KM", brand: "比亚迪", series: "秦PLUS", price: 6.8, mileage: 1.8, reg: "2023-06", carAge: 3, gearbox: "自动(E-CVT)", tradeType: "FOB", displacement: "1.5L", fuel: "插电混动", emission: "国VI", bodyType: "新能源", color: "蓝", location: "新能源展区", tags: ["new", "newest"], imgColor: "linear-gradient(135deg,#3f6ea5,#254a73)", imgText: "秦PLUS DM-i", imgs: ["img/cars/car21-1.webp","img/cars/car21-2.webp","img/cars/car21-3.webp","img/cars/car21-4.webp"] },
+  { id: 22, name: "大众朗逸 2017款 1.6L 自动舒适版", brand: "大众", series: "朗逸", price: 4.5,  mileage: 12.0, reg: "2017-06", carAge: 9,  gearbox: "自动", tradeType: "CIF", displacement: "1.6L", fuel: "汽油", emission: "国V",  bodyType: "紧凑型", color: "黑", location: "本市场B区", tags: ["practice"],      imgColor: "linear-gradient(135deg,#555b63,#2e3338)", imgText: "大众朗逸", imgs: ["img/cars/car22-1.webp","img/cars/car22-2.webp","img/cars/car22-3.webp","img/cars/car22-4.webp"] },
+  { id: 23, name: "现代ix35 2018款 2.0L 自动两驱智勇·畅质版", brand: "现代", series: "ix35", price: 5.2, mileage: 10.5, reg: "2018-08", carAge: 8, gearbox: "自动", tradeType: "EXW", displacement: "2.0L", fuel: "汽油", emission: "国V", bodyType: "SUV", color: "红", location: "本市场B区", tags: ["lowSuv", "practice"], imgColor: "linear-gradient(135deg,#9c5a5a,#6e3636)", imgText: "现代ix35", imgs: ["img/cars/car23-1.webp","img/cars/car23-2.webp","img/cars/car23-3.webp","img/cars/car23-4.webp"] },
+  { id: 24, name: "奔驰E级 2021款 E 300 L 时尚型", brand: "奔驰", series: "E级", price: 32.6, mileage: 3.9, reg: "2021-08", carAge: 5,  gearbox: "自动", tradeType: "FCA", displacement: "2.0T", fuel: "汽油", emission: "国VI", bodyType: "轿车", color: "黑", location: "豪华车馆", tags: ["new", "cert"],     imgColor: "linear-gradient(135deg,#2f3b4c,#141c28)", imgText: "奔驰E级", imgs: ["img/cars/car24-1.webp","img/cars/car24-2.webp","img/cars/car24-3.webp","img/cars/car24-4.webp"] },
+  { id: 25, name: "宝马X1 2022款 sDrive20Li 时尚型", brand: "宝马", series: "X1", price: 18.9,  mileage: 2.6, reg: "2022-05", carAge: 4,  gearbox: "自动", tradeType: "FOB", displacement: "1.5T", fuel: "汽油", emission: "国VI", bodyType: "SUV", color: "白", location: "豪华车馆", tags: ["new", "lowSuv"],    imgColor: "linear-gradient(135deg,#4a6b8a,#27425c)", imgText: "宝马X1", imgs: ["img/cars/car25-1.webp","img/cars/car25-2.webp","img/cars/car25-3.webp","img/cars/car25-4.webp"] },
+  { id: 26, name: "传祺M8 2021款 领秀系列 390T 豪华版", brand: "广汽传祺", series: "M8", price: 11.2, mileage: 5.1, reg: "2021-04", carAge: 5, gearbox: "自动", tradeType: "CIF", displacement: "2.0T", fuel: "汽油", emission: "国VI", bodyType: "MPV", color: "黑", location: "商务车馆", tags: ["newest", "cert"],  imgColor: "linear-gradient(135deg,#4d5a66,#28343f)", imgText: "传祺M8", imgs: ["img/cars/car26-1.webp","img/cars/car26-2.webp","img/cars/car26-3.webp","img/cars/car26-4.webp"] },
+  { id: 27, name: "福特Mustang 2019款 2.3T EcoBoost 黑曜魅影特别版", brand: "福特", series: "Mustang", price: 26.8, mileage: 4.5, reg: "2019-11", carAge: 7, gearbox: "自动", tradeType: "EXW", displacement: "2.3T", fuel: "汽油", emission: "国VI", bodyType: "跑车", color: "黄", location: "豪华车馆", tags: ["cert"], imgColor: "linear-gradient(135deg,#b89a3e,#7d6520)", imgText: "Mustang", imgs: ["img/cars/car27-1.webp","img/cars/car27-2.webp","img/cars/car27-3.webp","img/cars/car27-4.webp"] },
+  { id: 28, name: "长安CS35 PLUS 2020款 1.4T 自动悦联版", brand: "长安", series: "CS35 PLUS", price: 4.3, mileage: 7.4, reg: "2020-07", carAge: 6, gearbox: "自动", tradeType: "FCA", displacement: "1.4T", fuel: "汽油", emission: "国VI", bodyType: "SUV", color: "蓝", location: "本市场C区", tags: ["practice", "lowSuv"], imgColor: "linear-gradient(135deg,#5478a5,#33517a)", imgText: "长安CS35", imgs: ["img/cars/car28-1.webp","img/cars/car28-2.webp","img/cars/car28-3.webp","img/cars/car28-4.webp"] }
+];
+
+/* 首页「我要买车」区块：品牌行（点击跳列表页并带品牌条件） */
+/* 首页品牌轮播行（均为 js/cars.js 内有车源数据的品牌，点击可直达筛选结果） */
+var HOME_BRANDS = ["日产", "福特", "别克", "长安", "比亚迪", "吉利", "哈弗", "五菱", "广汽传祺", "奔驰", "宝马", "奥迪", "本田", "丰田", "大众", "特斯拉", "现代"];
+/* 首页轮播仅展示前 15 个（两排：8 + 7 + 更多），其余通过「更多」进入列表页筛选 */
+
+/* 品牌 logo 图（源：懂车帝品牌库 CDN；加载失败自动回退色块+首字） */
+var BRAND_LOGOS = {
+  "日产": "https://p3.dcarimg.com/img/motor-mis-img/5feee803f00613b3dfb9ec977192deb5~80x0.webp",
+  "福特": "https://p3.dcarimg.com/img/motor-mis-img/26bf5049dc5224161785225163fe6959~80x0.webp",
+  "别克": "https://p3.dcarimg.com/img/motor-mis-img/d43a7581e90f508acb9bceb87faaed84~80x0.webp",
+  "长安": "https://p3.dcarimg.com/img/tos-cn-i-dcdx/7460909912f44a8391ba22a7fd008867~80x0.webp",
+  "比亚迪": "https://p3.dcarimg.com/img/motor-mis-img/10a76eee736808997549bbb0f716e1cb~80x0.webp",
+  "吉利": "https://p3.dcarimg.com/img/motor-mis-img/1badee776354a960ac16444f51dad339~80x0.webp",
+  "哈弗": "https://p3.dcarimg.com/img/motor-mis-img/d557b170618043b5911d036fa7c8263f~80x0.webp",
+  "五菱": "https://p3.dcarimg.com/img/tos-cn-i-dcdx/f15a9d56604247ffb3183b1781d0cfb5~80x0.webp",
+  "广汽传祺": "https://p3.dcarimg.com/img/motor-mis-img/dfddc97d247ec51e0fa082ebcfd7ad4e~80x0.webp",
+  "奔驰": "https://p3.dcarimg.com/img/tos-cn-i-dcdx/d2956b62332f45e09f5538e8444a5454~80x0.webp",
+  "宝马": "https://p3.dcarimg.com/img/motor-mis-img/4867710a834bd648ba55797ba5e37f14~80x0.webp",
+  "奥迪": "https://p3.dcarimg.com/img/motor-mis-img/62946ba030f3589e083d8d3e98a595eb~80x0.webp",
+  "本田": "https://p3.dcarimg.com/img/tos-cn-i-dcdx/ce848b3a359d48ee97a3ffbc79c99aa8~80x0.webp",
+  "丰田": "https://p3.dcarimg.com/img/tos-cn-i-dcdx/66f2b4fa526340c589fe5d2b6bdd4d11~80x0.webp",
+  "大众": "https://p3.dcarimg.com/img/motor-mis-img/343173efb2ab28cda1b0e5a5b49dab8e~80x0.webp",
+  "特斯拉": "https://p3.dcarimg.com/img/motor-mis-img/222f2748c0d6e9c69c00a304f2ac8da1~80x0.webp",
+  "现代": "https://p3.dcarimg.com/img/motor-mis-img/6af469ddb92b4c24628c5884ab323f21~80x0.webp"
+};
+
+/* 首页价格区间行（与列表页价格筛选口径一致） */
+var HOME_PRICE_RANGES = [
+  { label: "3万以下",   min: 0,  max: 3 },
+  { label: "3-5万",     min: 3,  max: 5 },
+  { label: "5-7万",     min: 5,  max: 7 },
+  { label: "7-9万",     min: 7,  max: 9 },
+  { label: "9-12万",    min: 9,  max: 12 },
+  { label: "12-16万",   min: 12, max: 16 },
+  { label: "16-20万",   min: 16, max: 20 },
+  { label: "20万以上",  min: 20, max: 999 }
+];
+
+/* 首页车型行（点击跳列表页并带车型条件） */
+var HOME_BODY_TYPES = ["轿车", "SUV", "MPV", "新能源", "紧凑型", "跑车"];
+
+/* 今日推荐 Tab 定义（key 对应 CARS_DATA.tags） */
+var RECO_TABS = [
+  { key: "newest",   label: "最新上架" },
+  { key: "new",      label: "准新车" },
+  { key: "lowSuv",   label: "低价SUV" },
+  { key: "practice", label: "练手车" },
+  { key: "cert",     label: "认证车" }
+];

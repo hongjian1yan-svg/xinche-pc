@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!-- #AI:design 二手车市场官网复用模板 · 我要卖车（表单为前端演示态：必填校验通过后跳 success.html，不真实提交）
+     ⚙ 公共替换项见 js/config.js -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- #AI:design:start --><title>我要卖车 - 中山市鸿源二手车经销有限公司</title><!-- #AI:design:end --> <!-- REPLACE: 页面title市场名 -->
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/element-icons.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<!-- #AI:design:start -->
+<!-- 头部大图区：左「三大优势」+ 右「发布卖车信息」表单卡（背景图为生成图，正式上线替换为市场实拍图） -->
+<!-- #AI:design:end -->
+<div class="sell-hero">
+  <div class="sh-adv">
+    <h2 id="advTitle"></h2> <!-- REPLACE: 市场名由 config.js 注入 -->
+    <ul id="advList"></ul>
+  </div>
+  <div class="sell-form-card">
+    <div class="sf-head">
+      <h3 data-i18n="sl.formHead1">多渠道卖车，售出速度更快</h3>
+      <p data-i18n="sl.formHead2">发布卖车信息</p>
+    </div>
+    <div class="sf-body">
+      <form id="sellForm" novalidate>
+        <div class="sf-row">
+          <div class="sf-field"><label class="sf-label" for="fModel" data-i18n="sl.fModel">车型车系</label><select id="fModel"></select></div>
+        </div>
+        <div class="sf-err" id="eModel">请选择车型车系</div>
+        <div class="sf-row">
+          <div class="sf-field"><label class="sf-label" for="fCity" data-i18n="sl.fCity">上牌城市</label><select id="fCity"></select></div>
+          <div class="sf-field"><label class="sf-label" for="fReg" data-i18n="sl.fReg">首次上牌</label><select id="fReg"></select></div>
+        </div>
+        <div class="sf-err" id="eCity">请选择上牌城市</div>
+        <div class="sf-err" id="eReg">请选择首次上牌时间</div>
+        <div class="sf-row">
+          <div class="sf-field"><label class="sf-label" for="fMile" data-i18n="sl.fMile">行驶里程</label><span class="sf-unitwrap"><input type="number" id="fMile" class="has-unit" min="0" step="0.1" aria-label="行驶里程"><span class="sf-unit" data-i18n="sl.unitWanKm">万公里</span></span></div>
+          <div class="sf-field"><label class="sf-label" for="fPrice" data-i18n="sl.fPrice">期望售价</label><span class="sf-unitwrap"><input type="number" id="fPrice" class="has-unit" min="0" step="0.1" aria-label="期望售价"><span class="sf-unit" data-i18n="sl.unitWan">万</span></span></div>
+        </div>
+        <div class="sf-err" id="eMile">请填写行驶里程（万公里）</div>
+        <div class="sf-row">
+          <div class="sf-field"><label class="sf-label" for="fName" data-i18n="sl.fName">姓名（选填）</label><input type="text" id="fName" aria-label="姓名"></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-field"><label class="sf-label" for="fPhone" data-i18n="sl.fPhone">手机号</label><input type="tel" id="fPhone" maxlength="11" aria-label="手机号"></div>
+        </div>
+        <div class="sf-err" id="ePhone">请填写正确的 11 位手机号</div>
+        <!-- 邮箱：仅英文/俄文显示（海外用户无国内短信通道，改为邮箱联系） -->
+        <div class="sf-row" id="mailRow" style="display:none">
+          <div class="sf-field"><label class="sf-label" for="fMail" data-i18n="sl.fMail">邮箱</label><input type="email" id="fMail" aria-label="Email" placeholder="name@example.com"></div>
+        </div>
+        <div class="sf-err" id="eMail" style="display:none">Please enter a valid email address</div>
+        <div class="sf-row sf-code" id="codeRow">
+          <div class="sf-field"><label class="sf-label" for="fCode" data-i18n="sl.fCode">验证码</label><input type="text" id="fCode" maxlength="6" aria-label="验证码"></div>
+          <button type="button" class="sf-code-btn" id="codeBtn" data-i18n="sl.getCode">获取验证码</button>
+        </div>
+        <div class="sf-err" id="eCode">请填写验证码</div>
+        <button type="submit" class="sf-submit" data-i18n="sl.submit">立即提交</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 三大优势卡片（下方灰底分区） -->
+<div class="sell-adv-low">
+  <div class="wrap">
+    <h2 class="sec-title" style="text-align:center" id="advTitle2"></h2>
+    <div class="adv-cards" id="advCards"></div>
+  </div>
+</div>
+
+<footer id="site-footer"></footer>
+<div id="float-bar"></div>
+
+<!-- STAT CODE -->
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/cars.js"></script>
+<script src="js/common.js"></script>
+<script src="js/el-select.js"></script>
+<script>
+initPage("sell");
+
+/* ---------- 文案渲染（随语言） ---------- */
+function renderSellCopy() {
+  document.title = t("pt.sell") + " - " + marketName();
+  var advName = tf("sl.advTitle", { m: marketShort() });
+  document.getElementById("advTitle").textContent = advName;
+  document.getElementById("advTitle2").textContent = advName;
+  document.getElementById("advList").innerHTML =
+    tArr("home.sellAdvantages", SITE_CONFIG.sellAdvantages).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("");
+  var advDetail = [
+    { icon: "el-icon-lightning", t: t("sl.adv1t"), d: t("sl.adv1d") },
+    { icon: "el-icon-money", t: t("sl.adv2t"), d: t("sl.adv2d") },
+    { icon: "el-icon-s-check", t: t("sl.adv3t"), d: t("sl.adv3d") }
+  ];
+  document.getElementById("advCards").innerHTML = advDetail.map(function (a) {
+    return '<div class="adv-card"><div class="ac-icon ' + a.icon + '"></div><h4>' + esc(a.t) + '</h4><p>' + esc(a.d) + '</p></div>';
+  }).join("");
+  /* 表单选项 */
+  var sel = document.getElementById("fModel");
+  var selVal = sel.value;
+  var html = '<option value="">' + esc(t("sl.fModel")) + '</option>';
+  CARS_DATA.forEach(function (c) {
+    var v = c.brand + " " + c.series;
+    var label = window.__lang === "zh" ? v : brandName(c.brand) + " " + seriesName(c.series);
+    html += '<option value="' + esc(v) + '"' + (v === selVal ? " selected" : "") + '>' + esc(label) + "</option>";
+  });
+  sel.innerHTML = html;
+
+  var citySel = document.getElementById("fCity"), cityVal = citySel.value;
+  var cities = [t("sl.city1"), t("sl.city2")];
+  citySel.innerHTML = '<option value="">' + esc(t("sl.fCity")) + '</option>' +
+    cities.map(function (v) { return '<option' + (v === cityVal ? " selected" : "") + '>' + esc(v) + "</option>"; }).join("");
+
+  var regSel = document.getElementById("fReg"), regVal = regSel.value;
+  var nowY = new Date().getFullYear(), nowM = new Date().getMonth() + 1, rh = '<option value="">' + esc(t("sl.fReg")) + '</option>';
+  for (var back = 0; back <= 180; back++) {
+    var yy = nowY - Math.floor((back + (12 - nowM)) / 12);
+    var mm = ((nowM - 1 - back) % 12 + 12) % 12 + 1;
+    var v = yy + "-" + (mm < 10 ? "0" + mm : mm);
+    rh += '<option' + (v === regVal ? " selected" : "") + '>' + v + "</option>";
+  }
+  regSel.innerHTML = rh;
+
+  /* 错误提示文案 */
+  document.getElementById("eModel").textContent = t("sl.eModel");
+  document.getElementById("eCity").textContent = t("sl.eCity");
+  document.getElementById("eReg").textContent = t("sl.eReg");
+  document.getElementById("eMile").textContent = t("sl.eMile");
+  document.getElementById("ePhone").textContent = t("sl.ePhone");
+  document.getElementById("eCode").textContent = t("sl.eCode");
+  document.getElementById("eMail").textContent = t("sl.eMail");
+  /* 语言差异：中文 → 手机号+验证码；英/俄 → 手机号+邮箱（无国内短信通道） */
+  var isZh = window.__lang === "zh";
+  document.getElementById("codeRow").style.display = isZh ? "" : "none";
+  document.getElementById("eCode").style.display = isZh ? "" : "none";
+  document.getElementById("mailRow").style.display = isZh ? "none" : "";
+  document.getElementById("eMail").style.display = isZh ? "none" : "";
+  var phoneEl = document.getElementById("fPhone");
+  phoneEl.maxLength = isZh ? 11 : 20;
+  phoneEl.placeholder = isZh ? "" : "+86 138 0000 0000";
+  document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.dataset.i18n); });
+  if (window.enhanceAllSelects) window.enhanceAllSelects();
+  if (window.refreshSelectPh) window.refreshSelectPh();
+}
+renderSellCopy();
+
+/* ---------- 验证码演示态 ---------- */
+var codeBtn = document.getElementById("codeBtn"), codeTimer = null;
+codeBtn.addEventListener("click", function () {
+  if (codeBtn.disabled) return;
+  var left = 60;
+  codeBtn.disabled = true;
+  codeBtn.textContent = tf("sl.resend", { s: left });
+  codeTimer = setInterval(function () {
+    left--;
+    if (left <= 0) { clearInterval(codeTimer); codeBtn.disabled = false; codeBtn.textContent = t("sl.getCode"); }
+    else codeBtn.textContent = tf("sl.resend", { s: left });
+  }, 1000);
+});
+
+/* ---------- 必填校验 → 跳成功页 ---------- */
+function markErr(fieldId, errId, bad) {
+  var f = document.getElementById(fieldId).closest(".sf-field");
+  var e = document.getElementById(errId);
+  if (bad) { f.className = "sf-field err"; e.className = "sf-err on"; }
+  else { f.className = "sf-field"; e.className = "sf-err"; }
+  return bad;
+}
+document.getElementById("sellForm").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var bad = false;
+  bad = markErr("fModel", "eModel", !document.getElementById("fModel").value) || bad;
+  bad = markErr("fCity", "eCity", !document.getElementById("fCity").value) || bad;
+  bad = markErr("fReg", "eReg", !document.getElementById("fReg").value) || bad;
+  var mile = parseFloat(document.getElementById("fMile").value);
+  bad = markErr("fMile", "eMile", !(mile >= 0 && document.getElementById("fMile").value !== "")) || bad;
+  var phone = document.getElementById("fPhone").value.trim();
+  var phoneOk = window.__lang === "zh" ? /^1[3-9]\d{9}$/.test(phone) : /^[+\d][\d\s-]{6,19}$/.test(phone);
+  bad = markErr("fPhone", "ePhone", !phoneOk) || bad;
+  if (window.__lang === "zh") {
+    var code = document.getElementById("fCode").value.trim();
+    bad = markErr("fCode", "eCode", !/^\d{4,6}$/.test(code)) || bad;
+  } else {
+    var mail = document.getElementById("fMail").value.trim();
+    bad = markErr("fMail", "eMail", !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) || bad;
+  }
+  if (bad) {
+    var firstErr = document.querySelector(".sf-field.err");
+    if (firstErr) firstErr.scrollIntoView({ block: "center", behavior: "smooth" });
+    return;
+  }
+  /* 演示态：不落库不请求，直接跳成功页 */
+  location.href = "success.html";
+});
+/* 输入即清除错误态 */
+var errMap = { fModel: "eModel", fCity: "eCity", fReg: "eReg", fMile: "eMile", fPhone: "ePhone", fCode: "eCode", fMail: "eMail" };
+Object.keys(errMap).forEach(function (id) {
+  var el = document.getElementById(id);
+  el.addEventListener("input", clearErr);
+  el.addEventListener("change", clearErr);
+  function clearErr() {
+    el.closest(".sf-field").className = "sf-field";
+    document.getElementById(errMap[id]).className = "sf-err";
+  }
+});
+/* 语言切换钩子 */
+window.__rerenderPage = renderSellCopy;
+</script>
+<!-- STAT CODE END -->
+</body>
+</html>

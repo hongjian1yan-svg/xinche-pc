@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!-- #AI:design 二手车市场官网复用模板 · 新闻详情页
+     ⚙ 公共替换项见 js/config.js；正文为演示占位文案（REPLACE: 市场方有真实新闻时整体替换 js/news.js） -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- #AI:design:start --><title>公司动态 - 中山市鸿源二手车经销有限公司</title><!-- #AI:design:end --> <!-- REPLACE: 页面title市场名 -->
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/element-icons.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<!-- 面包屑：市场名 > 公司动态 > 正文 -->
+<div class="breadcrumb">
+  <div class="wrap" id="crumb"></div>
+</div>
+
+<div class="wrap">
+  <article class="news-detail">
+    <h1 class="nd-title" id="ndTitle"></h1>
+    <div class="nd-meta">
+      <span id="ndDate"></span><span id="ndSrc"></span><span id="ndViews"></span>
+    </div>
+    <div class="nd-body" id="ndBody"></div>
+    <div class="nd-nav">
+      <div>上一篇：<a id="ndPrev" href="#"></a></div>
+      <div>下一篇：<a id="ndNext" href="#"></a></div>
+    </div>
+    <div class="nd-back"><a class="btn btn-ghost" href="news-list.html"><i class="el-icon-back"></i> 返回公司动态列表</a></div>
+  </article>
+</div>
+
+<footer id="site-footer"></footer>
+<div id="float-bar"></div>
+
+<!-- STAT CODE -->
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/news.js"></script>
+<script src="js/common.js"></script>
+<script>
+initPage("news");
+
+var id = parseInt(getQuery("id"), 10) || 1;
+var idx = -1;
+for (var i = 0; i < NEWS_DATA.length; i++) if (NEWS_DATA[i].id === id) idx = i;
+if (idx === -1) idx = 0;
+var news = NEWS_DATA[idx];
+
+function renderNewsDetail() {
+var x = newsI(news);
+document.title = x.title + " - " + marketName();
+
+document.getElementById("crumb").innerHTML =
+  '<a href="shouye.html">' + esc(marketName()) + "</a><span class='bc-sep el-icon-arrow-right'></span>" +
+  '<a href="news-list.html">' + esc(t("nav.news")) + '</a><span class="bc-sep el-icon-arrow-right"></span><span>' + esc(t("crumb.article")) + "</span>";
+
+document.getElementById("ndTitle").textContent = x.title;
+document.getElementById("ndDate").textContent = t("nd.pub") + news.date;
+document.getElementById("ndSrc").textContent = t("nd.src") + marketName();
+document.getElementById("ndViews").textContent = tf("nd.views", { n: news.views });
+
+/* #AI:design:start */
+/* 正文占位（演示长文） */
+document.getElementById("ndBody").innerHTML =
+  "<p>" + esc(x.summary) + "</p>" +
+  '<div class="nd-img" style="background-image:url(\'' + news.img + '\')"></div>' +
+  "<p>" + esc(t("nd.p1")) + "</p>" +
+  "<p>" + esc(t("nd.p2")) + "</p>" +
+  "<p>" + esc(t("nd.p3")) + "</p>";
+/* #AI:design:end */
+
+var prev = NEWS_DATA[idx - 1] || null;
+var next = NEWS_DATA[idx + 1] || null;
+var pEl = document.getElementById("ndPrev"), nEl = document.getElementById("ndNext");
+document.querySelector(".nd-nav div:nth-child(1)").firstChild.textContent = t("nd.prev");
+document.querySelector(".nd-nav div:nth-child(2)").firstChild.textContent = t("nd.next");
+if (prev) { pEl.textContent = newsI(prev).title; pEl.href = "news-detail.html?id=" + prev.id; pEl.style.color = ""; }
+else { pEl.textContent = t("nd.none"); pEl.style.color = "#999"; }
+if (next) { nEl.textContent = newsI(next).title; nEl.href = "news-detail.html?id=" + next.id; nEl.style.color = ""; }
+else { nEl.textContent = t("nd.none"); nEl.style.color = "#999"; }
+document.querySelector(".nd-back .btn").innerHTML = '<i class="el-icon-back"></i> ' + esc(t("nd.back"));
+document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.dataset.i18n); });
+}
+renderNewsDetail();
+window.__rerenderPage = renderNewsDetail;
+</script>
+<!-- STAT CODE END -->
+</body>
+</html>
